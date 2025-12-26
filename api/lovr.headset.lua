@@ -756,6 +756,4 @@ function Layer:setPosition(x, y, z) end
 ---@param h number # The height of the viewport, in pixels.
 function Layer:setViewport(x, y, w, h) end
 
-headset = Layer
-
 _G.lovr.headset = headset

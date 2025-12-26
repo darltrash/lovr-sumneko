@@ -65,7 +65,7 @@ function Channel:hasRead(id) end
 --- Returns a message from the Channel without popping it from the queue.  If the Channel is empty, `nil` is returned.  This can be useful to determine if the Channel is empty.
 ---@see Channel:pop
 ---@see Channel
----@return * # The message, or `nil` if there is no message.
+---@return any # The message, or `nil` if there is no message.
 ---@return boolean # Whether a message was returned (use to detect nil).
 function Channel:peek() end
 
@@ -74,7 +74,7 @@ function Channel:peek() end
 ---@see Channel:push
 ---@see Channel
 ---@param wait number? # How long to wait for a message to be popped, in seconds.  `true` can be used to wait forever and `false` can be used to avoid waiting. (default: false)
----@return * # The received message, or `nil` if nothing was received.
+---@return any # The received message, or `nil` if nothing was received.
 function Channel:pop(wait) end
 
 --- Pushes a message onto the Channel.  The following types of data can be pushed: nil, boolean, number, string, table, lightuserdata, vectors, and userdata (LÖVR objects).
@@ -86,8 +86,6 @@ function Channel:pop(wait) end
 ---@return number # The ID of the pushed message.
 ---@return boolean # Whether the message was read by another thread before the wait timeout.
 function Channel:push(message, wait) end
-
-thread = Channel
 
 ---@class Thread
 local Thread = {}
@@ -113,7 +111,5 @@ function Thread:start(...) end
 ---@see Thread:isRunning
 ---@see Thread
 function Thread:wait() end
-
-thread = Thread
 
 _G.lovr.thread = thread

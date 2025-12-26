@@ -247,8 +247,6 @@ function physics.newWorld(settings) end
 ---@class BallJoint
 local BallJoint = {}
 
-physics = BallJoint
-
 ---@class BoxShape
 local BoxShape = {}
 
@@ -267,8 +265,6 @@ function BoxShape:getDimensions() end
 ---@param height number # The height of the box, in meters.
 ---@param depth number # The depth of the box, in meters.
 function BoxShape:setDimensions(width, height, depth) end
-
-physics = BoxShape
 
 ---@class CapsuleShape
 local CapsuleShape = {}
@@ -304,8 +300,6 @@ function CapsuleShape:setLength(length) end
 ---@see CapsuleShape
 ---@param radius number # The new radius, in meters.
 function CapsuleShape:setRadius(radius) end
-
-physics = CapsuleShape
 
 ---@class Collider
 local Collider = {}
@@ -702,7 +696,7 @@ function Collider:getTag() end
 ---@see Joint:setUserData
 ---@see Collider:setUserData
 ---@see Collider
----@return * # The custom value associated with the Collider.
+---@return any # The custom value associated with the Collider.
 function Collider:getUserData() end
 
 --- Returns the World the Collider is in.
@@ -1138,8 +1132,6 @@ function Collider:setTag(tag) end
 ---@param data any # The custom value to associate with the Collider.
 function Collider:setUserData(data) end
 
-physics = Collider
-
 ---@class ConeJoint
 local ConeJoint = {}
 
@@ -1161,8 +1153,6 @@ function ConeJoint:getLimit() end
 ---@see ConeJoint
 ---@param limit number # The new limit in radians, between 0 and pi.
 function ConeJoint:setLimit(limit) end
-
-physics = ConeJoint
 
 ---@class Contact
 local Contact = {}
@@ -1273,8 +1263,6 @@ function Contact:setRestitution(restitution) end
 ---@param z number # The z component of the surface velocity.
 function Contact:setSurfaceVelocity(x, y, z) end
 
-physics = Contact
-
 ---@class ConvexShape
 local ConvexShape = {}
 
@@ -1314,8 +1302,6 @@ function ConvexShape:getPointCount() end
 ---@return number # The scale.
 function ConvexShape:getScale() end
 
-physics = ConvexShape
-
 ---@class CylinderShape
 local CylinderShape = {}
 
@@ -1351,8 +1337,6 @@ function CylinderShape:setLength(length) end
 ---@param radius number # The new radius, in meters.
 function CylinderShape:setRadius(radius) end
 
-physics = CylinderShape
-
 ---@class DistanceJoint
 local DistanceJoint = {}
 
@@ -1384,8 +1368,6 @@ function DistanceJoint:setLimits(min, max) end
 ---@param frequency number? # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled. (default: 0.0)
 ---@param damping number? # The damping ratio of the spring. (default: 1.0)
 function DistanceJoint:setSpring(frequency, damping) end
-
-physics = DistanceJoint
 
 ---@class HingeJoint
 local HingeJoint = {}
@@ -1533,8 +1515,6 @@ function HingeJoint:setMotorTarget(target) end
 ---@param damping number? # The damping ratio of the spring. (default: 1.0)
 function HingeJoint:setSpring(frequency, damping) end
 
-physics = HingeJoint
-
 ---@class Joint
 local Joint = {}
 
@@ -1599,7 +1579,7 @@ function Joint:getType() end
 ---@see Shape:setUserData
 ---@see Joint:setUserData
 ---@see Joint
----@return * # The custom value associated with the Joint.
+---@return any # The custom value associated with the Joint.
 function Joint:getUserData() end
 
 --- Returns whether a Joint has been destroyed.  This the only method that can be called on a destroyed Joint, using the Joint in any other way will error.
@@ -1643,8 +1623,6 @@ function Joint:setPriority(priority) end
 ---@param data any # The custom value to associate with the Joint.
 function Joint:setUserData(data) end
 
-physics = Joint
-
 ---@class MeshShape
 local MeshShape = {}
 
@@ -1654,8 +1632,6 @@ local MeshShape = {}
 ---@see MeshShape
 ---@return number # The scale.
 function MeshShape:getScale() end
-
-physics = MeshShape
 
 ---@class Shape
 local Shape = {}
@@ -1819,7 +1795,7 @@ function Shape:getType() end
 ---@see Joint:setUserData
 ---@see Shape:setUserData
 ---@see Shape
----@return * # The custom value associated with the Shape.
+---@return any # The custom value associated with the Shape.
 function Shape:getUserData() end
 
 --- Returns the volume of the Shape, in cubic meters.
@@ -1895,8 +1871,6 @@ function Shape:setOffset(x, y, z, angle, ax, ay, az) end
 ---@see Shape
 ---@param data any # The custom value to associate with the Shape.
 function Shape:setUserData(data) end
-
-physics = Shape
 
 ---@class SliderJoint
 local SliderJoint = {}
@@ -2042,8 +2016,6 @@ function SliderJoint:setMotorTarget(target) end
 ---@param damping number? # The damping ratio of the spring. (default: 1.0)
 function SliderJoint:setSpring(frequency, damping) end
 
-physics = SliderJoint
-
 ---@class SphereShape
 local SphereShape = {}
 
@@ -2059,17 +2031,11 @@ function SphereShape:getRadius() end
 ---@param radius number # The radius of the sphere, in meters.
 function SphereShape:setRadius(radius) end
 
-physics = SphereShape
-
 ---@class TerrainShape
 local TerrainShape = {}
 
-physics = TerrainShape
-
 ---@class WeldJoint
 local WeldJoint = {}
-
-physics = WeldJoint
 
 ---@class World
 local World = {}
@@ -2608,7 +2574,5 @@ function World:shapecast(shape, x1, y1, z1, x2, y2, z2, angle, ax, ay, az, filte
 ---@see World
 ---@param dt number # The amount of time to advance the simulation forward.
 function World:update(dt) end
-
-physics = World
 
 _G.lovr.physics = physics

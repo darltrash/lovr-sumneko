@@ -336,8 +336,6 @@ function Curve:setPoint(index, x, y, z) end
 ---@return Curve # A new Curve.
 function Curve:slice(t1, t2) end
 
-math = Curve
-
 ---@class Mat4
 local Mat4 = {}
 
@@ -560,8 +558,6 @@ function Mat4:transpose() end
 ---@return number # The requested components of the matrix.
 function Mat4:unpack(raw) end
 
-math = Mat4
-
 ---@class Quat
 local Quat = {}
 
@@ -665,8 +661,6 @@ function Quat:slerp(r, t) end
 ---@return number # The z component of the rotation axis or the w value.
 function Quat:unpack(raw) end
 
-math = Quat
-
 ---@class RandomGenerator
 local RandomGenerator = {}
 
@@ -714,8 +708,6 @@ function RandomGenerator:setSeed(seed) end
 ---@see RandomGenerator
 ---@param state string # The serialized state.
 function RandomGenerator:setState(state) end
-
-math = RandomGenerator
 
 ---@class Vec2
 local Vec2 = {}
@@ -833,8 +825,6 @@ function Vec2:sub(u) end
 ---@return number # The x value.
 ---@return number # The y value.
 function Vec2:unpack() end
-
-math = Vec2
 
 ---@class Vec3
 local Vec3 = {}
@@ -985,8 +975,6 @@ function Vec3:transform(m) end
 ---@return number # The z value.
 function Vec3:unpack() end
 
-math = Vec3
-
 ---@class Vec4
 local Vec4 = {}
 
@@ -1118,11 +1106,7 @@ function Vec4:transform(m) end
 ---@return number # The w value.
 function Vec4:unpack() end
 
-math = Vec4
-
 ---@class Vectors
 local Vectors = {}
-
-math = Vectors
 
 _G.lovr.math = math

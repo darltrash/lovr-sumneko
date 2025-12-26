@@ -304,6 +304,4 @@ function File:tell() end
 ---@return string # The error message.
 function File:write(string, size) end
 
-filesystem = File
-
 _G.lovr.filesystem = filesystem

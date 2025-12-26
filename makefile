@@ -7,7 +7,7 @@ fetch-api:
 		wget -O api.json https://lovr.org/api/data || \
 		(echo "Error: Neither curl nor wget is available" && exit 1))
 
-execute:
+generate:
 	@rm -rf api/*
 	@mkdir -p api
 	@luajit generator.lua

@@ -525,8 +525,6 @@ function Buffer:newReadback(offset, extent) end
 ---@param count number? # The number of items to copy.  `nil` will copy as many items as possible, based on the lengths of the source and destination. (default: nil)
 function Buffer:setData(table, destinationIndex, sourceIndex, count) end
 
-graphics = Buffer
-
 ---@class Font
 local Font = {}
 
@@ -648,8 +646,6 @@ function Font:setLineSpacing(spacing) end
 ---@param density number # The new pixel density of the font.
 function Font:setPixelDensity(density) end
 
-graphics = Font
-
 ---@class Material
 local Material = {}
 
@@ -657,8 +653,6 @@ local Material = {}
 ---@see Material
 ---@return table # The Material properties.
 function Material:getProperties() end
-
-graphics = Material
 
 ---@class Mesh
 local Mesh = {}
@@ -872,8 +866,6 @@ function Mesh:setMaterial(material) end
 ---@param index number? # The index of the first vertex to return. (default: 1)
 ---@param count number? # The number of vertices to return.  If nil, returns the "rest" of the vertices, based on the `index` argument. (default: nil)
 function Mesh:setVertices(vertices, index, count) end
-
-graphics = Mesh
 
 ---@class Model
 local Model = {}
@@ -1457,8 +1449,6 @@ function Model:setNodeScale(index, sx, sy, sz, blend) end
 ---@param az number # The z component of the axis of rotation.
 ---@param blend number? # A number from 0 to 1 indicating how much of the target transform to blend in.  A value of 0 will not change the node's transform at all, whereas 1 will fully blend to the target transform. (default: 1.0)
 function Model:setNodeTransform(index, x, y, z, sx, sy, sz, angle, ax, ay, az, blend) end
-
-graphics = Model
 
 ---@class Pass
 local Pass = {}
@@ -2283,8 +2273,6 @@ function Pass:transform(x, y, z, sx, sy, sz, angle, ax, ay, az) end
 ---@param z number # The z component of the translation.
 function Pass:translate(x, y, z) end
 
-graphics = Pass
-
 ---@class Readback
 local Readback = {}
 
@@ -2318,8 +2306,6 @@ function Readback:isComplete() end
 ---@see Readback
 ---@return boolean # Whether the CPU had to be blocked for waiting.
 function Readback:wait() end
-
-graphics = Readback
 
 ---@class Sampler
 local Sampler = {}
@@ -2373,8 +2359,6 @@ function Sampler:getMipmapRange() end
 ---@return WrapMode # The wrap mode used in the vertical direction.
 ---@return WrapMode # The wrap mode used in the "z" direction, for 3D textures only.
 function Sampler:getWrap() end
-
-graphics = Sampler
 
 ---@class Shader
 local Shader = {}
@@ -2439,8 +2423,6 @@ function Shader:hasStage(stage) end
 ---@param name string # The name of the variable to check.
 ---@return boolean # Whether the Shader has the variable.
 function Shader:hasVariable(name) end
-
-graphics = Shader
 
 ---@class Texture
 local Texture = {}
@@ -2609,7 +2591,5 @@ function Texture:setPixels(image, dstx, dsty, dstlayer, dstmipmap, srcx, srcy, s
 ---@overload fun()
 ---@param mode FilterMode # The FilterMode shaders will use when reading pixels from the texture.
 function Texture:setSampler(mode) end
-
-graphics = Texture
 
 _G.lovr.graphics = graphics

@@ -492,6 +492,4 @@ function Source:stop() end
 ---@return number # The current playback position.
 function Source:tell(unit) end
 
-audio = Source
-
 _G.lovr.audio = audio

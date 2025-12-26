@@ -8,6 +8,30 @@ do
     f:close()
 end
 
+local reserved = {
+    ["and"] = true,
+    ["break"] = true,
+    ["do"] = true,
+    ["else"] = true,
+    ["elseif"] = true,
+    ["end"] = true,
+    ["false"] = true,
+    ["for"] = true,
+    ["function"] = true,
+    ["if"] = true,
+    ["in"] = true,
+    ["local"] = true,
+    ["nil"] = true,
+    ["not"] = true,
+    ["or"] = true,
+    ["repeat"] = true,
+    ["return"] = true,
+    ["then"] = true,
+    ["true"] = true,
+    ["until"] = true,
+    ["while"] = true,
+}
+
 local function writeComment(cmt, f)
     for line in cmt:gmatch('[^\r\n]+') do
         f:write("--- ")
@@ -37,6 +61,18 @@ local function writeEnum(enum, f)
     f:write("\n")
 end
 
+local function handleArg(arg)
+    if arg.name:sub(1, 3) == "..." then
+        arg.name = "..."
+    elseif reserved[arg.name] then
+        arg.name = arg.name .. "_"
+    end
+    if arg.type == "*" then
+        arg.type = "any"
+    end
+    return arg
+end
+
 local function writeFunction(func, namespace, is_method, f)
     local key = func.key
     local name = func.name
@@ -54,12 +90,7 @@ local function writeFunction(func, namespace, is_method, f)
 
         local params = {}
         for _, arg in ipairs(var.arguments) do
-            if arg.name:sub(1, 3) == "..." then
-                arg.name = "..."
-            end
-            if arg.type == "*" then
-                arg.type = "any"
-            end
+            handleArg(arg)
             table.insert(params, arg.name .. ": " .. arg.type)
         end
 
@@ -82,13 +113,7 @@ local function writeFunction(func, namespace, is_method, f)
     do
         local params = {}
         for _, arg in ipairs(first.arguments) do
-            if arg.name:sub(1, 3) == "..." then
-                arg.name = "..."
-            end
-
-            if arg.type == "*" then
-                arg.type = "any"
-            end
+            handleArg(arg)
 
             f:write("---@param ")
             f:write(arg.name)
@@ -107,6 +132,9 @@ local function writeFunction(func, namespace, is_method, f)
 
         for _, ret in ipairs(first.returns) do
             f:write("---@return ")
+            if ret.type == "*" then
+                ret.type = "any"
+            end
             f:write(ret.type)
             if ret.description then
                 f:write(" # ")
@@ -144,21 +172,15 @@ local function writeObject(object, namespace, f)
     for _, func in ipairs(object.methods) do
         writeFunction(func, name, true, f)
     end
-
-    --# data.Blob = Blob
-    f:write(namespace)
-    f:write(" = ")
-    f:write(name)
-    f:write("\n\n")
 end
 
 local function processModule(module)
     local key = module.key
     local name = key:match("([^.]+)$")
 
-    io.write("- '" .. key .. "'... ")
+    io.write(("- %-20s"):format(key .. "..."))
     if module.external then
-        print("Skipping (external.)")
+        print("EXTERNAL (skip)")
         return
     end
 
@@ -204,7 +226,7 @@ local function processModule(module)
 
     f:close()
 
-    print("Done.")
+    print("DONE")
 end
 
 print("Processing modules")
@@ -229,4 +251,15 @@ for _, key in ipairs(modules) do
     f:write(key)
     f:write("\n")
 end
+f:write("\n")
+f:write("---@diagnostic disable: inject-field\n")
+f:write("\n")
+
+for _, call in ipairs(data.callbacks) do
+    local key = call.key
+    local name = key:match("([^.]+)$")
+
+    writeFunction(call, "lovr", false, f)
+end
+
 f:close()

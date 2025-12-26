@@ -294,8 +294,6 @@ function Blob:getF32(offset, count) end
 ---@return number # `count` 64-bit doubles.
 function Blob:getF64(offset, count) end
 
-data = Blob
-
 ---@class Image
 local Image = {}
 
@@ -412,8 +410,6 @@ function Image:paste(source, x, y, fromX, fromY, width, height) end
 ---@param b number # The blue component of the pixel, from 0.0 to 1.0.
 ---@param a number? # The alpha component of the pixel, from 0.0 to 1.0. (default: 1.0)
 function Image:setPixel(x, y, r, g, b, a) end
-
-data = Image
 
 ---@class ModelData
 local ModelData = {}
@@ -925,8 +921,6 @@ function ModelData:getVertexCount() end
 ---@return number # The width of the model.
 function ModelData:getWidth() end
 
-data = ModelData
-
 ---@class Rasterizer
 local Rasterizer = {}
 
@@ -1063,8 +1057,6 @@ function Rasterizer:hasGlyphs(...) end
 ---@return Image # The glyph image.  It will be in the `rgba32f` format.
 function Rasterizer:newImage(character, spread, padding) end
 
-data = Rasterizer
-
 ---@class Sound
 local Sound = {}
 
@@ -1179,7 +1171,5 @@ function Sound:isStream() end
 ---@param srcOffset number? # A frame, byte, or index offset to apply when reading frames from the source. (default: 0)
 ---@return number # The number of frames written.
 function Sound:setFrames(t, count, dstOffset, srcOffset) end
-
-data = Sound
 
 _G.lovr.data = data
