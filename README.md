@@ -13,6 +13,7 @@ So, I had a terrible experience with the [Sumneko LSP](https://github.com/bjornb
   ]
 }
 ```
+You can also get the api folder, isolated, by [grabbing a release.](https://github.com/darltrash/lovr-sumneko/releases/)
 
 ## How to generate
 1. Get LuaJIT, and Make from your package manager of choice.
