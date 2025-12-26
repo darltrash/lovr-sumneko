@@ -2,7 +2,7 @@
 So, I had a terrible experience with the [Sumneko LSP](https://github.com/bjornbytes/lovr) [LÖVR](https://github.com/bjornbytes/lovr) annotations, they always worked super weird to me, and I decided to make new ones from the [official API definitions](https://github.com/bjornbytes/lovr-docs).
 
 ## How to use
-1. Steal the little folder named "api" in this repository
+1. Steal the `lovr` folder from this repository
 2. Paste it into your project, anywhere
 3. Let the LSP know you're using this instead of the original ones, use this example:
 ```json

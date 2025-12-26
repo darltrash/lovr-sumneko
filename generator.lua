@@ -184,7 +184,7 @@ local function processModule(module)
         return
     end
 
-    local f = io.open("api/" .. key .. ".lua", "w+")
+    local f = io.open("lovr/" .. key .. ".lua", "w+")
     assert(f, "Could not open file, make sure you got permissions!")
 
     --# ---@meta lovr.audio
@@ -240,7 +240,7 @@ end
 
 -- Because we register each namespace as it's own class, effectively, we have
 -- forced ourselves to write a little index of subclasses :(
-local f = assert(io.open("api/lovr.lua", "a+"))
+local f = assert(io.open("lovr/lovr.lua", "a+"))
 f:write("\n")
 for _, key in ipairs(modules) do
     local name = key:match("([^.]+)$")

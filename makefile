@@ -8,6 +8,9 @@ fetch-api:
 		(echo "Error: Neither curl nor wget is available" && exit 1))
 
 generate:
-	@rm -rf api/*
-	@mkdir -p api
+	@rm -rf lovr/
+	@mkdir lovr
 	@luajit generator.lua
+
+package: generate
+	zip -9 -r lovr.zip lovr/
