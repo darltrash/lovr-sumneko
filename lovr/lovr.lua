@@ -244,3 +244,9 @@ function lovr.visible(visible, display) end
 ---@param dy number # The relative vertical motion; upward movement results in positive values.
 function lovr.wheelmoved(dx, dy) end
 
+
+_G.vec2 = _G.lovr.math.vec2
+_G.vec3 = _G.lovr.math.vec3
+_G.vec4 = _G.lovr.math.vec4
+_G.mat4 = _G.lovr.math.mat4
+_G.quat = _G.lovr.math.quat

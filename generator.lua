@@ -32,6 +32,15 @@ local reserved = {
     ["while"] = true,
 }
 
+local operators = {
+    ["add"] = "add",
+    ["sub"] = "sub",
+    ["div"] = "div",
+    ["mul"] = "mul",
+    --["equals"] = "eq",
+    --["length"] = "len",
+}
+
 local function writeComment(cmt, f)
     for line in cmt:gmatch('[^\r\n]+') do
         f:write("--- ")
@@ -71,6 +80,49 @@ local function handleArg(arg)
         arg.type = "any"
     end
     return arg
+end
+
+local function writeOperator(func, f)
+    local name = operators[func.name]
+    if not name then
+        return
+    end
+
+    for i = 1, #func.variants do
+        local var = func.variants[i]
+
+        if (#var.arguments > 1) then
+            goto continue
+        end
+
+        local params = {}
+        for _, arg in ipairs(var.arguments) do
+            handleArg(arg)
+            table.insert(params, arg.type)
+        end
+
+        if (#var.returns > 1) then
+            goto continue
+        end
+
+        local returns = {}
+        for _, ret in ipairs(var.returns) do
+            table.insert(returns, ret.type)
+        end
+
+        f:write("---@operator ")
+        f:write(name)
+        f:write("(")
+        f:write(table.concat(params, ", "))
+        f:write(")")
+        if #returns > 0 then
+            f:write(": ")
+            f:write(table.concat(returns, ", "))
+        end
+        f:write("\n")
+
+        ::continue::
+    end
 end
 
 local function writeFunction(func, namespace, is_method, f)
@@ -163,6 +215,10 @@ local function writeObject(object, namespace, f)
     f:write("---@class ")
     f:write(name)
     f:write("\n")
+
+    for _, func in ipairs(object.methods) do
+        writeOperator(func, f)
+    end
 
     --# local Blob = {}
     f:write("local ")
@@ -260,6 +316,19 @@ for _, call in ipairs(data.callbacks) do
     local name = key:match("([^.]+)$")
 
     writeFunction(call, "lovr", false, f)
+end
+
+f:write("\n")
+local shortcuts = {
+    "vec2", "vec3", "vec4",
+    "mat4", "quat"
+}
+for _, short in ipairs(shortcuts) do
+    f:write("_G.")
+    f:write(short)
+    f:write(" = _G.lovr.math.")
+    f:write(short)
+    f:write("\n")
 end
 
 f:close()

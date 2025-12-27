@@ -337,6 +337,9 @@ function Curve:setPoint(index, x, y, z) end
 function Curve:slice(t1, t2) end
 
 ---@class Mat4
+---@operator mul(Mat4): Mat4
+---@operator mul(Vec3): Vec3
+---@operator mul(Vec4): Vec4
 local Mat4 = {}
 
 --- Returns whether a matrix is approximately equal to another matrix.
@@ -559,6 +562,8 @@ function Mat4:transpose() end
 function Mat4:unpack(raw) end
 
 ---@class Quat
+---@operator mul(Quat): Quat
+---@operator mul(Vec3): Vec3
 local Quat = {}
 
 --- Conjugates the input quaternion in place, returning the input.  If the quaternion is normalized, this is the same as inverting it.  It negates the (x, y, z) components of the quaternion.
@@ -710,6 +715,10 @@ function RandomGenerator:setSeed(seed) end
 function RandomGenerator:setState(state) end
 
 ---@class Vec2
+---@operator add(Vec2): Vec2
+---@operator div(Vec2): Vec2
+---@operator mul(Vec2): Vec2
+---@operator sub(Vec2): Vec2
 local Vec2 = {}
 
 --- Adds a vector or a number to the vector.
@@ -827,6 +836,10 @@ function Vec2:sub(u) end
 function Vec2:unpack() end
 
 ---@class Vec3
+---@operator add(Vec3): Vec3
+---@operator div(Vec3): Vec3
+---@operator mul(Vec3): Vec3
+---@operator sub(Vec3): Vec3
 local Vec3 = {}
 
 --- Adds a vector or a number to the vector.
@@ -976,6 +989,10 @@ function Vec3:transform(m) end
 function Vec3:unpack() end
 
 ---@class Vec4
+---@operator add(Vec4): Vec4
+---@operator div(Vec4): Vec4
+---@operator mul(Vec4): Vec4
+---@operator sub(Vec4): Vec4
 local Vec4 = {}
 
 --- Adds a vector or a number to the vector.
