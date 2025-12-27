@@ -261,7 +261,7 @@ function graphics.getWindowPass() end
 ---@param ... TextureFeature # Zero or more features to check.  If no features are given, this function will return whether the GPU supports *any* feature for this format.  Otherwise, this function will only return true if *all* of the input features are supported.
 ---@return boolean # Whether the GPU supports these operations for textures with this format, when created with the `linear` flag set to `true`.
 ---@return boolean # Whether the GPU supports these operations for textures with this format, when created with the `linear` flag set to `false`.
-function graphics.isFormatSupported(format, ...) end
+function graphics.isFormatSupported(format, ...features) end
 
 --- Returns whether the **super experimental** HDR mode is active.
 --- To enable HDR, add `t.graphics.hdr` to `lovr.conf`.  When enabled, LÖVR will try to create an HDR10 window.  If the GPU supports it, then this function will return true and the window texture will be HDR:
@@ -339,7 +339,7 @@ function graphics.newModel(file, options) end
 ---@overload fun(): Pass
 ---@param ... Texture # One or more textures the pass will render to.  This can be changed later using `Pass:setCanvas`.
 ---@return Pass # The new Pass.
-function graphics.newPass(...) end
+function graphics.newPass(...textures) end
 
 --- Creates a new Sampler.  Samplers are immutable, meaning their parameters can not be changed after the sampler is created.  Instead, a new sampler should be created with the updated properties.
 ---@see Pass:setSampler
@@ -366,7 +366,7 @@ function graphics.newShader(vertex, fragment, options) end
 ---@overload fun(width: number, height: number, options: table): Texture
 ---@overload fun(width: number, height: number, layers: number, options: table): Texture
 ---@overload fun(image: string, options: table): Texture
----@overload fun(images: {string | Blob | Image}, options: table): Texture
+---@overload fun(images: (string|Blob|Image)[], options: table): Texture
 ---@param file string | Blob # A filename or Blob containing an image file to load.
 ---@param options table? # Texture options. (default: nil)
 ---@return Texture # The new Texture.
@@ -395,7 +395,7 @@ function graphics.present() end
 ---@see Texture:clear
 ---@see Pass:fill
 ---@overload fun(hex: number, a: number)
----@overload fun(table: {number})
+---@overload fun(table: number[])
 ---@param r number # The red component of the background color.
 ---@param g number # The green component of the background color.
 ---@param b number # The blue component of the background color.
@@ -409,7 +409,7 @@ function graphics.setTimingEnabled(enable) end
 
 --- Submits work to the GPU.
 ---@see lovr.graphics.wait
----@overload fun(t: {Pass | boolean}): boolean
+---@overload fun(t: (Pass|boolean)[]): boolean
 ---@param ... Pass | boolean | nil # The pass objects to submit.  Falsy values will be skipped.
 ---@return boolean # Always returns true, for convenience when returning from `lovr.draw`.
 function graphics.submit(...) end
@@ -546,10 +546,10 @@ function Font:getLineSpacing() end
 ---@see Font:getWidth
 ---@see Font:getHeight
 ---@see Pass:text
----@overload fun(strings: table, wrap: number): {string}
+---@overload fun(strings: table, wrap: number): string[]
 ---@param string string # The text to wrap.
 ---@param wrap number # The line length to wrap at.
----@return {string} # A table of strings, one for each wrapped line.
+---@return string[] # A table of strings, one for each wrapped line.
 function Font:getLines(string, wrap) end
 
 --- Returns the pixel density of the font.  The density is a "pixels per world unit" factor that controls how the pixels in the font's texture are mapped to units in the coordinate space.
@@ -564,12 +564,12 @@ function Font:getPixelDensity() end
 function Font:getRasterizer() end
 
 --- Returns a table of vertices for a piece of text, along with a Material to use when rendering it. The Material returned by this function may not be the same if the Font's texture atlas needs to be recreated with a bigger size to make room for more glyphs.
----@overload fun(strings: table, wrap: number, halign: HorizontalAlign, valign: VerticalAlign): {number}, Material
+---@overload fun(strings: table, wrap: number, halign: HorizontalAlign, valign: VerticalAlign): number[], Material
 ---@param string string # The text to render.
 ---@param wrap number? # The maximum line length.  The units depend on the pixel density of the font, but are in meters by default. (default: 0)
 ---@param halign HorizontalAlign # The horizontal align.
 ---@param valign VerticalAlign # The vertical align.
----@return {number} # The table of vertices.  See below for the format of each vertex.
+---@return number[] # The table of vertices.  See below for the format of each vertex.
 ---@return Material # A Material to use when rendering the vertices.
 function Font:getVertices(string, wrap, halign, valign) end
 
@@ -665,7 +665,7 @@ function Mesh:getIndexBuffer() end
 --- Returns a table with the Mesh's vertex indices.
 ---@see Mesh:getIndexBuffer
 ---@see Mesh:setIndexBuffer
----@return {number} # A table of numbers with the 1-based vertex indices.
+---@return number[] # A table of numbers with the 1-based vertex indices.
 function Mesh:getIndices() end
 
 --- Returns the `Material` applied to the Mesh.
@@ -712,7 +712,7 @@ function Mesh:getVertexStride() end
 ---@see Mesh:setIndices
 ---@param index number? # The index of the first vertex to return. (default: 1)
 ---@param count number? # The number of vertices to return.  If nil, returns the "rest" of the vertices, based on the `index` argument. (default: nil)
----@return {{number}} # A table of vertices.  Each vertex is a table of numbers for each vertex attribute, given by the vertex format of the Mesh.
+---@return number[][] # A table of vertices.  Each vertex is a table of numbers for each vertex attribute, given by the vertex format of the Mesh.
 function Mesh:getVertices(index, count) end
 
 --- Sets or removes the axis-aligned bounding box of the Mesh.
@@ -762,7 +762,7 @@ function Mesh:setIndexBuffer(buffer) end
 ---@see Mesh:setVertices
 ---@overload fun(blob: Blob, type: DataType)
 ---@overload fun()
----@param t {number} # A list of numbers (1-based).
+---@param t number[] # A list of numbers (1-based).
 function Mesh:setIndices(t) end
 
 --- Sets a `Material` to use when drawing the Mesh.
@@ -779,7 +779,7 @@ function Mesh:setMaterial(material) end
 ---@see Mesh:getIndices
 ---@see Mesh:setIndices
 ---@overload fun(blob: Blob, index: number, count: number)
----@param vertices {{number}} # A table of vertices, where each vertex is a table of numbers matching the vertex format of the Mesh.
+---@param vertices number[][] # A table of vertices, where each vertex is a table of numbers matching the vertex format of the Mesh.
 ---@param index number? # The index of the first vertex to set. (default: 1)
 ---@param count number? # The number of vertices to set. (default: nil)
 function Mesh:setVertices(vertices, index, count) end
@@ -982,7 +982,7 @@ function Model:getMetadata() end
 ---@see Model:getNodeParent
 ---@see Model:getRootNode
 ---@param node string | number # The name or index of the parent node.
----@return {number} # A table containing the node index of each child of the parent node.
+---@return number[] # A table containing the node index of each child of the parent node.
 function Model:getNodeChildren(node) end
 
 --- Returns the number of nodes in the model.
@@ -1134,8 +1134,8 @@ function Model:getTriangleCount() end
 ---@see Model:getVertexCount
 ---@see Model:getMesh
 ---@see ModelData:getTriangles
----@return {number} # The triangle vertex positions, returned as a flat (non-nested) table of numbers.  The position of each vertex is given as an x, y, and z coordinate.
----@return {number} # A list of numbers representing how to connect the vertices into triangles.  Each number is a 1-based index into the `vertices` table, and every 3 indices form a triangle.
+---@return number[] # The triangle vertex positions, returned as a flat (non-nested) table of numbers.  The position of each vertex is given as an x, y, and z coordinate.
+---@return number[] # A list of numbers representing how to connect the vertices into triangles.  Each number is a 1-based index into the `vertices` table, and every 3 indices form a triangle.
 function Model:getTriangles() end
 
 --- Returns a `Buffer` that holds the vertices of all of the meshes in the Model.
@@ -1551,7 +1551,7 @@ function Pass:getViewPose(view) end
 function Pass:getWidth() end
 
 --- Draws a line between points.  `Pass:mesh` can also be used to draw line segments using the `line` `DrawMode`.
----@overload fun(t: {number | Vec3})
+---@overload fun(t: (number|Vec3)[])
 ---@overload fun(v1: Vec3, v2: Vec3, ...: Vec3)
 ---@param x1 number # The x coordinate of the first point.
 ---@param y1 number # The y coordinate of the first point.
@@ -1560,7 +1560,7 @@ function Pass:getWidth() end
 ---@param y2 number # The y coordinate of the next point.
 ---@param z2 number # The z coordinate of the next point.
 ---@param ... number # More points to add to the line.
-function Pass:line(x1, y1, z1, x2, y2, z2, ...) end
+function Pass:line(x1, y1, z1, x2, y2, z2, ...numbers) end
 
 --- Draws a mesh.
 ---@see Pass:setMeshMode
@@ -1611,7 +1611,7 @@ function Pass:origin() end
 function Pass:plane(x, y, z, width, height, angle, ax, ay, az, style, columns, rows) end
 
 --- Draws points.  `Pass:mesh` can also be used to draw points using a `Buffer`.
----@overload fun(t: {number | Vec3})
+---@overload fun(t: (number|Vec3)[])
 ---@overload fun(v: Vec3, ...: any)
 ---@param x number # The x coordinate of the first point.
 ---@param y number # The y coordinate of the first point.
@@ -1623,7 +1623,7 @@ function Pass:points(x, y, z, ...) end
 ---@see Pass:points
 ---@see Pass:line
 ---@see Pass:draw
----@overload fun(t: {number | Vec3})
+---@overload fun(t: (number|Vec3)[])
 ---@overload fun(v1: Vec3, v2: Vec3, ...: any)
 ---@param x1 number # The x coordinate of the first vertex.
 ---@param y1 number # The y coordinate of the first vertex.
@@ -1724,7 +1724,7 @@ function Pass:setBlendMode(blend, alphaBlend) end
 ---@overload fun(canvas: table)
 ---@overload fun()
 ---@param ... Texture # One or more color textures the pass will render to.
-function Pass:setCanvas(...) end
+function Pass:setCanvas(...textures) end
 
 --- Sets the clear values of the pass.  This controls the initial colors of the canvas texture pixels at the beginning of the render pass.  For each color texture, it can be one of the following:
 --- - A specific RGBA color value (or number for the depth texture).
@@ -1741,7 +1741,7 @@ function Pass:setCanvas(...) end
 function Pass:setClear(hex) end
 
 --- Sets the color used for drawing.  Color components are from 0 to 1.
----@overload fun(t: {number})
+---@overload fun(t: number[])
 ---@overload fun(hex: number, a: number)
 ---@param r number # The red component of the color.
 ---@param g number # The green component of the color.
@@ -1869,7 +1869,7 @@ function Pass:setStencilTest(test, value, mask) end
 ---@see Pass:setStencilTest
 ---@see Pass:setDepthTest
 ---@overload fun()
----@param action StencilAction | {StencilAction} # How pixels should update the stencil buffer when they are drawn.  Can also be a list of 3 stencil actions, used when a pixel fails the stencil test, fails the depth test, or passes the stencil test, respectively.
+---@param action StencilAction[] # How pixels should update the stencil buffer when they are drawn.  Can also be a list of 3 stencil actions, used when a pixel fails the stencil test, fails the depth test, or passes the stencil test, respectively.
 ---@param value number? # When using the 'replace' action, this is the value to replace with. (default: 1)
 ---@param mask number? # An optional mask to apply to stencil values before writing. (default: 0xff)
 function Pass:setStencilWrite(action, value, mask) end
@@ -2179,7 +2179,7 @@ local Texture = {}
 ---@see Pass:setClear
 ---@overload fun(hex: number, layer: number, layerCount: number, mipmap: number, mipmapCount: number)
 ---@overload fun(r: number, g: number, b: number, a: number, layer: number, layerCount: number, mipmap: number, mipmapCount: number)
----@overload fun(t: {number}, layer: number, layerCount: number, mipmap: number, mipmapCount: number)
+---@overload fun(t: number[], layer: number, layerCount: number, mipmap: number, mipmapCount: number)
 ---@overload fun(v3: Vec3, layer: number, layerCount: number, mipmap: number, mipmapCount: number)
 ---@overload fun(v4: Vec4, layer: number, layerCount: number, mipmap: number, mipmapCount: number)
 function Texture:clear() end

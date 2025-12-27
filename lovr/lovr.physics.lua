@@ -1832,7 +1832,7 @@ function World:getColliderCount() end
 --- Returns a list of colliders in the world.  This includes sleeping and disabled colliders.
 ---@see World:getColliderCount
 ---@see World:getJoints
----@return {Collider} # The list of `Collider` objects in the World.
+---@return Collider[] # The list of `Collider` objects in the World.
 function World:getColliders() end
 
 --- Returns the World's gravity.  Gravity is a constant acceleration applied to all colliders.  The default is `(0, -9.81, 0)` meters per second squared, causing colliders to fall downward.
@@ -1855,7 +1855,7 @@ function World:getJointCount() end
 --- Returns a table with all the joints in the World.  This includes disabled joints.
 ---@see World:getJointCount
 ---@see World:getColliders
----@return {Joint} # The list of `Joint` objects in the World.
+---@return Joint[] # The list of `Joint` objects in the World.
 function World:getJoints() end
 
 --- Returns the linear damping parameters of the World.  Linear damping is similar to drag or air resistance, slowing down colliders over time as they move.
@@ -1883,7 +1883,7 @@ function World:getStepCount() end
 ---@see World:enableCollisionBetween
 ---@see World:disableCollisionBetween
 ---@see World:isCollisionEnabledBetween
----@return {string} # A table of collision tags (strings).
+---@return string[] # A table of collision tags (strings).
 function World:getTags() end
 
 --- Returns the tightness of joints in the World.

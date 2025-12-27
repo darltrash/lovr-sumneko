@@ -62,16 +62,37 @@ local function writeEnum(enum, f)
     f:write("\n")
 end
 
-local function handleArg(arg)
-    if arg.name:sub(1, 3) == "..." then
-        arg.name = "..."
-    elseif reserved[arg.name] then
-        arg.name = arg.name .. "_"
+local function handleType(t)
+    if t == "*" then
+        return "any"
     end
-    if arg.type == "*" then
-        arg.type = "any"
+
+    local a = t:match("{(.*)}")
+    if a then
+        local things = {}
+        for item in a:gmatch("[^|]+") do
+            -- trim whitespace around each item
+            item = item:match("^%s*(.-)%s*$")
+            table.insert(things, handleType(item))
+        end
+
+        if #things == 1 then
+            return things[1] .. "[]"
+        end
+
+        return "(" .. table.concat(things, "|") .. ")[]"
     end
-    return arg
+
+    return t
+end
+
+local function handleParam(name)
+    if name:sub(1, 3) == "..." then
+        return "..."
+    elseif reserved[name] then
+        return name .. "_"
+    end
+    return name
 end
 
 local function writeOperator(func, f)
@@ -89,8 +110,7 @@ local function writeOperator(func, f)
 
         local params = {}
         for _, arg in ipairs(var.arguments) do
-            handleArg(arg)
-            table.insert(params, arg.type)
+            table.insert(params, handleType(arg.type))
         end
 
         if (#var.returns > 1) then
@@ -99,7 +119,7 @@ local function writeOperator(func, f)
 
         local returns = {}
         for _, ret in ipairs(var.returns) do
-            table.insert(returns, ret.type)
+            table.insert(returns, handleType(ret.type))
         end
 
         f:write("---@operator ")
@@ -136,13 +156,12 @@ local function writeFunction(func, namespace, is_method, f)
 
         local params = {}
         for _, arg in ipairs(var.arguments) do
-            handleArg(arg)
-            table.insert(params, arg.name .. ": " .. arg.type)
+            table.insert(params, handleParam(arg.name) .. ": " .. handleType(arg.type))
         end
 
         local returns = {}
         for _, ret in ipairs(var.returns) do
-            table.insert(returns, ret.type)
+            table.insert(returns, handleType(ret.type))
         end
 
         f:write("---@overload fun(")
@@ -159,12 +178,10 @@ local function writeFunction(func, namespace, is_method, f)
     do
         local params = {}
         for _, arg in ipairs(first.arguments) do
-            handleArg(arg)
-
             f:write("---@param ")
-            f:write(arg.name)
+            f:write(handleParam(arg.name))
             f:write(" ")
-            f:write(arg.type .. (arg.default and "?" or ""))
+            f:write(handleType(arg.type) .. (arg.default and "?" or ""))
             f:write(" # ")
             writeSingleLine(arg.description, f)
             if arg.default then
@@ -178,10 +195,7 @@ local function writeFunction(func, namespace, is_method, f)
 
         for _, ret in ipairs(first.returns) do
             f:write("---@return ")
-            if ret.type == "*" then
-                ret.type = "any"
-            end
-            f:write(ret.type)
+            f:write(handleType(ret.type))
             if ret.description then
                 f:write(" # ")
                 writeSingleLine(ret.description, f)
@@ -216,14 +230,12 @@ local function generateSwizzles(name, f)
         vecSize = 4
     end
 
-    -- Single components
     for _, comp in ipairs(components) do
         f:write("---@field ")
         f:write(comp)
         f:write(" number\n")
     end
 
-    -- Common 2-component swizzles
     if vecSize >= 2 then
         local common2 = { "xy", "yx", "xx", "yy" }
         if vecSize >= 3 then
@@ -248,7 +260,6 @@ local function generateSwizzles(name, f)
         end
     end
 
-    -- Common 3-component swizzles
     if vecSize >= 3 then
         local common3 = {
             "xyz", "xzy", "yxz", "yzx", "zxy", "zyx", "xxx", "yyy", "zzz"
@@ -257,7 +268,6 @@ local function generateSwizzles(name, f)
             table.insert(common3, "xyw")
             table.insert(common3, "xzw")
             table.insert(common3, "yzw")
-            table.insert(common3, "xyz")
             table.insert(common3, "wxy")
             table.insert(common3, "wxz")
             table.insert(common3, "wyz")
@@ -303,7 +313,6 @@ local function writeObject(object, namespace, f)
     end
     f:write("\n")
 
-    -- Generate swizzle fields
     if swizzable then
         generateSwizzles(name, f)
     end
@@ -336,7 +345,7 @@ local function processModule(module)
 
     io.write(("- %-20s"):format(key .. "..."))
     if module.external then
-        print("EXTERNAL (skip)")
+        print("SKIP")
         return
     end
 
@@ -382,7 +391,7 @@ local function processModule(module)
 
     f:close()
 
-    print("DONE")
+    print("OK")
 end
 
 print("Processing modules")

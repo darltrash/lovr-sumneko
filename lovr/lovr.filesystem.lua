@@ -61,7 +61,7 @@ function filesystem.getAppdataDirectory() end
 
 --- Returns a sorted table containing all files and folders in a single directory.
 ---@param path string # The directory.
----@return {string} # A table with a string for each file and subfolder in the directory.
+---@return string[] # A table with a string for each file and subfolder in the directory.
 function filesystem.getDirectoryItems(path) end
 
 --- Returns the absolute path of the LÖVR executable.

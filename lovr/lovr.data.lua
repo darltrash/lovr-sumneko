@@ -294,7 +294,7 @@ function Blob:getF64(offset, count) end
 ---@see Blob:setU32
 ---@see Blob:setF32
 ---@see Blob:setF64
----@overload fun(offset: number, table: {number})
+---@overload fun(offset: number, table: number[])
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 8-bit signed integers (each taking up 1 byte, ranging from-127 to 128).
 function Blob:setI8(offset, ...) end
@@ -308,7 +308,7 @@ function Blob:setI8(offset, ...) end
 ---@see Blob:setU32
 ---@see Blob:setF32
 ---@see Blob:setF64
----@overload fun(offset: number, table: {number})
+---@overload fun(offset: number, table: number[])
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 8-bit unsigned integers (each taking up 1 byte, ranging from 0 to 255).
 function Blob:setU8(offset, ...) end
@@ -322,7 +322,7 @@ function Blob:setU8(offset, ...) end
 ---@see Blob:setU32
 ---@see Blob:setF32
 ---@see Blob:setF64
----@overload fun(offset: number, table: {number})
+---@overload fun(offset: number, table: number[])
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 16-bit signed integers (each taking up 2 bytes, ranging from-32768 to 32767).
 function Blob:setI16(offset, ...) end
@@ -336,7 +336,7 @@ function Blob:setI16(offset, ...) end
 ---@see Blob:setU32
 ---@see Blob:setF32
 ---@see Blob:setF64
----@overload fun(offset: number, table: {number})
+---@overload fun(offset: number, table: number[])
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 16-bit unsigned integers (each taking up 2 bytes, ranging from 0 to 65535).
 function Blob:setU16(offset, ...) end
@@ -350,7 +350,7 @@ function Blob:setU16(offset, ...) end
 ---@see Blob:setU32
 ---@see Blob:setF32
 ---@see Blob:setF64
----@overload fun(offset: number, table: {number})
+---@overload fun(offset: number, table: number[])
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 32-bit signed integers (each taking up 4 bytes, ranging from-2147483648 to 2147483647).
 function Blob:setI32(offset, ...) end
@@ -364,7 +364,7 @@ function Blob:setI32(offset, ...) end
 ---@see Blob:setI32
 ---@see Blob:setF32
 ---@see Blob:setF64
----@overload fun(offset: number, table: {number})
+---@overload fun(offset: number, table: number[])
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 32-bit unsigned integers (each taking up 4 bytes, ranging from 0 to 4294967296).
 function Blob:setU32(offset, ...) end
@@ -378,7 +378,7 @@ function Blob:setU32(offset, ...) end
 ---@see Blob:setI32
 ---@see Blob:setU32
 ---@see Blob:setF64
----@overload fun(offset: number, table: {number})
+---@overload fun(offset: number, table: number[])
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 32-bit floats (each taking up 4 bytes).
 function Blob:setF32(offset, ...) end
@@ -392,7 +392,7 @@ function Blob:setF32(offset, ...) end
 ---@see Blob:setI32
 ---@see Blob:setU32
 ---@see Blob:setF32
----@overload fun(offset: number, table: {number})
+---@overload fun(offset: number, table: number[])
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 64-bit floating point numbers (each taking up 8 bytes).
 function Blob:setF64(offset, ...) end
@@ -783,7 +783,7 @@ function ModelData:getMetadata() end
 ---@see ModelData:getRootNode
 ---@see Model:getNodeChildren
 ---@param node string | number # The name or index of the parent node.
----@return {number} # A table containing the node index of each child of the parent node.
+---@return number[] # A table containing the node index of each child of the parent node.
 function ModelData:getNodeChildren(node) end
 
 --- Returns the number of nodes in the model.
@@ -1112,12 +1112,12 @@ function Sound:getFormat() end
 function Sound:getFrameCount() end
 
 --- Reads frames from the Sound into a table, Blob, or another Sound.
----@overload fun(t: table, count: number, srcOffset: number, dstOffset: number): {number}, number
+---@overload fun(t: table, count: number, srcOffset: number, dstOffset: number): number[], number
 ---@overload fun(blob: Blob, count: number, srcOffset: number, dstOffset: number): number
 ---@overload fun(sound: Sound, count: number, srcOffset: number, dstOffset: number): number
 ---@param count number? # The number of frames to read.  If nil, reads as many frames as possible.Compressed sounds will automatically be decoded.Reading from a stream will ignore the source offset and read the oldest frames. (default: nil)
 ---@param srcOffset number? # A frame offset to apply to the sound when reading frames. (default: 0)
----@return {number} # A table containing audio frames.
+---@return number[] # A table containing audio frames.
 ---@return number # The number of frames read.
 function Sound:getFrames(count, srcOffset) end
 

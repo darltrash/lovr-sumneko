@@ -10,7 +10,7 @@ function math.drain() end
 
 --- Converts a color from gamma space to linear space.
 ---@see lovr.math.linearToGamma
----@overload fun(color: {number}): number, number, number
+---@overload fun(color: number[]): number, number, number
 ---@overload fun(x: number): number
 ---@param gr number # The red component of the gamma-space color.
 ---@param gg number # The green component of the gamma-space color.
@@ -26,7 +26,7 @@ function math.getRandomSeed() end
 
 --- Converts a color from linear space to gamma space.
 ---@see lovr.math.gammaToLinear
----@overload fun(color: {number}): number, number, number
+---@overload fun(color: number[]): number, number, number
 ---@overload fun(x: number): number
 ---@param lr number # The red component of the linear-space color.
 ---@param lg number # The green component of the linear-space color.
@@ -283,7 +283,7 @@ function Curve:removePoint(index) end
 ---@param n number? # The number of points to use. (default: 32)
 ---@param t1 number? # How far along the curve to start rendering. (default: 0)
 ---@param t2 number? # How far along the curve to stop rendering. (default: 1)
----@return {number} # A (flat) table of 3D points along the curve.
+---@return number[] # A (flat) table of 3D points along the curve.
 function Curve:render(n, t1, t2) end
 
 --- Changes the position of a control point on the Curve.
@@ -543,7 +543,6 @@ function Mat4:unpack(raw) end
 ---@field xyw Vec3
 ---@field xzw Vec3
 ---@field yzw Vec3
----@field xyz Vec3
 ---@field wxy Vec3
 ---@field wxz Vec3
 ---@field wyz Vec3
@@ -1013,7 +1012,6 @@ function Vec3:unpack() end
 ---@field xyw Vec3
 ---@field xzw Vec3
 ---@field yzw Vec3
----@field xyz Vec3
 ---@field wxy Vec3
 ---@field wxz Vec3
 ---@field wyz Vec3

@@ -204,13 +204,13 @@ function headset.getFoveation() end
 function headset.getHandles() end
 
 --- Returns a table with all of the currently tracked hand devices.
----@return {Device} # The currently tracked hand devices.
+---@return Device[] # The currently tracked hand devices.
 function headset.getHands() end
 
 --- Returns the list of active `Layer` objects.  These are the layers that will be rendered in the headset's display.  They are rendered in order.
 ---@see lovr.headset.newLayer
 ---@see Layer
----@return {Layer} # The list of layers.
+---@return Layer[] # The list of layers.
 function headset.getLayers() end
 
 --- Returns the name of the headset as a string.  The exact string that is returned depends on the hardware and VR SDK that is currently in use.
@@ -295,9 +295,9 @@ function headset.getRefreshRates() end
 --- Returns a list of joint transforms tracked by a device.  Currently, only hand devices are able to track joints.
 ---@see lovr.headset.getPose
 ---@see lovr.headset.animate
----@overload fun(device: Device, t: table): {{number}} | nil
+---@overload fun(device: Device, t: table): number[][]
 ---@param device Device # The hand device to query (`left` or `right`).
----@return {{number}} | nil # A list of joint transforms for the device.  Each transform is a table with 3 numbers for the position of the joint, 1 number for the joint radius (in meters), and 4 numbers for the angle/axis orientation of the joint.  There is also a `radius` key with the radius of the joint as well.
+---@return number[][] # A list of joint transforms for the device.  Each transform is a table with 3 numbers for the position of the joint, 1 number for the joint radius (in meters), and 4 numbers for the angle/axis orientation of the joint.  There is also a `radius` key with the radius of the joint as well.
 function headset.getSkeleton(device) end
 
 --- Returns a Texture that will be submitted to the headset display.  This will be the render target used in the headset's render pass.  The texture is not guaranteed to be the same every frame, and must be called every frame to get the current texture.
@@ -443,7 +443,7 @@ function headset.newModel(key) end
 ---@see Layer
 ---@see Pass:skybox
 ---@overload fun()
----@param background Image | {Image} | Texture # The image(s) or texture to use for the background.  Backgrounds can either be cubemaps (6 images) or equirectangular (a single panoramic 2D image).Textures can have any color format, but it will be converted to `rgba8` before getting copied to the VR runtime.  Images currently have to be `rgba8`.
+---@param background Image[] # The image(s) or texture to use for the background.  Backgrounds can either be cubemaps (6 images) or equirectangular (a single panoramic 2D image).Textures can have any color format, but it will be converted to `rgba8` before getting copied to the VR runtime.  Images currently have to be `rgba8`.
 function headset.setBackground(background) end
 
 --- Sets the near and far clipping planes used to render to the headset.  Objects closer than the near clipping plane or further than the far clipping plane will be clipped out of view.
@@ -463,7 +463,7 @@ function headset.setFoveation(level, dynamic) end
 ---@see Layer
 ---@overload fun(t: table)
 ---@param ... Layer # Zero or more layers to render in the headset.
-function headset.setLayers(...) end
+function headset.setLayers(...layers) end
 
 --- Sets a new passthrough mode.  Not all headsets support all passthrough modes.  Use `lovr.headset.getPassthroughModes` to see which modes are supported.
 ---@see lovr.headset.getPassthroughModes
@@ -609,7 +609,7 @@ function Layer:getTexture() end
 function Layer:getViewport() end
 
 --- Sets the color of the layer.  This will tint the contents of its texture.  It can be used to fade the layer without re-rendering its texture, which is especially useful for layers created with the `static` option.
----@overload fun(t: {number})
+---@overload fun(t: number[])
 ---@overload fun(hex: number, a: number)
 ---@param r number # The red component of the color.
 ---@param g number # The green component of the color.
