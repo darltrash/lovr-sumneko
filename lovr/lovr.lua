@@ -5,7 +5,6 @@
 local lovr = {}
 
 --- Get the current major, minor, and patch version of LÖVR.
----@see lovr
 ---@return number # The major version.
 ---@return number # The minor version.
 ---@return number # The patch number.
@@ -17,11 +16,9 @@ function lovr.getVersion() end
 local Object = {}
 
 --- Immediately destroys Lua's reference to the object it's called on.  After calling this function on an object, it is an error to do anything with the object from Lua (call methods on it, pass it to other functions, etc.).  If nothing else is using the object, it will be destroyed immediately, which can be used to destroy something earlier than it would normally be garbage collected in order to reduce memory.
----@see Object
 function Object:release() end
 
 --- Returns the name of the object's type as a string.
----@see Object
 ---@return string # The type of the object.
 function Object:type() end
 
@@ -41,6 +38,7 @@ lovr.thread = lovr.thread
 lovr.timer = lovr.timer
 
 ---@diagnostic disable: inject-field
+---@diagnostic disable: duplicate-set-field
 
 --- The `lovr.conf` callback lets you configure default settings for LÖVR.  It is called once right before the game starts.
 --- :::note
@@ -56,7 +54,7 @@ function lovr.conf(t) end
 ---@see lovr.graphics.getWindowPass
 ---@see lovr.graphics.setBackgroundColor
 ---@param pass Pass # A render pass targeting the main display (headset or window).
----@return boolean # If truthy, the input Pass will not be submitted to the GPU.
+---@return boolean | nil # If truthy, the input Pass will not be submitted to the GPU.
 function lovr.draw(pass) end
 
 --- The `lovr.errhand` callback is run whenever an error occurs.  It receives a parameter containing the error message.  It should return a handler function that will run in a loop to render the error screen.
@@ -90,8 +88,8 @@ function lovr.focus(focused, display) end
 ---@see lovr.system.isKeyDown
 ---@param key KeyCode # The key that was pressed.
 ---@param scancode number # The id of the key (ignores keyboard layout, may vary between keyboards).
----@param repeat_ boolean # Whether the event is the result of a key repeat instead of an actual press.
-function lovr.keypressed(key, scancode, repeat_) end
+---@param isrepeat boolean # Whether the event is the result of a key repeat instead of an actual press.
+function lovr.keypressed(key, scancode, isrepeat) end
 
 --- This callback is called when a key is released.
 ---@see lovr.system.wasKeyReleased

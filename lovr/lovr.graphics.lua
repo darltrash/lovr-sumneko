@@ -119,6 +119,7 @@ local graphics = {}
 ---@alias FilterMode
 ---| '"nearest"' # A pixelated appearance where the "nearest neighbor" pixel is used.
 ---| '"linear"' # A smooth appearance where neighboring pixels are averaged.
+---| '"cubic"' # An even smoother appearance, but slower and typically only available on mobile GPUs. Use `lovr.graphics.isFormatSupported('format', 'cubic')` to check for support for a specific format, or `lovr.graphics.getFeatures().cubic` to see if cubic filtering is supported at all.Note that this can only be used for `min` and `mag` options in sampler.  Trying to use this for the `mip` filter mode will silently fall back to `linear`.
 
 --- Different ways to horizontally align text with `Pass:text`.
 ---@alias HorizontalAlign
@@ -169,6 +170,7 @@ local graphics = {}
 ---| '"render"' # The Texture can used as a canvas in a `Pass`.
 ---| '"storage"' # The Texture can be sent to a storage image variable in shaders (e.g. `image2D`).
 ---| '"blit"' # The Texture can be used with `Pass:blit` and `Pass:generateMipmaps`.
+---| '"cubic"' # The Texture can be used with a sampler that uses a `cubic` filter mode.  See `FilterMode`.
 
 --- Different types of textures.  Textures are multidimensional blocks of GPU memory, and the texture's type determines how many dimensions there are, and adds some semantics about what the 3rd dimension means.
 ---@alias TextureType
@@ -205,10 +207,8 @@ local graphics = {}
 --- Compiles shader code to SPIR-V bytecode.  The bytecode can be passed to `lovr.graphics.newShader` to create shaders, which will be faster than creating it from GLSL. The bytecode is portable, so bytecode compiled on one platform will work on other platforms. This allows shaders to be precompiled in a build step.
 ---@see lovr.graphics.newShader
 ---@see Shader
----@see lovr.graphics
----@overload fun(stage: ShaderStage, blob: Blob): Blob
 ---@param stage ShaderStage # The type of shader to compile.
----@param source string # A string or filename with shader code.
+---@param source string | Blob # A string, filename, or Blob with shader code.
 ---@return Blob # A Blob containing compiled SPIR-V code.
 function graphics.compileShader(stage, source) end
 
@@ -217,8 +217,6 @@ function graphics.compileShader(stage, source) end
 ---@see Pass:setClear
 ---@see Texture:clear
 ---@see Pass:fill
----@see lovr.graphics.setBackgroundColor
----@see lovr.graphics
 ---@return number # The red component of the background color.
 ---@return number # The green component of the background color.
 ---@return number # The blue component of the background color.
@@ -228,14 +226,12 @@ function graphics.getBackgroundColor() end
 --- Returns the default Font.  The default font is Varela Round, created at 32px with a spread value of `4.0`.  It's used by `Pass:text` if no Font is provided.
 ---@see Pass:text
 ---@see lovr.graphics.newFont
----@see lovr.graphics
 ---@return Font # The default Font object.
 function graphics.getDefaultFont() end
 
 --- Returns information about the graphics device and driver.
 ---@see lovr.graphics.getFeatures
 ---@see lovr.graphics.getLimits
----@see lovr.graphics
 ---@return table
 function graphics.getDevice() end
 
@@ -243,7 +239,6 @@ function graphics.getDevice() end
 ---@see lovr.graphics.isFormatSupported
 ---@see lovr.graphics.getDevice
 ---@see lovr.graphics.getLimits
----@see lovr.graphics
 ---@return table # 
 function graphics.getFeatures() end
 
@@ -251,43 +246,42 @@ function graphics.getFeatures() end
 ---@see lovr.graphics.isFormatSupported
 ---@see lovr.graphics.getDevice
 ---@see lovr.graphics.getFeatures
----@see lovr.graphics
 ---@return table # 
 function graphics.getLimits() end
 
 --- Returns the window pass.  This is a builtin render `Pass` object that renders to the desktop window texture.  If the desktop window was not open when the graphics module was initialized, this function will return `nil`.
----@see lovr.graphics
----@return Pass # The window pass, or `nil` if there is no window.
+---@return Pass | nil # The window pass, or `nil` if there is no window.
 function graphics.getWindowPass() end
 
 --- Returns the type of operations the GPU supports for a texture format, if any.
 ---@see lovr.graphics.getDevice
 ---@see lovr.graphics.getFeatures
 ---@see lovr.graphics.getLimits
----@see lovr.graphics
 ---@param format TextureFormat # The texture format to query.
 ---@param ... TextureFeature # Zero or more features to check.  If no features are given, this function will return whether the GPU supports *any* feature for this format.  Otherwise, this function will only return true if *all* of the input features are supported.
 ---@return boolean # Whether the GPU supports these operations for textures with this format, when created with the `linear` flag set to `true`.
 ---@return boolean # Whether the GPU supports these operations for textures with this format, when created with the `linear` flag set to `false`.
 function graphics.isFormatSupported(format, ...) end
 
+--- Returns whether the **super experimental** HDR mode is active.
+--- To enable HDR, add `t.graphics.hdr` to `lovr.conf`.  When enabled, LÖVR will try to create an HDR10 window.  If the GPU supports it, then this function will return true and the window texture will be HDR:
+--- - Its format will be `rgb10a2` instead of `rgba8`.
+--- - The display will assume its colors are in the Rec.2020 color space, instead of sRGB.
+--- - The display will assume its colors are encoded with the PQ transfer function, instead of sRGB.
+--- For now, it's up to you to write PQ-encoded Rec.2020 color data from your shader when rendering to the window.
+---@return boolean # Whether HDR is enabled.
+function graphics.isHDR() end
+
 --- Returns whether timing stats are enabled.  When enabled, `Pass:getStats` will return `submitTime` and `gpuTime` durations.  Timing is enabled by default when `t.graphics.debug` is set in `lovr.conf`.  Timing has a small amount of overhead, so it should only be enabled when needed.
 ---@see Pass:getStats
----@see lovr.graphics.setTimingEnabled
----@see lovr.graphics
 ---@return boolean # Whether timing is enabled.
 function graphics.isTimingEnabled() end
 
 --- Creates a Buffer.
 ---@see Shader:getBufferFormat
----@see lovr.graphics
 ---@overload fun(blob: Blob): Buffer
----@overload fun(format: table, length: number): Buffer
----@overload fun(format: table, data: table): Buffer
----@overload fun(format: table, blob: Blob): Buffer
----@overload fun(type: DataType, length: number): Buffer
----@overload fun(type: DataType, data: table): Buffer
----@overload fun(type: DataType, blob: Blob): Buffer
+---@overload fun(format: table | DataType, length: number): Buffer
+---@overload fun(format: table | DataType, data: table | Blob): Buffer
 ---@param size number # The size of the Buffer, in bytes.
 ---@return Buffer # The new Buffer.
 function graphics.newBuffer(size) end
@@ -296,18 +290,15 @@ function graphics.newBuffer(size) end
 ---@see lovr.graphics.getDefaultFont
 ---@see lovr.data.newRasterizer
 ---@see Pass:text
----@see lovr.graphics
----@overload fun(blob: Blob, size: number, spread: number): Font
 ---@overload fun(size: number, spread: number): Font
 ---@overload fun(rasterizer: Rasterizer, spread: number): Font
----@param filename string # A path to a TTF or BMFont file.
+---@param file string | Blob # A filename or Blob containing a TTF or BMFont file.
 ---@param size number? # The size of the Font in pixels (TTF only).  Larger sizes are slower to initialize and use more memory, but have better quality. (default: 32)
 ---@param spread number? # For signed distance field fonts (currently all fonts), the width of the SDF, in pixels.  The greater the distance the font is viewed from, the larger this value needs to be for the font to remain properly antialiased.  Increasing this will have a performance penalty similar to increasing the size of the font. (default: 4)
 ---@return Font # The new Font.
-function graphics.newFont(filename, size, spread) end
+function graphics.newFont(file, size, spread) end
 
 --- Creates a new Material from a table of properties and textures.  All fields are optional.  Once a Material is created, its properties can not be changed.  Instead, a new Material should be created with the updated properties.
----@see lovr.graphics
 ---@param properties table # Material properties.
 ---@return Material # The new material.
 function graphics.newMaterial(properties) end
@@ -320,7 +311,6 @@ function graphics.newMaterial(properties) end
 ---     }
 ---@see lovr.graphics.newBuffer
 ---@see lovr.graphics.newModel
----@see lovr.graphics
 ---@overload fun(vertices: table, storage: MeshStorage): Mesh
 ---@overload fun(blob: Blob, storage: MeshStorage): Mesh
 ---@overload fun(format: table, count: number, storage: MeshStorage): Mesh
@@ -335,19 +325,16 @@ function graphics.newMesh(count, storage) end
 --- Loads a 3D model from a file.  Currently, OBJ, glTF, and binary STL files are supported.
 ---@see lovr.data.newModelData
 ---@see Pass:draw
----@see lovr.graphics
----@overload fun(blob: Blob, options: table): Model
 ---@overload fun(modelData: ModelData, options: table): Model
----@param filename string # The path to model file.
----@param options table # Model options.
+---@param file string | Blob # A filename or Blob containing 3D model data to import.
+---@param options table? # An optional table of Model options. (default: nil)
 ---@return Model # The new Model.
-function graphics.newModel(filename, options) end
+function graphics.newModel(file, options) end
 
 --- Creates and returns a new Pass object.  The canvas (the set of textures the Pass renders to) can be specified when creating the Pass, or later using `Pass:setCanvas`.
 ---@see lovr.graphics.submit
 ---@see lovr.graphics.getWindowPass
 ---@see lovr.headset.getPass
----@see lovr.graphics
 ---@overload fun(canvas: table): Pass
 ---@overload fun(): Pass
 ---@param ... Texture # One or more textures the pass will render to.  This can be changed later using `Pass:setCanvas`.
@@ -356,7 +343,6 @@ function graphics.newPass(...) end
 
 --- Creates a new Sampler.  Samplers are immutable, meaning their parameters can not be changed after the sampler is created.  Instead, a new sampler should be created with the updated properties.
 ---@see Pass:setSampler
----@see lovr.graphics
 ---@param parameters table # Parameters for the sampler.
 ---@return Sampler # The new sampler.
 function graphics.newSampler(parameters) end
@@ -367,27 +353,24 @@ function graphics.newSampler(parameters) end
 ---@see lovr.graphics.compileShader
 ---@see ShaderType
 ---@see ShaderStage
----@see lovr.graphics
----@overload fun(compute: string, options: table): Shader
----@overload fun(default: DefaultShader, options: table): Shader
----@param vertex string # A string, path to a file, or Blob containing GLSL or SPIR-V code for the vertex stage.  Can also be a `DefaultShader` to use that shader's vertex code.
----@param fragment string # A string, path to a file, or Blob containing GLSL or SPIR-V code for the fragment stage. Can also be a `DefaultShader` to use that shader's fragment code.
----@param options table # Shader options.
+---@overload fun(compute: string | Blob, options: table): Shader
+---@overload fun(defaultshader: DefaultShader, options: table): Shader
+---@param vertex string | DefaultShader | Blob # A string, path to a file, or Blob containing GLSL or SPIR-V code for the vertex stage.  Can also be a `DefaultShader` to use that shader's vertex code.
+---@param fragment string | DefaultShader | Blob # A string, path to a file, or Blob containing GLSL or SPIR-V code for the fragment stage. Can also be a `DefaultShader` to use that shader's fragment code.
+---@param options table? # An optional table of Shader options. (default: nil)
 ---@return Shader # The new shader.
 function graphics.newShader(vertex, fragment, options) end
 
 --- Creates a new Texture.  Image filenames or `Image` objects can be used to provide the initial pixel data and the dimensions, format, and type.  Alternatively, dimensions can be provided, which will create an empty texture.
 ---@see lovr.graphics.newTextureView
----@see lovr.graphics
 ---@overload fun(width: number, height: number, options: table): Texture
 ---@overload fun(width: number, height: number, layers: number, options: table): Texture
 ---@overload fun(image: string, options: table): Texture
----@overload fun(images: table, options: table): Texture
----@overload fun(blob: Blob, options: table): Texture
----@param filename string # The filename of an image to load.
----@param options table # Texture options.
+---@overload fun(images: {string | Blob | Image}, options: table): Texture
+---@param file string | Blob # A filename or Blob containing an image file to load.
+---@param options table? # Texture options. (default: nil)
 ---@return Texture # The new Texture.
-function graphics.newTexture(filename, options) end
+function graphics.newTexture(file, options) end
 
 --- Creates a new Texture view.  A texture view does not store any pixels on its own, but instead uses the pixel data of a "parent" Texture object.  The width, height, format, sample count, and usage flags all match the parent.  The view may have a different `TextureType`, and it may reference a subset of the parent texture's layers and mipmap levels.
 --- Texture views are used for:
@@ -396,16 +379,14 @@ function graphics.newTexture(filename, options) end
 --- - Rendering to a particular array layer or mipmap level of a texture.
 --- - Binding a particular range of layers or mipmap levels to a shader.
 ---@see lovr.graphics.newTexture
----@see lovr.graphics
 ---@param parent Texture # The parent Texture to create a view of.
----@param options table # Options for the texture view.
+---@param options table? # Options for the texture view. (default: nil)
 ---@return Texture # The new texture view.
 function graphics.newTextureView(parent, options) end
 
 --- Presents the window texture to the desktop window.  This function is called automatically by the default implementation of `lovr.run`, so it normally does not need to be called.
 ---@see lovr.graphics.submit
 ---@see lovr.graphics.getWindowPass
----@see lovr.graphics
 function graphics.present() end
 
 --- Changes the global background color.  The textures in a render pass will be cleared to this color at the beginning of the pass if no other clear option is specified.  Additionally, the headset and window will be cleared to this color before rendering.
@@ -413,10 +394,8 @@ function graphics.present() end
 ---@see Pass:setClear
 ---@see Texture:clear
 ---@see Pass:fill
----@see lovr.graphics.getBackgroundColor
----@see lovr.graphics
 ---@overload fun(hex: number, a: number)
----@overload fun(table: table)
+---@overload fun(table: {number})
 ---@param r number # The red component of the background color.
 ---@param g number # The green component of the background color.
 ---@param b number # The blue component of the background color.
@@ -425,30 +404,26 @@ function graphics.setBackgroundColor(r, g, b, a) end
 
 --- Enables or disables timing stats.  When enabled, `Pass:getStats` will return `submitTime` and `gpuTime` durations.  Timing is enabled by default when `t.graphics.debug` is set in `lovr.conf`.  Timing has a small amount of overhead, so it should only be enabled when needed.
 ---@see Pass:getStats
----@see lovr.graphics.isTimingEnabled
----@see lovr.graphics
 ---@param enable boolean # Whether timing should be enabled.
 function graphics.setTimingEnabled(enable) end
 
 --- Submits work to the GPU.
 ---@see lovr.graphics.wait
----@see lovr.graphics
----@overload fun(t: table): boolean
----@param ... Pass # The pass objects to submit.  Falsy values will be skipped.
+---@overload fun(t: {Pass | boolean}): boolean
+---@param ... Pass | boolean | nil # The pass objects to submit.  Falsy values will be skipped.
 ---@return boolean # Always returns true, for convenience when returning from `lovr.draw`.
 function graphics.submit(...) end
 
 --- Waits for all submitted GPU work to finish.  A normal application that is trying to render graphics at a high framerate should never use this function, since waiting like this prevents the CPU from doing other useful work.  Otherwise, reasons to use this function might be for debugging or to force a `Readback` to finish immediately.
 ---@see lovr.graphics.submit
----@see lovr.graphics
 function graphics.wait() end
 
 ---@class Buffer
+---@see lovr.graphics.newBuffer # (Constructor)
 local Buffer = {}
 
 --- Clears a range of data in the Buffer to a value.
 ---@see Texture:clear
----@see Buffer
 ---@param offset number? # The offset of the range of the Buffer to clear, in bytes.  Must be a multiple of 4. (default: 0)
 ---@param extent number? # The number of bytes to clear.  If `nil`, clears to the end of the Buffer.  Must be a multiple of 4. (default: nil)
 ---@param value number? # The value to clear to.  This will be interpreted as a 32 bit number, which will be repeated across the clear range. (default: 0x00000000)
@@ -458,8 +433,6 @@ function Buffer:clear(offset, extent, value) end
 ---@see Buffer:newReadback
 ---@see Buffer:mapData
 ---@see Readback:getData
----@see Buffer:setData
----@see Buffer
 ---@param index number? # The index of the first item to read. (default: 1)
 ---@param count number? # The number of items to read.  If nil, reads the remainder of the buffer. (default: nil)
 ---@return table # The table with the Buffer's data.
@@ -469,14 +442,12 @@ function Buffer:getData(index, count) end
 ---@see Buffer:getSize
 ---@see Buffer:getLength
 ---@see Buffer:getStride
----@see Buffer
 ---@return table # A list of fields comprising the format.
 function Buffer:getFormat() end
 
 --- Returns the length of the Buffer, or `nil` if the Buffer was not created with a format.
 ---@see Buffer:getSize
 ---@see Buffer:getStride
----@see Buffer
 ---@return number # The length of the Buffer.
 function Buffer:getLength() end
 
@@ -484,20 +455,17 @@ function Buffer:getLength() end
 --- The size of the Buffer can't change after it's created.
 ---@see Buffer:getLength
 ---@see Buffer:getStride
----@see Buffer
 ---@return number # The size of the Buffer, in bytes.
 function Buffer:getSize() end
 
 --- Returns the distance between each item in the Buffer, in bytes, or `nil` if the Buffer was not created with a format.
 ---@see Buffer:getSize
 ---@see Buffer:getLength
----@see Buffer
 ---@return number # The stride of the Buffer, in bytes.
 function Buffer:getStride() end
 
 --- Returns a pointer to GPU memory and schedules a copy from this pointer to the buffer's data. The data in the pointer will replace the data in the buffer.  This is intended for use with the LuaJIT FFI or for passing to C libraries.
 ---@see Blob:getPointer
----@see Buffer
 ---@param offset number? # A byte offset in the buffer to write to. (default: 0)
 ---@param extent number? # The number of bytes to replace.  If nil, writes to the rest of the buffer. (default: nil)
 ---@return lightuserdata # A pointer to the Buffer's memory.
@@ -506,15 +474,12 @@ function Buffer:mapData(offset, extent) end
 --- Creates and returns a new `Readback` that will download the data in the Buffer from VRAM. Once the readback is complete, `Readback:getData` returns the data as a table, or `Readback:getBlob` returns the data as a `Blob`.
 ---@see Buffer:getData
 ---@see Texture:newReadback
----@see Buffer
 ---@param offset number? # A byte offset to read from. (default: 0)
 ---@param extent number? # The number of bytes to read.  If nil, reads the rest of the buffer. (default: nil)
 ---@return Readback # A new Readback object.
 function Buffer:newReadback(offset, extent) end
 
 --- Copies data to the Buffer from either a table, `Blob`, or `Buffer`.
----@see Buffer:getData
----@see Buffer
 ---@overload fun(...: number)
 ---@overload fun(vector: any)
 ---@overload fun(blob: Blob, destinationOffset: number, sourceOffset: number, size: number)
@@ -526,6 +491,8 @@ function Buffer:newReadback(offset, extent) end
 function Buffer:setData(table, destinationIndex, sourceIndex, count) end
 
 ---@class Font
+---@see lovr.graphics.newFont # (Constructor)
+---@see lovr.graphics.getDefaultFont # (Constructor)
 local Font = {}
 
 --- Returns the ascent of the font.  The ascent is the maximum amount glyphs ascend above the baseline.  The units depend on the font's pixel density.  With the default density, the units correspond to meters.
@@ -534,7 +501,6 @@ local Font = {}
 ---@see Font:getHeight
 ---@see Font:getKerning
 ---@see Font:getWidth
----@see Font
 ---@return number # The ascent of the font.
 function Font:getAscent() end
 
@@ -544,7 +510,6 @@ function Font:getAscent() end
 ---@see Font:getHeight
 ---@see Font:getKerning
 ---@see Font:getWidth
----@see Font
 ---@return number # The descent of the font.
 function Font:getDescent() end
 
@@ -557,7 +522,6 @@ function Font:getDescent() end
 ---@see Font:getKerning
 ---@see Font:getWidth
 ---@see Font:getLines
----@see Font
 ---@return number # The height of the font.
 function Font:getHeight() end
 
@@ -567,55 +531,45 @@ function Font:getHeight() end
 ---@see Font:getDescent
 ---@see Font:getHeight
 ---@see Font:getWidth
----@see Font
----@overload fun(firstCodepoint: number, second: string): number
----@overload fun(first: string, secondCodepoint: number): number
----@overload fun(firstCodepoint: number, secondCodepoint: number): number
----@param first string # The first character.
----@param second string # The second character.
+---@param first string | number # The first character or codepoint.
+---@param second string | number # The second character or codepoint.
 ---@return number # The kerning between the two glyphs.
 function Font:getKerning(first, second) end
 
 --- Returns the line spacing of the Font.  When spacing out lines, the height of the font is multiplied the line spacing to get the final spacing value.  The default is 1.0.
 ---@see Font:getHeight
----@see Font:setLineSpacing
----@see Font
 ---@return number # The line spacing of the font.
 function Font:getLineSpacing() end
 
---- Returns a table of wrapped lines for a piece of text, given a line length limit.  Newlines are handled correctly.  The wrap limit units depend on the pixel density of the font.  With the default pixel density, the units correspond to meters when the font is drawn at 1.0 scale.
+--- Returns a table of wrapped lines for a piece of text, given a line length limit.
+--- By default the units for `limit` are in meters.  If text is being drawn with scale applied, make sure the scale is also applied to the `limit`.
 ---@see Font:getWidth
 ---@see Font:getHeight
 ---@see Pass:text
----@see Font
----@overload fun(strings: table, wrap: number): table
+---@overload fun(strings: table, wrap: number): {string}
 ---@param string string # The text to wrap.
 ---@param wrap number # The line length to wrap at.
----@return table # A table strings, one for each wrapped line (without any color information).
+---@return {string} # A table of strings, one for each wrapped line.
 function Font:getLines(string, wrap) end
 
 --- Returns the pixel density of the font.  The density is a "pixels per world unit" factor that controls how the pixels in the font's texture are mapped to units in the coordinate space.
 --- The default pixel density is set to the height of the font.  This means that lines of text rendered with a scale of 1.0 come out to 1 unit (meter) tall.  However, if this font was drawn to a 2D texture where the units are in pixels, the font would still be drawn 1 unit (pixel) tall!  Scaling the coordinate space or the size of the text by the height of the font would fix this.  However, a more convenient option is to set the pixel density of the font to 1.0 when doing 2D rendering to make the font's size match up with the pixels of the canvas.
----@see Font:setPixelDensity
----@see Font
 ---@return number # The pixel density of the font.
 function Font:getPixelDensity() end
 
 --- Returns the Rasterizer object backing the Font.
 ---@see lovr.graphics.newFont
 ---@see lovr.data.newRasterizer
----@see Font
 ---@return Rasterizer # The Rasterizer.
 function Font:getRasterizer() end
 
 --- Returns a table of vertices for a piece of text, along with a Material to use when rendering it. The Material returned by this function may not be the same if the Font's texture atlas needs to be recreated with a bigger size to make room for more glyphs.
----@see Font
----@overload fun(strings: table, wrap: number, halign: HorizontalAlign, valign: VerticalAlign): table, Material
+---@overload fun(strings: table, wrap: number, halign: HorizontalAlign, valign: VerticalAlign): {number}, Material
 ---@param string string # The text to render.
 ---@param wrap number? # The maximum line length.  The units depend on the pixel density of the font, but are in meters by default. (default: 0)
 ---@param halign HorizontalAlign # The horizontal align.
 ---@param valign VerticalAlign # The vertical align.
----@return table # The table of vertices.  See below for the format of each vertex.
+---@return {number} # The table of vertices.  See below for the format of each vertex.
 ---@return Material # A Material to use when rendering the vertices.
 function Font:getVertices(string, wrap, halign, valign) end
 
@@ -625,7 +579,6 @@ function Font:getVertices(string, wrap, halign, valign) end
 ---@see Font:getHeight
 ---@see Font:getKerning
 ---@see Font:getLines
----@see Font
 ---@overload fun(strings: table): number
 ---@param string string # The text to measure.
 ---@return number # The maximum width of the text.
@@ -633,28 +586,25 @@ function Font:getWidth(string) end
 
 --- Sets the line spacing of the Font.  When spacing out lines, the height of the font is multiplied by the line spacing to get the final spacing value.  The default is 1.0.
 ---@see Font:getHeight
----@see Font:getLineSpacing
----@see Font
 ---@param spacing number # The new line spacing.
 function Font:setLineSpacing(spacing) end
 
 --- Sets the pixel density of the font.  The density is a "pixels per world unit" factor that controls how the pixels in the font's texture are mapped to units in the coordinate space.
 --- The default pixel density is set to the height of the font.  This means that lines of text rendered with a scale of 1.0 come out to 1 unit (meter) tall.  However, if this font was drawn to a 2D texture where the units are in pixels, the font would still be drawn 1 unit (pixel) tall!  Scaling the coordinate space or the size of the text by the height of the font would fix this.  However, a more convenient option is to set the pixel density of the font to 1.0 when doing 2D rendering to make the font's size match up with the pixels of the canvas.
----@see Font:getPixelDensity
----@see Font
 ---@overload fun()
 ---@param density number # The new pixel density of the font.
 function Font:setPixelDensity(density) end
 
 ---@class Material
+---@see lovr.graphics.newMaterial # (Constructor)
 local Material = {}
 
 --- Returns the properties of the Material in a table.
----@see Material
 ---@return table # The Material properties.
 function Material:getProperties() end
 
 ---@class Mesh
+---@see lovr.graphics.newMesh # (Constructor)
 local Mesh = {}
 
 --- Computes the axis-aligned bounding box of the Mesh from its vertices.
@@ -670,7 +620,6 @@ local Mesh = {}
 ---@see Shape:getAABB
 ---@see Model:getBoundingBox
 ---@see ModelData:getBoundingBox
----@see Mesh
 ---@return boolean # Whether the bounding box was updated.
 function Mesh:computeBoundingBox() end
 
@@ -683,8 +632,6 @@ function Mesh:computeBoundingBox() end
 ---@see Shape:getAABB
 ---@see Model:getBoundingBox
 ---@see ModelData:getBoundingBox
----@see Mesh:setBoundingBox
----@see Mesh
 ---@return number # The minimum x coordinate of the bounding box.
 ---@return number # The maximum x coordinate of the bounding box.
 ---@return number # The minimum y coordinate of the bounding box.
@@ -695,15 +642,11 @@ function Mesh:getBoundingBox() end
 
 --- Returns the `DrawMode` of the mesh, which controls how the vertices in the Mesh are connected together to create pixels.  The default is `triangles`.
 ---@see Pass:setMeshMode
----@see Mesh:setDrawMode
----@see Mesh
 ---@return DrawMode # The current draw mode.
 function Mesh:getDrawMode() end
 
 --- Returns the range of vertices drawn by the Mesh.  If different sets of mesh data are stored in a single Mesh object, the draw range can be used to select different sets of vertices to render.
 ---@see Mesh:setIndices
----@see Mesh:setDrawRange
----@see Mesh
 ---@overload fun()
 ---@return number # The index of the first vertex that will be drawn (or the first index, if the Mesh has vertex indices).
 ---@return number # The number of vertices that will be drawn (or indices, if the Mesh has vertex indices).
@@ -716,25 +659,19 @@ function Mesh:getDrawRange() end
 ---@see Mesh:getIndices
 ---@see Mesh:setIndices
 ---@see Mesh:getVertexBuffer
----@see Mesh:setIndexBuffer
----@see Mesh
 ---@return Buffer # The index buffer.
 function Mesh:getIndexBuffer() end
 
 --- Returns a table with the Mesh's vertex indices.
 ---@see Mesh:getIndexBuffer
 ---@see Mesh:setIndexBuffer
----@see Mesh:setIndices
----@see Mesh
----@return table # A table of numbers with the 1-based vertex indices.
+---@return {number} # A table of numbers with the 1-based vertex indices.
 function Mesh:getIndices() end
 
 --- Returns the `Material` applied to the Mesh.
 ---@see Pass:setMaterial
 ---@see Model:getMaterial
 ---@see lovr.graphics.newMaterial
----@see Mesh:setMaterial
----@see Mesh
 ---@return Material # The material.
 function Mesh:getMaterial() end
 
@@ -743,7 +680,6 @@ function Mesh:getMaterial() end
 ---@see Mesh:getVertices
 ---@see Mesh:setVertices
 ---@see Mesh:getIndexBuffer
----@see Mesh
 ---@return Buffer # The vertex buffer.
 function Mesh:getVertexBuffer() end
 
@@ -752,7 +688,6 @@ function Mesh:getVertexBuffer() end
 ---@see Mesh:getVertexFormat
 ---@see lovr.graphics.newMesh
 ---@see Model:getMesh
----@see Mesh
 ---@return number # The number of vertices in the Mesh.
 function Mesh:getVertexCount() end
 
@@ -760,7 +695,6 @@ function Mesh:getVertexCount() end
 ---@see Mesh:getVertexCount
 ---@see Mesh:getVertexStride
 ---@see lovr.graphics.newMesh
----@see Mesh
 ---@return table # The vertex format.
 function Mesh:getVertexFormat() end
 
@@ -768,7 +702,6 @@ function Mesh:getVertexFormat() end
 ---@see Mesh:getVertexCount
 ---@see Mesh:getVertexFormat
 ---@see lovr.graphics.newMesh
----@see Mesh
 ---@return number # The stride of the Mesh, in bytes.
 function Mesh:getVertexStride() end
 
@@ -777,11 +710,9 @@ function Mesh:getVertexStride() end
 ---@see Mesh:getVertexFormat
 ---@see Mesh:getIndices
 ---@see Mesh:setIndices
----@see Mesh:setVertices
----@see Mesh
 ---@param index number? # The index of the first vertex to return. (default: 1)
 ---@param count number? # The number of vertices to return.  If nil, returns the "rest" of the vertices, based on the `index` argument. (default: nil)
----@return table # A table of vertices.  Each vertex is a table of numbers for each vertex attribute, given by the vertex format of the Mesh.
+---@return {{number}} # A table of vertices.  Each vertex is a table of numbers for each vertex attribute, given by the vertex format of the Mesh.
 function Mesh:getVertices(index, count) end
 
 --- Sets or removes the axis-aligned bounding box of the Mesh.
@@ -793,8 +724,6 @@ function Mesh:getVertices(index, count) end
 ---@see Shape:getAABB
 ---@see Model:getBoundingBox
 ---@see ModelData:getBoundingBox
----@see Mesh:getBoundingBox
----@see Mesh
 ---@overload fun()
 ---@param minx number # The minimum x coordinate of the bounding box.
 ---@param maxx number # The maximum x coordinate of the bounding box.
@@ -806,15 +735,11 @@ function Mesh:setBoundingBox(minx, maxx, miny, maxy, minz, maxz) end
 
 --- Changes the `DrawMode` of the mesh, which controls how the vertices in the Mesh are connected together to create pixels.  The default is `triangles`.
 ---@see Pass:setMeshMode
----@see Mesh:getDrawMode
----@see Mesh
 ---@param mode DrawMode # The current draw mode.
 function Mesh:setDrawMode(mode) end
 
 --- Sets the range of vertices drawn by the Mesh.  If different sets of mesh data are stored in a single Mesh object, the draw range can be used to select different sets of vertices to render.
 ---@see Mesh:setIndices
----@see Mesh:getDrawRange
----@see Mesh
 ---@overload fun()
 ---@param start number # The index of the first vertex that will be drawn (or the first index, if the Mesh has vertex indices).
 ---@param count number # The number of vertices that will be drawn (or indices, if the Mesh has vertex indices).
@@ -827,8 +752,6 @@ function Mesh:setDrawRange(start, count, offset) end
 ---@see Mesh:getIndices
 ---@see Mesh:setIndices
 ---@see Mesh:getVertexBuffer
----@see Mesh:getIndexBuffer
----@see Mesh
 ---@param buffer Buffer # The index buffer.
 function Mesh:setIndexBuffer(buffer) end
 
@@ -837,19 +760,15 @@ function Mesh:setIndexBuffer(buffer) end
 ---@see Mesh:getIndexBuffer
 ---@see Mesh:setIndexBuffer
 ---@see Mesh:setVertices
----@see Mesh:getIndices
----@see Mesh
 ---@overload fun(blob: Blob, type: DataType)
 ---@overload fun()
----@param t table # A list of numbers (1-based).
+---@param t {number} # A list of numbers (1-based).
 function Mesh:setIndices(t) end
 
 --- Sets a `Material` to use when drawing the Mesh.
 ---@see Pass:setMaterial
 ---@see Model:getMaterial
 ---@see lovr.graphics.newMaterial
----@see Mesh:getMaterial
----@see Mesh
 ---@overload fun(texture: Texture)
 ---@param material Material # The material to use.
 function Mesh:setMaterial(material) end
@@ -859,15 +778,15 @@ function Mesh:setMaterial(material) end
 ---@see Mesh:getVertexFormat
 ---@see Mesh:getIndices
 ---@see Mesh:setIndices
----@see Mesh:getVertices
----@see Mesh
 ---@overload fun(blob: Blob, index: number, count: number)
----@param vertices table # A table of vertices, where each vertex is a table of numbers matching the vertex format of the Mesh.
----@param index number? # The index of the first vertex to return. (default: 1)
----@param count number? # The number of vertices to return.  If nil, returns the "rest" of the vertices, based on the `index` argument. (default: nil)
+---@param vertices {{number}} # A table of vertices, where each vertex is a table of numbers matching the vertex format of the Mesh.
+---@param index number? # The index of the first vertex to set. (default: 1)
+---@param count number? # The number of vertices to set. (default: nil)
 function Mesh:setVertices(vertices, index, count) end
 
 ---@class Model
+---@see lovr.graphics.newModel # (Constructor)
+---@see lovr.headset.newModel # (Constructor)
 local Model = {}
 
 --- Animates a Model by setting or blending the transforms of nodes using data stored in the keyframes of an animation.
@@ -884,16 +803,13 @@ local Model = {}
 ---@see Model:setNodeScale
 ---@see Model:getNodeTransform
 ---@see Model:setNodeTransform
----@see Model
----@overload fun(index: number, time: number, blend: number)
----@param name string # The name of an animation in the model file.
+---@param animation string # The name or index of an animation in the model file.
 ---@param time number # The timestamp to evaluate the keyframes at, in seconds.
 ---@param blend number? # How much of the animation's pose to blend into the nodes, from 0 to 1. (default: 1.0)
-function Model:animate(name, time, blend) end
+function Model:animate(animation, time, blend) end
 
 --- Returns a lightweight copy of a Model.  Most of the data will be shared between the two copies of the model, like the materials, textures, and metadata.  However, the clone has its own set of node transforms, allowing it to be animated separately from its parent.  This allows a single model to be rendered in multiple different animation poses in a frame.
 ---@see lovr.graphics.newModel
----@see Model
 ---@return Model # A genetically identical copy of the Model.
 function Model:clone() end
 
@@ -901,7 +817,6 @@ function Model:clone() end
 ---@see Model:getAnimationName
 ---@see Model:getAnimationDuration
 ---@see Model:animate
----@see Model
 ---@return number # The number of animations in the Model.
 function Model:getAnimationCount() end
 
@@ -909,31 +824,26 @@ function Model:getAnimationCount() end
 ---@see Model:getAnimationCount
 ---@see Model:getAnimationName
 ---@see Model:animate
----@see Model
----@overload fun(name: string): number
----@param index number # The animation index.
+---@param animation string | number # The name or index of an animation.
 ---@return number # The duration of the animation, in seconds.
-function Model:getAnimationDuration(index) end
+function Model:getAnimationDuration(animation) end
 
 --- Returns the name of an animation in the Model.
 ---@see Model:getAnimationCount
 ---@see Model:getAnimationDuration
----@see Model
 ---@param index number # The index of an animation.
----@return string # The name of the animation.
+---@return string | nil # The name of the animation, or `nil` if the animation doesn't have a name.
 function Model:getAnimationName(index) end
 
 --- Returns the number of blend shapes in the model.
 ---@see Model:getBlendShapeName
 ---@see ModelData:getBlendShapeCount
----@see Model
 ---@return number # The number of blend shapes in the model.
 function Model:getBlendShapeCount() end
 
 --- Returns the name of a blend shape in the model.
 ---@see Model:getBlendShapeCount
 ---@see ModelData:getBlendShapeName
----@see Model
 ---@param index number # The index of a blend shape.
 ---@return string # The name of the blend shape.
 function Model:getBlendShapeName(index) end
@@ -942,12 +852,9 @@ function Model:getBlendShapeName(index) end
 ---@see Model:getBlendShapeCount
 ---@see Model:getBlendShapeName
 ---@see Model:resetBlendShapes
----@see Model:setBlendShapeWeight
----@see Model
----@overload fun(name: string): number
----@param index number # The index of a blend shape.
+---@param blendshape string | number # The name or index of a blend shape.
 ---@return number # The weight of the blend shape.
-function Model:getBlendShapeWeight(index) end
+function Model:getBlendShapeWeight(blendshape) end
 
 --- Returns the 6 values of the Model's axis-aligned bounding box.
 ---@see Model:getWidth
@@ -958,7 +865,6 @@ function Model:getBlendShapeWeight(index) end
 ---@see Model:getBoundingSphere
 ---@see ModelData:getBoundingBox
 ---@see Collider:getAABB
----@see Model
 ---@return number # The minimum x coordinate of the vertices in the Model.
 ---@return number # The maximum x coordinate of the vertices in the Model.
 ---@return number # The minimum y coordinate of the vertices in the Model.
@@ -975,7 +881,6 @@ function Model:getBoundingBox() end
 ---@see Model:getCenter
 ---@see Model:getBoundingBox
 ---@see ModelData:getBoundingSphere
----@see Model
 ---@return number # The x coordinate of the position of the sphere.
 ---@return number # The y coordinate of the position of the sphere.
 ---@return number # The z coordinate of the position of the sphere.
@@ -989,7 +894,6 @@ function Model:getBoundingSphere() end
 ---@see Model:getDimensions
 ---@see Model:getBoundingBox
 ---@see ModelData:getCenter
----@see Model
 ---@return number # The x offset of the center of the bounding box.
 ---@return number # The y offset of the center of the bounding box.
 ---@return number # The z offset of the center of the bounding box.
@@ -997,7 +901,6 @@ function Model:getCenter() end
 
 --- Returns the ModelData this Model was created from.
 ---@see lovr.data.newModelData
----@see Model
 ---@return ModelData # The ModelData.
 function Model:getData() end
 
@@ -1008,7 +911,6 @@ function Model:getData() end
 ---@see Model:getCenter
 ---@see Model:getBoundingBox
 ---@see ModelData:getDepth
----@see Model
 ---@return number # The depth of the Model.
 function Model:getDepth() end
 
@@ -1019,7 +921,6 @@ function Model:getDepth() end
 ---@see Model:getCenter
 ---@see Model:getBoundingBox
 ---@see ModelData:getDimensions
----@see Model
 ---@return number # The width of the Model.
 ---@return number # The height of the Model.
 ---@return number # The depth of the Model.
@@ -1032,37 +933,31 @@ function Model:getDimensions() end
 ---@see Model:getCenter
 ---@see Model:getBoundingBox
 ---@see ModelData:getHeight
----@see Model
 ---@return number # The height of the Model.
 function Model:getHeight() end
 
 --- Returns the index buffer used by the Model.  The index buffer describes the order used to draw the vertices in each mesh.
 ---@see Model:getVertexBuffer
 ---@see Model:getMesh
----@see Model
 ---@return Buffer # The index buffer.
 function Model:getIndexBuffer() end
 
 --- Returns a `Material` loaded from the Model.
 ---@see Model:getMaterialCount
 ---@see Model:getMaterialName
----@see Model
----@overload fun(index: number): Material
----@param name string # The name of the Material to return.
+---@param which string | number # The name or index of the Material to return.
 ---@return Material # The material.
-function Model:getMaterial(name) end
+function Model:getMaterial(which) end
 
 --- Returns the number of materials in the Model.
 ---@see Model:getMaterialName
 ---@see Model:getMaterial
----@see Model
 ---@return number # The number of materials in the Model.
 function Model:getMaterialCount() end
 
 --- Returns the name of a material in the Model.
 ---@see Model:getMaterialCount
 ---@see Model:getMaterial
----@see Model
 ---@param index number # The index of a material.
 ---@return string # The name of the material.
 function Model:getMaterialName(index) end
@@ -1070,33 +965,27 @@ function Model:getMaterialName(index) end
 --- Returns a `Mesh` from the Model.
 ---@see Model:getMeshCount
 ---@see lovr.graphics.newMesh
----@see Model
 ---@param index number # The index of the Mesh to return.
 ---@return Mesh # The mesh object.
 function Model:getMesh(index) end
 
 --- Returns the number of meshes in the Model.
 ---@see Model:getMesh
----@see Model
 ---@return number # The number of meshes in the Model.
 function Model:getMeshCount() end
 
 --- Returns extra information stored in the model file.  Currently this is only implemented for glTF models and returns the JSON string from the glTF or glb file.  The metadata can be used to get application-specific data or add support for glTF extensions not supported by LÖVR.
----@see Model
 ---@return string # The metadata from the model file.
 function Model:getMetadata() end
 
 --- Given a parent node, this function returns a table with the indices of its children.
 ---@see Model:getNodeParent
 ---@see Model:getRootNode
----@see Model
----@overload fun(name: string): table
----@param index number # The index of the parent node.
----@return table # A table containing a node index for each child of the node.
-function Model:getNodeChildren(index) end
+---@param node string | number # The name or index of the parent node.
+---@return {number} # A table containing the node index of each child of the parent node.
+function Model:getNodeChildren(node) end
 
 --- Returns the number of nodes in the model.
----@see Model
 ---@return number # The number of nodes in the model.
 function Model:getNodeCount() end
 
@@ -1104,7 +993,6 @@ function Model:getNodeCount() end
 ---@see Model:getNodeCount
 ---@see Model:getAnimationName
 ---@see Model:getMaterialName
----@see Model
 ---@param index number # The index of the node.
 ---@return string # The name of the node.
 function Model:getNodeName(index) end
@@ -1119,25 +1007,20 @@ function Model:getNodeName(index) end
 ---@see Model:getNodeTransform
 ---@see Model:setNodeTransform
 ---@see Model:animate
----@see Model:setNodeOrientation
----@see Model
----@overload fun(name: string, origin: OriginType): number, number, number, number
----@param index number # The index of the node.
+---@param node string | number # The name or index of a node.
 ---@param origin OriginType? # Whether the orientation should be returned relative to the root node or the node's parent. (default: 'root')
 ---@return number # The number of radians the node is rotated around its axis of rotation.
 ---@return number # The x component of the axis of rotation.
 ---@return number # The y component of the axis of rotation.
 ---@return number # The z component of the axis of rotation.
-function Model:getNodeOrientation(index, origin) end
+function Model:getNodeOrientation(node, origin) end
 
 --- Given a child node, this function returns the index of its parent.
 ---@see Model:getNodeChildren
 ---@see Model:getRootNode
----@see Model
----@overload fun(name: string): number
----@param index number # The index of the child node.
+---@param node number # The name or index of the child node.
 ---@return number # The index of the parent.
-function Model:getNodeParent(index) end
+function Model:getNodeParent(node) end
 
 --- Returns the pose (position and orientation) of a node.
 ---@see Model:getNodePosition
@@ -1149,10 +1032,7 @@ function Model:getNodeParent(index) end
 ---@see Model:getNodeTransform
 ---@see Model:setNodeTransform
 ---@see Model:animate
----@see Model:setNodePose
----@see Model
----@overload fun(name: string, origin: OriginType): number, number, number, number, number, number, number
----@param index number # The index of a node.
+---@param node string | number # The name or index of a node.
 ---@param origin OriginType? # Whether the pose should be returned relative to the root node or the node's parent. (default: 'root')
 ---@return number # The x position of the node.
 ---@return number # The y position of the node.
@@ -1161,7 +1041,7 @@ function Model:getNodeParent(index) end
 ---@return number # The x component of the axis of rotation.
 ---@return number # The y component of the axis of rotation.
 ---@return number # The z component of the axis of rotation.
-function Model:getNodePose(index, origin) end
+function Model:getNodePose(node, origin) end
 
 --- Returns the position of a node.
 ---@see Model:getNodeOrientation
@@ -1173,15 +1053,12 @@ function Model:getNodePose(index, origin) end
 ---@see Model:getNodeTransform
 ---@see Model:setNodeTransform
 ---@see Model:animate
----@see Model:setNodePosition
----@see Model
----@overload fun(name: string, space: OriginType): number, number, number
----@param index number # The index of the node.
+---@param node string | number # The name or index of a node.
 ---@param space OriginType? # Whether the position should be returned relative to the root node or the node's parent. (default: 'root')
 ---@return number # The x coordinate.
 ---@return number # The y coordinate.
 ---@return number # The z coordinate.
-function Model:getNodePosition(index, space) end
+function Model:getNodePosition(node, space) end
 
 --- Returns the scale of a node.
 ---@see Model:getNodePosition
@@ -1193,15 +1070,12 @@ function Model:getNodePosition(index, space) end
 ---@see Model:getNodeTransform
 ---@see Model:setNodeTransform
 ---@see Model:animate
----@see Model:setNodeScale
----@see Model
----@overload fun(name: string, origin: OriginType): number, number, number
----@param index number # The index of the node.
+---@param node string | number # The name or index of a node.
 ---@param origin OriginType? # Whether the scale should be returned relative to the root node or the node's parent. (default: 'root')
 ---@return number # The x scale.
 ---@return number # The y scale.
 ---@return number # The z scale.
-function Model:getNodeScale(index, origin) end
+function Model:getNodeScale(node, origin) end
 
 --- Returns the transform (position, scale, and rotation) of a node.
 ---@see Model:getNodePosition
@@ -1213,10 +1087,7 @@ function Model:getNodeScale(index, origin) end
 ---@see Model:getNodePose
 ---@see Model:setNodePose
 ---@see Model:animate
----@see Model:setNodeTransform
----@see Model
----@overload fun(name: string, origin: OriginType): number, number, number, number, number, number, number, number, number, number
----@param index number # The index of a node.
+---@param node string | number # The name or index of a node.
 ---@param origin OriginType? # Whether the transform should be returned relative to the root node or the node's parent. (default: 'root')
 ---@return number # The x position of the node.
 ---@return number # The y position of the node.
@@ -1228,26 +1099,23 @@ function Model:getNodeScale(index, origin) end
 ---@return number # The x component of the axis of rotation.
 ---@return number # The y component of the axis of rotation.
 ---@return number # The z component of the axis of rotation.
-function Model:getNodeTransform(index, origin) end
+function Model:getNodeTransform(node, origin) end
 
 --- Returns the index of the model's root node.
 ---@see Model:getNodeCount
 ---@see Model:getNodeParent
----@see Model
 ---@return number # The index of the root node.
 function Model:getRootNode() end
 
 --- Returns one of the textures in the Model.
 ---@see Model:getTextureCount
 ---@see Model:getMaterial
----@see Model
 ---@param index number # The index of the texture to get.
 ---@return Texture # The texture.
 function Model:getTexture(index) end
 
 --- Returns the number of textures in the Model.
 ---@see Model:getTexture
----@see Model
 ---@return number # The number of textures in the Model.
 function Model:getTextureCount() end
 
@@ -1256,7 +1124,6 @@ function Model:getTextureCount() end
 ---@see Model:getVertexCount
 ---@see ModelData:getTriangleCount
 ---@see Model:getMesh
----@see Model
 ---@return number # The total number of triangles in the Model.
 function Model:getTriangleCount() end
 
@@ -1267,15 +1134,13 @@ function Model:getTriangleCount() end
 ---@see Model:getVertexCount
 ---@see Model:getMesh
 ---@see ModelData:getTriangles
----@see Model
----@return table # The triangle vertex positions, returned as a flat (non-nested) table of numbers.  The position of each vertex is given as an x, y, and z coordinate.
----@return table # A list of numbers representing how to connect the vertices into triangles.  Each number is a 1-based index into the `vertices` table, and every 3 indices form a triangle.
+---@return {number} # The triangle vertex positions, returned as a flat (non-nested) table of numbers.  The position of each vertex is given as an x, y, and z coordinate.
+---@return {number} # A list of numbers representing how to connect the vertices into triangles.  Each number is a 1-based index into the `vertices` table, and every 3 indices form a triangle.
 function Model:getTriangles() end
 
 --- Returns a `Buffer` that holds the vertices of all of the meshes in the Model.
 ---@see Model:getIndexBuffer
 ---@see Model:getMesh
----@see Model
 ---@return Buffer # The vertex buffer.
 function Model:getVertexBuffer() end
 
@@ -1283,7 +1148,6 @@ function Model:getVertexBuffer() end
 ---@see Model:getTriangles
 ---@see Model:getTriangleCount
 ---@see ModelData:getVertexCount
----@see Model
 ---@return number # The total number of vertices.
 function Model:getVertexCount() end
 
@@ -1294,12 +1158,10 @@ function Model:getVertexCount() end
 ---@see Model:getCenter
 ---@see Model:getBoundingBox
 ---@see ModelData:getWidth
----@see Model
 ---@return number # The width of the Model.
 function Model:getWidth() end
 
 --- Returns whether the Model has any skeletal animations.
----@see Model
 ---@return boolean # Whether the animation uses joint nodes for skeletal animation.
 function Model:hasJoints() end
 
@@ -1307,24 +1169,19 @@ function Model:hasJoints() end
 ---@see Model:resetNodeTransforms
 ---@see Model:getBlendShapeWeight
 ---@see Model:setBlendShapeWeight
----@see Model
 function Model:resetBlendShapes() end
 
 --- Resets node transforms to the original ones defined in the model file.
 ---@see Model:resetBlendShapes
----@see Model
 function Model:resetNodeTransforms() end
 
 --- Sets the weight of a blend shape.  A blend shape contains offset values for the vertices of one of the meshes in a Model.  Whenever the Model is drawn, the offsets are multiplied by the weight of the blend shape, allowing for smooth blending between different meshes.  A weight of zero won't apply any displacement and will skip processing of the blend shape.
 ---@see Model:getBlendShapeCount
 ---@see Model:getBlendShapeName
 ---@see Model:resetBlendShapes
----@see Model:getBlendShapeWeight
----@see Model
----@overload fun(name: string, weight: number)
----@param index number # The index of a blend shape.
+---@param blendshape string | number # The name or index of a blend shape.
 ---@param weight number # The new weight for the blend shape.
-function Model:setBlendShapeWeight(index, weight) end
+function Model:setBlendShapeWeight(blendshape, weight) end
 
 --- Sets or blends the orientation of a node to a new orientation.  This sets the local orientation of the node, relative to its parent.
 ---@see Model:getNodePosition
@@ -1336,18 +1193,14 @@ function Model:setBlendShapeWeight(index, weight) end
 ---@see Model:getNodeTransform
 ---@see Model:setNodeTransform
 ---@see Model:animate
----@see Model:getNodeOrientation
----@see Model
----@overload fun(name: string, angle: number, ax: number, ay: number, az: number, blend: number)
----@overload fun(index: number, orientation: Quat, blend: number)
----@overload fun(name: string, orientation: Quat, blend: number)
----@param index number # The index of the node.
+---@overload fun(node: string | number, orientation: Quat, blend: number)
+---@param node string | number # The name or index of a node.
 ---@param angle number # The number of radians the node should be rotated around its rotation axis.
 ---@param ax number # The x component of the axis of rotation.
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
 ---@param blend number? # A number from 0 to 1 indicating how much of the target orientation to blend in.  A value of 0 will not change the node's orientation at all, whereas 1 will fully blend to the target orientation. (default: 1.0)
-function Model:setNodeOrientation(index, angle, ax, ay, az, blend) end
+function Model:setNodeOrientation(node, angle, ax, ay, az, blend) end
 
 --- Sets or blends the pose (position and orientation) of a node to a new pose.  This sets the local pose of the node, relative to its parent.  The scale will remain unchanged.
 ---@see Model:getNodePosition
@@ -1359,12 +1212,8 @@ function Model:setNodeOrientation(index, angle, ax, ay, az, blend) end
 ---@see Model:getNodeTransform
 ---@see Model:setNodeTransform
 ---@see Model:animate
----@see Model:getNodePose
----@see Model
----@overload fun(name: string, x: number, y: number, z: number, angle: number, ax: number, ay: number, az: number, blend: number)
----@overload fun(index: number, position: Vec3, orientation: Quat, blend: number)
----@overload fun(name: string, position: Vec3, orientation: Quat, blend: number)
----@param index number # The index of the node.
+---@overload fun(node: string | number, position: Vec3, orientation: Quat, blend: number)
+---@param node string | number # The name or index of a node.
 ---@param x number # The x component of the position.
 ---@param y number # The y component of the position.
 ---@param z number # The z component of the position.
@@ -1373,7 +1222,7 @@ function Model:setNodeOrientation(index, angle, ax, ay, az, blend) end
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
 ---@param blend number? # A number from 0 to 1 indicating how much of the target pose to blend in.  A value of 0 will not change the node's pose at all, whereas 1 will fully blend to the target pose. (default: 1.0)
-function Model:setNodePose(index, x, y, z, angle, ax, ay, az, blend) end
+function Model:setNodePose(node, x, y, z, angle, ax, ay, az, blend) end
 
 --- Sets or blends the position of a node.  This sets the local position of the node, relative to its parent.
 ---@see Model:getNodeOrientation
@@ -1385,17 +1234,13 @@ function Model:setNodePose(index, x, y, z, angle, ax, ay, az, blend) end
 ---@see Model:getNodeTransform
 ---@see Model:setNodeTransform
 ---@see Model:animate
----@see Model:getNodePosition
----@see Model
----@overload fun(name: string, x: number, y: number, z: number, blend: number)
----@overload fun(index: number, position: Vec3, blend: number)
----@overload fun(name: string, position: Vec3, blend: number)
----@param index number # The index of the node.
+---@overload fun(node: string | number, position: Vec3, blend: number)
+---@param node string | number # The name or index of a node.
 ---@param x number # The x coordinate of the new position.
 ---@param y number # The y coordinate of the new position.
 ---@param z number # The z coordinate of the new position.
 ---@param blend number? # A number from 0 to 1 indicating how much of the new position to blend in.  A value of 0 will not change the node's position at all, whereas 1 will fully blend to the target position. (default: 1.0)
-function Model:setNodePosition(index, x, y, z, blend) end
+function Model:setNodePosition(node, x, y, z, blend) end
 
 --- Sets or blends the scale of a node to a new scale.  This sets the local scale of the node, relative to its parent.
 ---@see Model:getNodePosition
@@ -1407,17 +1252,13 @@ function Model:setNodePosition(index, x, y, z, blend) end
 ---@see Model:getNodeTransform
 ---@see Model:setNodeTransform
 ---@see Model:animate
----@see Model:getNodeScale
----@see Model
----@overload fun(name: string, sx: number, sy: number, sz: number, blend: number)
----@overload fun(index: number, scale: Vec3, blend: number)
----@overload fun(name: string, scale: Vec3, blend: number)
----@param index number # The index of the node.
+---@overload fun(node: string | number, scale: Vec3, blend: number)
+---@param node string | number # The name or index of a node.
 ---@param sx number # The x scale.
 ---@param sy number # The y scale.
 ---@param sz number # The z scale.
 ---@param blend number? # A number from 0 to 1 indicating how much of the new scale to blend in.  A value of 0 will not change the node's scale at all, whereas 1 will fully blend to the target scale. (default: 1.0)
-function Model:setNodeScale(index, sx, sy, sz, blend) end
+function Model:setNodeScale(node, sx, sy, sz, blend) end
 
 --- Sets or blends the transform of a node to a new transform.  This sets the local transform of the node, relative to its parent.
 ---@see Model:getNodePosition
@@ -1429,14 +1270,9 @@ function Model:setNodeScale(index, sx, sy, sz, blend) end
 ---@see Model:getNodePose
 ---@see Model:setNodePose
 ---@see Model:animate
----@see Model:getNodeTransform
----@see Model
----@overload fun(name: string, x: number, y: number, z: number, sx: number, sy: number, sz: number, angle: number, ax: number, ay: number, az: number, blend: number)
----@overload fun(index: number, position: Vec3, scale: Vec3, orientation: Quat, blend: number)
----@overload fun(name: string, position: Vec3, scale: Vec3, orientation: Quat, blend: number)
----@overload fun(index: number, transform: Mat4, blend: number)
----@overload fun(name: string, transform: Mat4, blend: number)
----@param index number # The index of the node.
+---@overload fun(node: string | number, position: Vec3, scale: Vec3, orientation: Quat, blend: number)
+---@overload fun(node: string | number, transform: Mat4, blend: number)
+---@param node string | number # The name or index of a node.
 ---@param x number # The x component of the position.
 ---@param y number # The y component of the position.
 ---@param z number # The z component of the position.
@@ -1448,28 +1284,28 @@ function Model:setNodeScale(index, sx, sy, sz, blend) end
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
 ---@param blend number? # A number from 0 to 1 indicating how much of the target transform to blend in.  A value of 0 will not change the node's transform at all, whereas 1 will fully blend to the target transform. (default: 1.0)
-function Model:setNodeTransform(index, x, y, z, sx, sy, sz, angle, ax, ay, az, blend) end
+function Model:setNodeTransform(node, x, y, z, sx, sy, sz, angle, ax, ay, az, blend) end
 
 ---@class Pass
+---@see lovr.graphics.newPass # (Constructor)
+---@see lovr.graphics.getWindowPass # (Constructor)
+---@see lovr.headset.getPass # (Constructor)
 local Pass = {}
 
 --- Synchronizes compute work.
 --- By default, within a single Pass, multiple calls to `Pass:compute` can run on the GPU in any order, or all at the same time.  This is great because it lets the GPU process the work as efficiently as possible, but sometimes multiple compute dispatches need to be sequenced.
 --- Calling this function will insert a barrier.  All compute operations on the Pass after the barrier will only start once all of the previous compute operations on the Pass are finished.
 ---@see Pass:compute
----@see Pass
 function Pass:barrier() end
 
 --- Begins a new tally.  The tally will count the number of pixels touched by any draws that occur while the tally is active.  If a pixel fails the depth test or stencil test then it won't be counted, so the tally is a way to detect if objects are visible.
 --- The results for all the tallies in the pass can be copied to a `Buffer` when the Pass finishes by setting a buffer with `Pass:setTallyBuffer`.
 ---@see Pass:finishTally
----@see Pass
 ---@return number # The index of the tally that was started.
 function Pass:beginTally() end
 
 --- Draw a box.  This is like `Pass:cube`, except it takes 3 separate values for the scale.
 ---@see Pass:cube
----@see Pass
 ---@overload fun(position: Vec3, size: Vec3, orientation: Quat, style: DrawStyle)
 ---@overload fun(transform: Mat4, style: DrawStyle)
 ---@param x number? # The x coordinate of the center of the box. (default: 0)
@@ -1486,7 +1322,6 @@ function Pass:beginTally() end
 function Pass:box(x, y, z, width, height, depth, angle, ax, ay, az, style) end
 
 --- Draws a capsule.  A capsule is shaped like a cylinder with a hemisphere on each end.
----@see Pass
 ---@overload fun(position: Vec3, radius: number, length: number, orientation: Quat, segments: number)
 ---@overload fun(transform: Mat4, segments: number)
 ---@overload fun(p1: Vec3, p2: Vec3, radius: number, segments: number)
@@ -1503,7 +1338,6 @@ function Pass:box(x, y, z, width, height, depth, angle, ax, ay, az, style) end
 function Pass:capsule(x, y, z, radius, length, angle, ax, ay, az, segments) end
 
 --- Draws a circle.
----@see Pass
 ---@overload fun(position: Vec3, radius: number, orientation: Quat, style: DrawStyle, angle1: number, angle2: number, segments: number)
 ---@overload fun(transform: Mat4, style: DrawStyle, angle1: number, angle2: number, segments: number)
 ---@param x number? # The x coordinate of the center of the circle. (default: 0)
@@ -1526,7 +1360,6 @@ function Pass:circle(x, y, z, radius, angle, ax, ay, az, style, angle1, angle2, 
 ---@see Pass:setShader
 ---@see Pass:send
 ---@see lovr.graphics.getLimits
----@see Pass
 ---@overload fun(buffer: Buffer, offset: number)
 ---@param x number? # The number of workgroups to dispatch in the x dimension. (default: 1)
 ---@param y number? # The number of workgroups to dispatch in the y dimension. (default: 1)
@@ -1534,7 +1367,6 @@ function Pass:circle(x, y, z, radius, angle, ax, ay, az, style, angle1, angle2, 
 function Pass:compute(x, y, z) end
 
 --- Draws a cone.
----@see Pass
 ---@overload fun(position: Vec3, radius: number, length: number, orientation: Quat, segments: number)
 ---@overload fun(transform: Mat4, segments: number)
 ---@overload fun(p1: Vec3, p2: Vec3, radius: number, segments: number)
@@ -1551,7 +1383,6 @@ function Pass:compute(x, y, z) end
 function Pass:cone(x, y, z, radius, length, angle, ax, ay, az, segments) end
 
 --- Draws a cube.
----@see Pass
 ---@overload fun(position: Vec3, size: number, orientation: Quat, style: DrawStyle)
 ---@overload fun(transform: Mat4, style: DrawStyle)
 ---@param x number? # The x coordinate of the center of the cube. (default: 0)
@@ -1566,7 +1397,6 @@ function Pass:cone(x, y, z, radius, length, angle, ax, ay, az, segments) end
 function Pass:cube(x, y, z, size, angle, ax, ay, az, style) end
 
 --- Draws a cylinder.
----@see Pass
 ---@overload fun(position: Vec3, radius: number, length: number, orientation: Quat, capped: boolean, angle1: number, angle2: number, segments: number)
 ---@overload fun(transform: Mat4, capped: boolean, angle1: number, angle2: number, segments: number)
 ---@overload fun(p1: Vec3, p2: Vec3, radius: number, capped: boolean, angle1: number, angle2: number, segments: number)
@@ -1586,10 +1416,9 @@ function Pass:cube(x, y, z, size, angle, ax, ay, az, style) end
 function Pass:cylinder(x, y, z, radius, length, angle, ax, ay, az, capped, angle1, angle2, segments) end
 
 --- Draws a `Model`, `Mesh`, or `Texture`.
----@see Pass
----@overload fun(object: any, position: Vec3, scale3: Vec3, orientation: Quat, instances: number)
----@overload fun(object: any, transform: Mat4, instances: number)
----@param object any # The Model, Mesh, or Texture to draw.
+---@overload fun(object: Model | Mesh | Texture, position: Vec3, scale3: Vec3, orientation: Quat, instances: number)
+---@overload fun(object: Model | Mesh | Texture, transform: Mat4, instances: number)
+---@param object Model | Mesh | Texture # The object to draw.
 ---@param x number? # The x coordinate to draw the object at. (default: 0)
 ---@param y number? # The y coordinate to draw the object at. (default: 0)
 ---@param z number? # The z coordinate to draw the object at. (default: 0)
@@ -1602,7 +1431,6 @@ function Pass:cylinder(x, y, z, radius, length, angle, ax, ay, az, capped, angle
 function Pass:draw(object, x, y, z, scale, angle, ax, ay, az, instances) end
 
 --- Draws a fullscreen triangle.  The `fill` shader is used, which stretches the triangle across the screen.
----@see Pass
 ---@overload fun()
 ---@param texture Texture # The texture to fill.  If nil, the texture from the active material is used.
 function Pass:fill(texture) end
@@ -1610,7 +1438,6 @@ function Pass:fill(texture) end
 --- Finishes a tally that was previously started with `Pass:beginTally`.  This will stop counting the number of pixels affected by draws.
 --- The results for all the tallies in the pass can be copied to a `Buffer` when the Pass finishes by setting a buffer with `Pass:setTallyBuffer`.
 ---@see Pass:beginTally
----@see Pass
 ---@return number # The index of the tally that was finished.
 function Pass:finishTally() end
 
@@ -1620,16 +1447,12 @@ function Pass:finishTally() end
 ---@see Pass:getWidth
 ---@see Pass:getHeight
 ---@see Pass:getDimensions
----@see Pass:setCanvas
----@see Pass
 ---@overload fun()
 ---@return table # The canvas.  Numeric keys will contain the color Textures, along with the following keys:
 function Pass:getCanvas() end
 
 --- Returns the clear values of the pass.
 ---@see Pass:getCanvas
----@see Pass:setClear
----@see Pass
 ---@return table # The clear values for the pass.  Each color texture's clear value is stored at its index, as either a 4-number rgba table or a boolean.  If the pass has a depth texture, there will also be a `depth` key with its clear value as a number or boolean.
 function Pass:getClear() end
 
@@ -1641,7 +1464,6 @@ function Pass:getClear() end
 ---@see Pass:setCanvas
 ---@see lovr.system.getWindowDimensions
 ---@see lovr.headset.getDisplayDimensions
----@see Pass
 ---@return number # The texture width.
 ---@return number # The texture height.
 function Pass:getDimensions() end
@@ -1654,7 +1476,6 @@ function Pass:getDimensions() end
 ---@see Pass:setCanvas
 ---@see lovr.system.getWindowHeight
 ---@see lovr.headset.getDisplayHeight
----@see Pass
 ---@return number # The texture height.
 function Pass:getHeight() end
 
@@ -1662,7 +1483,6 @@ function Pass:getHeight() end
 ---@see lovr.graphics.newPass
 ---@see Texture:getLabel
 ---@see Shader:getLabel
----@see Pass
 ---@return string # The label, or nil if none was set.
 function Pass:getLabel() end
 
@@ -1671,8 +1491,6 @@ function Pass:getLabel() end
 ---@see lovr.headset.getViewCount
 ---@see Pass:getViewPose
 ---@see Pass:setViewPose
----@see Pass:setProjection
----@see Pass
 ---@overload fun(view: number, matrix: Mat4): Mat4
 ---@param view number # The view index.
 ---@return number # The left field of view angle, in radians.
@@ -1685,7 +1503,6 @@ function Pass:getProjection(view) end
 ---@see lovr.graphics.isTimingEnabled
 ---@see lovr.graphics.setTimingEnabled
 ---@see Pass:setViewCull
----@see Pass
 ---@return table # A table with statistics.
 function Pass:getStats() end
 
@@ -1693,8 +1510,6 @@ function Pass:getStats() end
 --- If no buffer has been set, this function will return `nil`.
 ---@see Pass:beginTally
 ---@see Pass:finishTally
----@see Pass:setTallyBuffer
----@see Pass
 ---@return Buffer # The buffer.
 ---@return number # An offset in the buffer where results will be written.
 function Pass:getTallyBuffer() end
@@ -1705,7 +1520,6 @@ function Pass:getTallyBuffer() end
 ---@see Pass:getProjection
 ---@see Pass:setProjection
 ---@see lovr.headset.getViewCount
----@see Pass
 ---@return number # The view count.
 function Pass:getViewCount() end
 
@@ -1714,8 +1528,6 @@ function Pass:getViewCount() end
 ---@see lovr.headset.getViewCount
 ---@see Pass:getProjection
 ---@see Pass:setProjection
----@see Pass:setViewPose
----@see Pass
 ---@overload fun(view: number, matrix: Mat4, invert: boolean): Mat4
 ---@param view number # The view index.
 ---@return number # The x position of the viewer, in meters.
@@ -1735,26 +1547,23 @@ function Pass:getViewPose(view) end
 ---@see Pass:setCanvas
 ---@see lovr.system.getWindowWidth
 ---@see lovr.headset.getDisplayWidth
----@see Pass
 ---@return number # The texture width.
 function Pass:getWidth() end
 
 --- Draws a line between points.  `Pass:mesh` can also be used to draw line segments using the `line` `DrawMode`.
----@see Pass
----@overload fun(t: table)
----@overload fun(v1: Vec3, v2: Vec3, ...: any)
+---@overload fun(t: {number | Vec3})
+---@overload fun(v1: Vec3, v2: Vec3, ...: Vec3)
 ---@param x1 number # The x coordinate of the first point.
 ---@param y1 number # The y coordinate of the first point.
 ---@param z1 number # The z coordinate of the first point.
 ---@param x2 number # The x coordinate of the next point.
 ---@param y2 number # The y coordinate of the next point.
 ---@param z2 number # The z coordinate of the next point.
----@param ... any # More points to add to the line.
+---@param ... number # More points to add to the line.
 function Pass:line(x1, y1, z1, x2, y2, z2, ...) end
 
 --- Draws a mesh.
 ---@see Pass:setMeshMode
----@see Pass
 ---@overload fun(vertices: Buffer, position: Vec3, scales: Vec3, orientation: Quat, start: number, count: number, instances: number)
 ---@overload fun(vertices: Buffer, transform: Mat4, start: number, count: number, instances: number)
 ---@overload fun(vertices: Buffer, indices: Buffer, x: number, y: number, z: number, scale: number, angle: number, ax: number, ay: number, az: number, start: number, count: number, instances: number, base: number)
@@ -1782,11 +1591,9 @@ function Pass:mesh(vertices, x, y, z, scale, angle, ax, ay, az, start, count, in
 ---@see Pass:transform
 ---@see Pass:push
 ---@see Pass:pop
----@see Pass
 function Pass:origin() end
 
 --- Draws a plane.
----@see Pass
 ---@overload fun(position: Vec3, size: Vec2, orientation: Quat, style: DrawStyle, columns: number, rows: number)
 ---@overload fun(transform: Mat4, style: DrawStyle, columns: number, rows: number)
 ---@param x number? # The x coordinate of the center of the plane. (default: 0)
@@ -1804,8 +1611,7 @@ function Pass:origin() end
 function Pass:plane(x, y, z, width, height, angle, ax, ay, az, style, columns, rows) end
 
 --- Draws points.  `Pass:mesh` can also be used to draw points using a `Buffer`.
----@see Pass
----@overload fun(t: table)
+---@overload fun(t: {number | Vec3})
 ---@overload fun(v: Vec3, ...: any)
 ---@param x number # The x coordinate of the first point.
 ---@param y number # The y coordinate of the first point.
@@ -1817,8 +1623,7 @@ function Pass:points(x, y, z, ...) end
 ---@see Pass:points
 ---@see Pass:line
 ---@see Pass:draw
----@see Pass
----@overload fun(t: table)
+---@overload fun(t: {number | Vec3})
 ---@overload fun(v1: Vec3, v2: Vec3, ...: any)
 ---@param x1 number # The x coordinate of the first vertex.
 ---@param y1 number # The y coordinate of the first vertex.
@@ -1832,19 +1637,16 @@ function Pass:polygon(x1, y1, z1, x2, y2, z2, ...) end
 --- Pops the transform or render state stack, restoring it to the state it was in when it was last pushed.
 ---@see Pass:push
 ---@see StackType
----@see Pass
 ---@param stack StackType? # The type of stack to pop. (default: 'transform')
 function Pass:pop(stack) end
 
 --- Saves a copy of the transform or render states.  Further changes can be made to the transform or render states, and afterwards `Pass:pop` can be used to restore the original state.  Pushes and pops can be nested, but it's an error to pop without a corresponding push.
 ---@see Pass:pop
 ---@see StackType
----@see Pass
 ---@param stack StackType? # The type of stack to push. (default: 'transform')
 function Pass:push(stack) end
 
 --- Resets the Pass, clearing all of its draws and computes and resetting all of its state to the default values.
----@see Pass
 function Pass:reset() end
 
 --- Rotates the coordinate system.
@@ -1854,7 +1656,6 @@ function Pass:reset() end
 ---@see Pass:origin
 ---@see Pass:push
 ---@see Pass:pop
----@see Pass
 ---@overload fun(rotation: Quat)
 ---@param angle number # The amount to rotate the coordinate system by, in radians.
 ---@param ax number # The x component of the axis of rotation.
@@ -1863,7 +1664,6 @@ function Pass:reset() end
 function Pass:rotate(angle, ax, ay, az) end
 
 --- Draws a rounded rectangle.
----@see Pass
 ---@overload fun(position: Vec3, size: Vec3, orientation: Quat, radius: number, segments: number)
 ---@overload fun(transform: Mat4, radius: number, segments: number)
 ---@param x number? # The x coordinate of the center of the rectangle. (default: 0)
@@ -1887,7 +1687,6 @@ function Pass:roundrect(x, y, z, width, height, thickness, angle, ax, ay, az, ra
 ---@see Pass:origin
 ---@see Pass:push
 ---@see Pass:pop
----@see Pass
 ---@overload fun(scale: Vec3)
 ---@param sx number # The x component of the scale.
 ---@param sy number? # The y component of the scale. (default: sx)
@@ -1895,7 +1694,6 @@ function Pass:roundrect(x, y, z, width, height, thickness, angle, ax, ay, az, ra
 function Pass:scale(sx, sy, sz) end
 
 --- Sends a value to a variable in the Pass's active `Shader`.  The active shader is changed using `Pass:setShader`.
----@see Pass
 ---@overload fun(name: string, texture: Texture)
 ---@overload fun(name: string, sampler: Sampler)
 ---@overload fun(name: string, data: any)
@@ -1906,12 +1704,10 @@ function Pass:scale(sx, sy, sz) end
 function Pass:send(name, buffer, offset, extent) end
 
 --- Sets whether alpha to coverage is enabled.  Alpha to coverage factors the alpha of a pixel into antialiasing calculations.  It can be used to get antialiased edges on textures with transparency.  It's often used for foliage.
----@see Pass
 ---@param enable boolean # Whether alpha to coverage should be enabled.
 function Pass:setAlphaToCoverage(enable) end
 
 --- Sets the blend mode.  When a pixel is drawn, the blend mode controls how it is mixed with the color and alpha of the pixel underneath it.
----@see Pass
 ---@overload fun()
 ---@overload fun(index: number, blend: BlendMode, alphaBlend: BlendAlphaMode)
 ---@overload fun(index: number)
@@ -1925,8 +1721,6 @@ function Pass:setBlendMode(blend, alphaBlend) end
 ---@see Pass:getWidth
 ---@see Pass:getHeight
 ---@see Pass:getDimensions
----@see Pass:getCanvas
----@see Pass
 ---@overload fun(canvas: table)
 ---@overload fun()
 ---@param ... Texture # One or more color textures the pass will render to.
@@ -1940,8 +1734,6 @@ function Pass:setCanvas(...) end
 ---   GPUs.
 ---@see Pass:setCanvas
 ---@see Texture:clear
----@see Pass:getClear
----@see Pass
 ---@overload fun(r: number, g: number, b: number, a: number)
 ---@overload fun(clear: boolean)
 ---@overload fun(t: table)
@@ -1949,8 +1741,7 @@ function Pass:setCanvas(...) end
 function Pass:setClear(hex) end
 
 --- Sets the color used for drawing.  Color components are from 0 to 1.
----@see Pass
----@overload fun(t: table)
+---@overload fun(t: {number})
 ---@overload fun(hex: number, a: number)
 ---@param r number # The red component of the color.
 ---@param g number # The green component of the color.
@@ -1961,7 +1752,6 @@ function Pass:setColor(r, g, b, a) end
 --- Sets the color channels affected by drawing, on a per-channel basis.  Disabling color writes is often used to render to the depth or stencil buffer without affecting existing pixel colors.
 ---@see Pass:setDepthWrite
 ---@see Pass:setStencilWrite
----@see Pass
 ---@overload fun(r: boolean, g: boolean, b: boolean, a: boolean)
 ---@overload fun(index: number, enable: boolean)
 ---@overload fun(index: number, r: boolean, g: boolean, b: boolean, a: boolean)
@@ -1971,7 +1761,6 @@ function Pass:setColorWrite(enable) end
 --- Sets whether the front or back faces of triangles are culled.
 ---@see Pass:setViewCull
 ---@see Pass:setWinding
----@see Pass
 ---@overload fun()
 ---@param mode CullMode # Whether `front` faces, `back` faces, or `none` of the faces should be culled.
 function Pass:setCullMode(mode) end
@@ -1980,7 +1769,6 @@ function Pass:setCullMode(mode) end
 ---@see Pass:setDepthTest
 ---@see Pass:setDepthWrite
 ---@see Pass:setDepthOffset
----@see Pass
 ---@param enable boolean # Whether depth clamp should be enabled.
 function Pass:setDepthClamp(enable) end
 
@@ -1988,7 +1776,6 @@ function Pass:setDepthClamp(enable) end
 --- This can be used to fix Z fighting when rendering decals or other nearly-overlapping objects, and is also useful for shadow biasing when implementing shadow mapping.
 ---@see Pass:setDepthTest
 ---@see Pass:setDepthWrite
----@see Pass
 ---@param offset number? # The depth offset. (default: 0.0)
 ---@param sloped number? # The sloped depth offset. (default: 0.0)
 function Pass:setDepthOffset(offset, sloped) end
@@ -1999,7 +1786,6 @@ function Pass:setDepthOffset(offset, sloped) end
 ---@see Pass:setDepthClamp
 ---@see Pass:setStencilTest
 ---@see Pass:setProjection
----@see Pass
 ---@overload fun()
 ---@param test CompareMode # The new depth test to use.
 function Pass:setDepthTest(test) end
@@ -2008,14 +1794,12 @@ function Pass:setDepthTest(test) end
 ---@see Pass:setStencilWrite
 ---@see Pass:setColorWrite
 ---@see Pass:setDepthTest
----@see Pass
 ---@param write boolean # Whether the depth buffer should be affected by draws.
 function Pass:setDepthWrite(write) end
 
 --- Sets whether the front or back faces of triangles are culled.
 ---@see Pass:setViewCull
 ---@see Pass:setWinding
----@see Pass
 ---@overload fun()
 ---@param mode CullMode # Whether `front` faces, `back` faces, or `none` of the faces should be culled.
 function Pass:setFaceCull(mode) end
@@ -2024,19 +1808,15 @@ function Pass:setFaceCull(mode) end
 ---@see Pass:text
 ---@see lovr.graphics.newFont
 ---@see lovr.graphics.getDefaultFont
----@see Pass
 ---@param font Font # The Font to use when rendering text.
 function Pass:setFont(font) end
 
 --- Sets the material.  This will apply to most drawing, except for text, skyboxes, and models, which use their own materials.
----@see Pass
----@overload fun(texture: Texture)
 ---@overload fun()
----@param material Material # The material to use for drawing.
+---@param material Texture | Material # The texture or material to apply to surfaces.
 function Pass:setMaterial(material) end
 
 --- Changes the way vertices are connected together when drawing using `Pass:mesh`.
----@see Pass
 ---@param mode DrawMode # The mesh mode to use.
 function Pass:setMeshMode(mode) end
 
@@ -2046,8 +1826,6 @@ function Pass:setMeshMode(mode) end
 ---@see lovr.headset.getViewCount
 ---@see Pass:getViewPose
 ---@see Pass:setViewPose
----@see Pass:getProjection
----@see Pass
 ---@overload fun(view: number, matrix: Mat4)
 ---@param view number # The index of the view to update.
 ---@param left number # The left field of view angle, in radians.
@@ -2059,14 +1837,11 @@ function Pass:setMeshMode(mode) end
 function Pass:setProjection(view, left, right, up, down, near, far) end
 
 --- Sets the default `Sampler` to use when sampling textures.  It is also possible to send a custom sampler to a shader using `Pass:send` and use that instead, which allows customizing the sampler on a per-texture basis.
----@see Pass
----@overload fun(sampler: Sampler)
----@param filter FilterMode? # The default filter mode to use when sampling textures (the `repeat` wrap mode will be used). (default: 'linear')
-function Pass:setSampler(filter) end
+---@param sampler Sampler | FilterMode? # The Sampler shaders will use when reading from textures.  It can also be a `FilterMode`, for convenience (other sampler settings will use their defaults). (default: 'linear')
+function Pass:setSampler(sampler) end
 
 --- Sets the scissor rectangle.  Any pixels outside the scissor rectangle will not be drawn.
 ---@see Pass:setViewport
----@see Pass
 ---@overload fun()
 ---@param x number # The x coordinate of the upper-left corner of the scissor rectangle.
 ---@param y number # The y coordinate of the upper-left corner of the scissor rectangle.
@@ -2074,19 +1849,16 @@ function Pass:setSampler(filter) end
 ---@param h number # The height of the scissor rectangle.
 function Pass:setScissor(x, y, w, h) end
 
---- Sets the active shader.  In a render pass, the Shader will affect all drawing operations until it is changed again.  In a compute pass, the Shader will be run when `Pass:compute` is called.
+--- Sets the active shader.  The Shader will affect all drawing operations until it is changed again.
 ---@see Pass:send
 ---@see Pass:compute
----@see Pass
----@overload fun(default: DefaultShader)
 ---@overload fun()
----@param shader Shader # The shader to use.
+---@param shader Shader | DefaultShader # The shader to use.
 function Pass:setShader(shader) end
 
 --- Sets the stencil test.  Any pixels that fail the stencil test won't be drawn.  For example, setting the stencil test to `('equal', 1)` will only draw pixels that have a stencil value of 1. The stencil buffer can be modified by drawing while stencil writes are enabled with `lovr.graphics.setStencilWrite`.
 ---@see Pass:setStencilWrite
 ---@see Pass:setDepthTest
----@see Pass
 ---@overload fun()
 ---@param test CompareMode # The new stencil test to use.
 ---@param value number # The stencil value to compare against.
@@ -2096,10 +1868,8 @@ function Pass:setStencilTest(test, value, mask) end
 --- Sets or disables stencil writes.  When stencil writes are enabled, any pixels drawn will update the values in the stencil buffer using the `StencilAction` set.
 ---@see Pass:setStencilTest
 ---@see Pass:setDepthTest
----@see Pass
----@overload fun(actions: table, value: number, mask: number)
 ---@overload fun()
----@param action StencilAction # How pixels drawn will update the stencil buffer.
+---@param action StencilAction | {StencilAction} # How pixels should update the stencil buffer when they are drawn.  Can also be a list of 3 stencil actions, used when a pixel fails the stencil test, fails the depth test, or passes the stencil test, respectively.
 ---@param value number? # When using the 'replace' action, this is the value to replace with. (default: 1)
 ---@param mask number? # An optional mask to apply to stencil values before writing. (default: 0xff)
 function Pass:setStencilWrite(action, value, mask) end
@@ -2107,8 +1877,6 @@ function Pass:setStencilWrite(action, value, mask) end
 --- Sets the Buffer where tally results will be written to.  Each time the render pass finishes, the results of all the tallies will be copied to the Buffer at the specified offset.  The buffer can be used in a later pass in a compute shader, or the data in the buffer can be read back using e.g. `Buffer:newReadback`.
 ---@see Pass:beginTally
 ---@see Pass:finishTally
----@see Pass:getTallyBuffer
----@see Pass
 ---@overload fun()
 ---@param buffer Buffer # The buffer.
 ---@param offset number # A byte offset where results will be written.  Must be a multiple of 4.
@@ -2120,7 +1888,6 @@ function Pass:setTallyBuffer(buffer, offset) end
 ---@see Mesh:setBoundingBox
 ---@see Pass:setViewPose
 ---@see Pass:setProjection
----@see Pass
 ---@param enable boolean # Whether frustum culling should be enabled.
 function Pass:setViewCull(enable) end
 
@@ -2130,8 +1897,6 @@ function Pass:setViewCull(enable) end
 ---@see lovr.headset.getViewCount
 ---@see Pass:getProjection
 ---@see Pass:setProjection
----@see Pass:getViewPose
----@see Pass
 ---@overload fun(view: number, position: Vec3, orientation: Quat)
 ---@overload fun(view: number, matrix: Mat4, inverted: boolean)
 ---@param view number # The index of the view to update.
@@ -2147,7 +1912,6 @@ function Pass:setViewPose(view, x, y, z, angle, ax, ay, az) end
 --- Sets the viewport.  Everything rendered will get mapped to the rectangle defined by the viewport.  More specifically, this defines the transformation from normalized device coordinates to pixel coordinates.
 ---@see Pass:setScissor
 ---@see Pass:getDimensions
----@see Pass
 ---@overload fun()
 ---@param x number # The x coordinate of the upper-left corner of the viewport.
 ---@param y number # The y coordinate of the upper-left corner of the viewport.
@@ -2159,24 +1923,20 @@ function Pass:setViewport(x, y, w, h, dmin, dmax) end
 
 --- Sets whether vertices in the clockwise or counterclockwise order vertices are considered the "front" face of a triangle.  This is used for culling with `Pass:setCullMode`.
 ---@see Pass:setCullMode
----@see Pass
 ---@param winding Winding # Whether triangle vertices are ordered `clockwise` or `counterclockwise`.
 function Pass:setWinding(winding) end
 
 --- Enables or disables wireframe rendering.  This will draw all triangles as lines while active. It's intended to be used for debugging, since it usually has a performance cost.
 ---@see Pass:setMeshMode
----@see Pass
 ---@param enable boolean # Whether wireframe rendering should be enabled.
 function Pass:setWireframe(enable) end
 
 --- Draws a skybox.
----@see Pass
 ---@overload fun()
 ---@param skybox Texture # The skybox to render.  Its `TextureType` can be `cube` to render as a cubemap, or `2d` to render as an equirectangular (spherical) 2D image.
 function Pass:skybox(skybox) end
 
 --- Draws a sphere
----@see Pass
 ---@overload fun(position: Vec3, radius: number, orientation: Quat, longitudes: number, latitudes: number)
 ---@overload fun(transform: Mat4, longitudes: number, latitudes: number)
 ---@param x number? # The x coordinate of the center of the sphere. (default: 0)
@@ -2200,7 +1960,6 @@ function Pass:sphere(x, y, z, radius, angle, ax, ay, az, longitudes, latitudes) 
 ---@see Font:getLines
 ---@see Font:getVertices
 ---@see Font
----@see Pass
 ---@overload fun(text: string, position: Vec3, scale: number, orientation: Quat, wrap: number, halign: HorizontalAlign, valign: VerticalAlign)
 ---@overload fun(text: string, transform: Mat4, wrap: number, halign: HorizontalAlign, valign: VerticalAlign)
 ---@overload fun(colortext: table, x: number, y: number, z: number, scale: number, angle: number, ax: number, ay: number, az: number, wrap: number, halign: HorizontalAlign, valign: VerticalAlign)
@@ -2221,7 +1980,6 @@ function Pass:sphere(x, y, z, radius, angle, ax, ay, az, longitudes, latitudes) 
 function Pass:text(text, x, y, z, scale, angle, ax, ay, az, wrap, halign, valign) end
 
 --- Draws a torus.
----@see Pass
 ---@overload fun(position: Vec3, scale: Vec3, orientation: Quat, tsegments: number, psegments: number)
 ---@overload fun(transform: Mat4, tsegments: number, psegments: number)
 ---@param x number? # The x coordinate of the center of the torus. (default: 0)
@@ -2244,7 +2002,6 @@ function Pass:torus(x, y, z, radius, thickness, angle, ax, ay, az, tsegments, ps
 ---@see Pass:origin
 ---@see Pass:push
 ---@see Pass:pop
----@see Pass
 ---@overload fun(translation: Vec3, scale: Vec3, rotation: Quat)
 ---@overload fun(transform: Mat4)
 ---@param x number # The x component of the translation.
@@ -2266,7 +2023,6 @@ function Pass:transform(x, y, z, sx, sy, sz, angle, ax, ay, az) end
 ---@see Pass:origin
 ---@see Pass:push
 ---@see Pass:pop
----@see Pass
 ---@overload fun(translation: Vec3)
 ---@param x number # The x component of the translation.
 ---@param y number # The y component of the translation.
@@ -2274,40 +2030,38 @@ function Pass:transform(x, y, z, sx, sy, sz, angle, ax, ay, az) end
 function Pass:translate(x, y, z) end
 
 ---@class Readback
+---@see Buffer:newReadback # (Constructor)
+---@see Texture:newReadback # (Constructor)
 local Readback = {}
 
 --- Returns the Readback's data as a Blob.
 ---@see Readback:getData
 ---@see Readback:getImage
----@see Readback
 ---@return Blob # The Blob.
 function Readback:getBlob() end
 
 --- Returns the data from the Readback, as a table.  See `Buffer:getData` for the way the table is structured.
 ---@see Readback:getBlob
 ---@see Readback:getImage
----@see Readback
 ---@return table # A table containing the data that was read back.
 function Readback:getData() end
 
 --- Returns the Readback's data as an Image.
 ---@see Readback:getData
 ---@see Readback:getBlob
----@see Readback
 ---@return Image # The Image.
 function Readback:getImage() end
 
 --- Returns whether the Readback has completed on the GPU and its data is available.
----@see Readback
 ---@return boolean # Whether the readback is complete.
 function Readback:isComplete() end
 
 --- Blocks the CPU until the Readback is finished on the GPU.
----@see Readback
 ---@return boolean # Whether the CPU had to be blocked for waiting.
 function Readback:wait() end
 
 ---@class Sampler
+---@see lovr.graphics.newSampler # (Constructor)
 local Sampler = {}
 
 --- Returns the anisotropy level of the Sampler.  Anisotropy smooths out a texture's appearance when viewed at grazing angles.
@@ -2315,7 +2069,6 @@ local Sampler = {}
 ---@see Sampler:getWrap
 ---@see Sampler:getCompareMode
 ---@see Sampler:getMipmapRange
----@see Sampler
 ---@return number # The anisotropy level of the sampler.
 function Sampler:getAnisotropy() end
 
@@ -2324,7 +2077,6 @@ function Sampler:getAnisotropy() end
 ---@see Sampler:getWrap
 ---@see Sampler:getAnisotropy
 ---@see Sampler:getMipmapRange
----@see Sampler
 ---@return CompareMode # The compare mode of the sampler.
 function Sampler:getCompareMode() end
 
@@ -2333,7 +2085,6 @@ function Sampler:getCompareMode() end
 ---@see Sampler:getCompareMode
 ---@see Sampler:getAnisotropy
 ---@see Sampler:getMipmapRange
----@see Sampler
 ---@return FilterMode # The filter mode used when the texture is minified.
 ---@return FilterMode # The filter mode used when the texture is magnified.
 ---@return FilterMode # The filter mode used to select a mipmap level.
@@ -2344,7 +2095,6 @@ function Sampler:getFilter() end
 ---@see Sampler:getWrap
 ---@see Sampler:getCompareMode
 ---@see Sampler:getAnisotropy
----@see Sampler
 ---@return number # The minimum mipmap level that will be sampled (0 is the largest image).
 ---@return number # The maximum mipmap level that will be sampled.
 function Sampler:getMipmapRange() end
@@ -2354,17 +2104,17 @@ function Sampler:getMipmapRange() end
 ---@see Sampler:getCompareMode
 ---@see Sampler:getAnisotropy
 ---@see Sampler:getMipmapRange
----@see Sampler
 ---@return WrapMode # The wrap mode used in the horizontal direction.
 ---@return WrapMode # The wrap mode used in the vertical direction.
 ---@return WrapMode # The wrap mode used in the "z" direction, for 3D textures only.
 function Sampler:getWrap() end
 
 ---@class Shader
+---@see lovr.graphics.newShader # (Constructor)
+---@see Shader:clone # (Constructor)
 local Shader = {}
 
 --- Clones a shader.  This creates an inexpensive copy of it with different flags.  It can be used to create several variants of a shader with different behavior.
----@see Shader
 ---@param source Shader # The Shader to clone.
 ---@param flags table # The flags used by the clone.
 ---@return Shader # The new Shader.
@@ -2373,7 +2123,6 @@ function Shader:clone(source, flags) end
 --- Returns the format of a buffer declared in shader code.  The return type matches the same syntax used by `lovr.graphics.newBuffer` and `Buffer:getFormat`, so it can be used to quickly create a Buffer that matches a variable from a Shader.
 ---@see lovr.graphics.newBuffer
 ---@see Buffer:getFormat
----@see Shader
 ---@param name string # The name of the buffer variable to return the format of.
 ---@return table # A list of fields that match the type declaration of the buffer in the shader code.  Each field has `name`, `type`, and `offset` keys.  If the field is an array, it will have `length` and `stride` keys as well.  The top-level table also has a `stride` key.  Offsets and strides are in bytes.
 ---@return number # The number of items in the buffer (or 1 if the buffer is not an array).
@@ -2383,28 +2132,24 @@ function Shader:getBufferFormat(name) end
 ---@see lovr.graphics.newShader
 ---@see Texture:getLabel
 ---@see Pass:getLabel
----@see Shader
 ---@return string # The label, or nil if none was set.
 function Shader:getLabel() end
 
 --- Returns whether the shader is a graphics or compute shader.
 ---@see Shader:hasStage
 ---@see lovr.graphics.newShader
----@see Shader
 ---@return ShaderType # The type of the Shader.
 function Shader:getType() end
 
 --- Returns the workgroup size of a compute shader.  The workgroup size defines how many times a compute shader is invoked for each workgroup dispatched by `Pass:compute`.
 ---@see Pass:compute
 ---@see lovr.graphics.getLimits
----@see Shader
 ---@return number # The x size of a workgroup.
 ---@return number # The y size of a workgroup.
 ---@return number # The z size of a workgroup.
 function Shader:getWorkgroupSize() end
 
 --- Returns whether the Shader has a vertex attribute, by name or location.
----@see Shader
 ---@overload fun(location: number): boolean
 ---@param name string # The name of an attribute.
 ---@return boolean # Whether the Shader has the attribute.
@@ -2412,19 +2157,19 @@ function Shader:hasAttribute(name) end
 
 --- Returns whether the Shader has a given stage.
 ---@see Shader:getType
----@see Shader
 ---@param stage ShaderStage # The stage.
 ---@return boolean # Whether the Shader has the stage.
 function Shader:hasStage(stage) end
 
 --- Returns whether the Shader has a variable.
 ---@see Pass:send
----@see Shader
 ---@param name string # The name of the variable to check.
 ---@return boolean # Whether the Shader has the variable.
 function Shader:hasVariable(name) end
 
 ---@class Texture
+---@see lovr.graphics.newTexture # (Constructor)
+---@see lovr.graphics.newTextureView # (Constructor)
 local Texture = {}
 
 --- Clears layers and mipmaps in a texture to a given color.
@@ -2432,10 +2177,9 @@ local Texture = {}
 ---@see Buffer:clear
 ---@see Texture:setPixels
 ---@see Pass:setClear
----@see Texture
 ---@overload fun(hex: number, layer: number, layerCount: number, mipmap: number, mipmapCount: number)
 ---@overload fun(r: number, g: number, b: number, a: number, layer: number, layerCount: number, mipmap: number, mipmapCount: number)
----@overload fun(t: table, layer: number, layerCount: number, mipmap: number, mipmapCount: number)
+---@overload fun(t: {number}, layer: number, layerCount: number, mipmap: number, mipmapCount: number)
 ---@overload fun(v3: Vec3, layer: number, layerCount: number, mipmap: number, mipmapCount: number)
 ---@overload fun(v4: Vec4, layer: number, layerCount: number, mipmap: number, mipmapCount: number)
 function Texture:clear() end
@@ -2443,7 +2187,6 @@ function Texture:clear() end
 --- Regenerates mipmap levels of a texture.  This downscales pixels from the texture to progressively smaller sizes and saves them.  If the texture is drawn at a smaller scale later, the mipmaps are used, which smooths out the appearance and improves performance.
 ---@see Texture:setPixels
 ---@see Texture:getMipmapCount
----@see Texture
 ---@param base number? # The base mipmap level which will be used to generate subsequent mipmaps. (default: 1)
 ---@param count number? # The number of mipmap levels to generate.  If nil, the rest of the mipmaps will be generated. (default: nil)
 function Texture:generateMipmaps(base, count) end
@@ -2452,14 +2195,12 @@ function Texture:generateMipmaps(base, count) end
 ---@see Texture:getWidth
 ---@see Texture:getHeight
 ---@see Texture:getLayerCount
----@see Texture
 ---@return number # The width of the Texture.
 ---@return number # The height of the Texture.
 ---@return number # The number of layers in the Texture.
 function Texture:getDimensions() end
 
 --- Returns the format of the texture.
----@see Texture
 ---@return TextureFormat # The format of the Texture.
 ---@return boolean # Whether the format is linear or srgb.
 function Texture:getFormat() end
@@ -2468,7 +2209,6 @@ function Texture:getFormat() end
 ---@see Texture:getWidth
 ---@see Texture:getLayerCount
 ---@see Texture:getDimensions
----@see Texture
 ---@return number # The height of the Texture, in pixels.
 function Texture:getHeight() end
 
@@ -2476,7 +2216,6 @@ function Texture:getHeight() end
 ---@see lovr.graphics.newTexture
 ---@see Shader:getLabel
 ---@see Pass:getLabel
----@see Texture
 ---@return string # The label, or nil if none was set.
 function Texture:getLabel() end
 
@@ -2484,7 +2223,6 @@ function Texture:getLabel() end
 ---@see Texture:getWidth
 ---@see Texture:getHeight
 ---@see Texture:getDimensions
----@see Texture
 ---@return number # The layer count of the Texture.
 function Texture:getLayerCount() end
 
@@ -2492,14 +2230,11 @@ function Texture:getLayerCount() end
 ---@see lovr.graphics.newTexture
 ---@see Sampler:getMipmapRange
 ---@see Texture:generateMipmaps
----@see Texture
 ---@return number # The number of mipmap levels in the Texture.
 function Texture:getMipmapCount() end
 
 --- Creates and returns a new `Image` object with the current pixels of the Texture.  This function is very very slow because it stalls the CPU until the download is complete.  It should only be used for debugging, non-interactive scripts, etc.  For an asynchronous version that doesn't stall the CPU, see `Texture:newReadback`.
 ---@see Texture:newReadback
----@see Texture:setPixels
----@see Texture
 ---@param x number? # The x offset of the region to download. (default: 0)
 ---@param y number? # The y offset of the region to download. (default: 0)
 ---@param layer number? # The index of the layer to download. (default: 1)
@@ -2512,19 +2247,15 @@ function Texture:getPixels(x, y, layer, mipmap, width, height) end
 --- Returns the number of samples in the texture.  Multiple samples are used for multisample antialiasing when rendering to the texture.  Currently, the sample count is either 1 (not antialiased) or 4 (antialiased).
 ---@see lovr.graphics.newTexture
 ---@see Pass:setCanvas
----@see Texture
 ---@return number # The number of samples in the Texture.
 function Texture:getSampleCount() end
 
 --- Returns the Sampler object previously assigned with `Texture:setSampler`.
 --- This API is experimental, and subject to change in the future!
----@see Texture:setSampler
----@see Texture
 ---@return Sampler # The Sampler object.
 function Texture:getSampler() end
 
 --- Returns the type of the texture.
----@see Texture
 ---@return TextureType # The type of the Texture.
 function Texture:getType() end
 
@@ -2532,13 +2263,11 @@ function Texture:getType() end
 ---@see Texture:getHeight
 ---@see Texture:getLayerCount
 ---@see Texture:getDimensions
----@see Texture
 ---@return number # The width of the Texture, in pixels.
 function Texture:getWidth() end
 
 --- Returns whether a Texture was created with a set of `TextureUsage` flags.  Usage flags are specified when the Texture is created, and restrict what you can do with a Texture object.  By default, only the `sample` usage is enabled.  Applying a smaller set of usage flags helps LÖVR optimize things better.
 ---@see lovr.graphics.newTexture
----@see Texture
 ---@param ... TextureUsage # One or more usage flags.
 ---@return boolean # Whether the Texture has all the provided usage flags.
 function Texture:hasUsage(...) end
@@ -2546,7 +2275,6 @@ function Texture:hasUsage(...) end
 --- Creates and returns a new `Readback` that will download the pixels in the Texture from VRAM. Once the readback is complete, `Readback:getImage` returns an `Image` with a CPU copy of the data.
 ---@see Texture:getPixels
 ---@see Buffer:newReadback
----@see Texture
 ---@param x number? # The x offset of the region to download. (default: 0)
 ---@param y number? # The y offset of the region to download. (default: 0)
 ---@param layer number? # The index of the layer to download. (default: 1)
@@ -2560,10 +2288,7 @@ function Texture:newReadback(x, y, layer, mipmap, width, height) end
 ---@see Texture:newReadback
 ---@see Texture:generateMipmaps
 ---@see Image:paste
----@see Texture:getPixels
----@see Texture
----@overload fun(texture: Texture, dstx: number, dsty: number, dstlayer: number, dstmipmap: number, srcx: number, srcy: number, srclayer: number, srcmipmap: number, width: number, height: number, layers: number, srcwidth: number, srcheight: number, srcdepth: number, filter: FilterMode)
----@param image Image # The image to copy to the texture.
+---@param source Texture | Image # The source texture or image to copy to this texture.
 ---@param dstx number? # The x offset to copy to. (default: 0)
 ---@param dsty number? # The y offset to copy to. (default: 0)
 ---@param dstlayer number? # The index of the layer to copy to. (default: 1)
@@ -2575,7 +2300,7 @@ function Texture:newReadback(x, y, layer, mipmap, width, height) end
 ---@param width number? # The width of the region of pixels to copy.  If nil, the maximum possible width will be used, based on the widths of the source/destination and the offset parameters. (default: nil)
 ---@param height number? # The height of the region of pixels to copy.  If nil, the maximum possible height will be used, based on the heights of the source/destination and the offset parameters. (default: nil)
 ---@param layers number? # The number of layers to copy.  If nil, copies as many layers as possible. (default: nil)
-function Texture:setPixels(image, dstx, dsty, dstlayer, dstmipmap, srcx, srcy, srclayer, srcmipmap, width, height, layers) end
+function Texture:setPixels(source, dstx, dsty, dstlayer, dstmipmap, srcx, srcy, srclayer, srcmipmap, width, height, layers) end
 
 --- Sets sampler settings for the texture.  This can either be a `FilterMode` like `nearest`, or a `Sampler` object, which allows configuring all of the filtering and wrapping settings.
 --- There are other ways of using custom samplers for a texture, but they have disadvantages:
@@ -2585,8 +2310,6 @@ function Texture:setPixels(image, dstx, dsty, dstlayer, dstmipmap, srcx, srcy, s
 --- - `Pass:setSampler` exists, but it applies to all textures in all draws in the Pass.  It doesn't
 ---   allow for changing filtering settings on a per-texture basis.
 --- This API is experimental, and subject to change in the future!
----@see Texture:getSampler
----@see Texture
 ---@overload fun(sampler: Sampler)
 ---@overload fun()
 ---@param mode FilterMode # The FilterMode shaders will use when reading pixels from the texture.

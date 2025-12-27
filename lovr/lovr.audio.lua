@@ -48,8 +48,6 @@ local audio = {}
 ---| '"db"' # Decibels.
 
 --- Returns the global air absorption coefficients for the medium.  This affects Sources that have the `absorption` effect enabled, causing audio volume to drop off with distance as it is absorbed by the medium it's traveling through (air, water, etc.).  The difference between absorption and the attenuation effect is that absorption is more subtle and is frequency-dependent, so higher-frequency bands can get absorbed more quickly than lower ones. This can be used to apply "underwater" effects and stuff.
----@see lovr.audio.setAbsorption
----@see lovr.audio
 ---@return number # The absorption coefficient for the low frequency band.
 ---@return number # The absorption coefficient for the mid frequency band.
 ---@return number # The absorption coefficient for the high frequency band.
@@ -58,11 +56,9 @@ function audio.getAbsorption() end
 --- Returns information about the active playback or capture device.
 ---@see lovr.audio.getDevices
 ---@see lovr.audio.setDevice
----@see lovr.audio.setDevice
----@see lovr.audio
 ---@param type AudioType? # The type of device to query. (default: 'playback')
----@return string # The name of the device.
----@return userdata # The opaque id of the device.
+---@return string | nil # The name of the device, or `nil` if no device is set.
+---@return userdata | nil # The opaque id of the device, or `nil` if no device is set.
 function audio.getDevice(type) end
 
 --- Returns a list of playback or capture devices.  Each device has an `id`, `name`, and a `default` flag indicating whether it's the default device.
@@ -71,7 +67,6 @@ function audio.getDevice(type) end
 ---@see lovr.audio.getDevice
 ---@see lovr.audio.start
 ---@see lovr.audio.stop
----@see lovr.audio
 ---@param type AudioType? # The type of devices to query (playback or capture). (default: 'playback')
 ---@return table # The list of devices.
 function audio.getDevices(type) end
@@ -80,8 +75,6 @@ function audio.getDevices(type) end
 ---@see lovr.audio.getPosition
 ---@see lovr.audio.getPose
 ---@see Source:getOrientation
----@see lovr.audio.setOrientation
----@see lovr.audio
 ---@return number # The number of radians the listener is rotated around its axis of rotation.
 ---@return number # The x component of the axis of rotation.
 ---@return number # The y component of the axis of rotation.
@@ -92,8 +85,6 @@ function audio.getOrientation() end
 ---@see lovr.audio.getPosition
 ---@see lovr.audio.getOrientation
 ---@see Source:getPose
----@see lovr.audio.setPose
----@see lovr.audio
 ---@return number # The x position of the listener, in meters.
 ---@return number # The y position of the listener, in meters.
 ---@return number # The z position of the listener, in meters.
@@ -104,8 +95,6 @@ function audio.getOrientation() end
 function audio.getPose() end
 
 --- Returns the position of the virtual audio listener, in meters.
----@see lovr.audio.setPosition
----@see lovr.audio
 ---@return number # The x position of the listener.
 ---@return number # The y position of the listener.
 ---@return number # The z position of the listener.
@@ -113,20 +102,16 @@ function audio.getPosition() end
 
 --- Returns the sample rate used by the playback device.  This can be changed using `lovr.conf`.
 ---@see lovr.conf
----@see lovr.audio
 ---@return number # The sample rate of the playback device, in Hz.
 function audio.getSampleRate() end
 
 --- Returns the name of the active spatializer (`simple`, `oculus`, or `phonon`).
 --- The `t.audio.spatializer` setting in `lovr.conf` can be used to express a preference for a particular spatializer.  If it's `nil`, all spatializers will be tried in the following order: `phonon`, `oculus`, `simple`.
 ---@see lovr.conf
----@see lovr.audio
 ---@return string # The name of the active spatializer.
 function audio.getSpatializer() end
 
 --- Returns the master volume.  All audio sent to the playback device has its volume multiplied by this factor.
----@see lovr.audio.setVolume
----@see lovr.audio
 ---@param units VolumeUnit? # The units to return (linear or db). (default: 'linear')
 ---@return number # The master volume.
 function audio.getVolume(units) end
@@ -134,24 +119,19 @@ function audio.getVolume(units) end
 --- Returns whether an audio device is started.
 ---@see lovr.audio.start
 ---@see lovr.audio.stop
----@see lovr.audio
 ---@param type AudioType? # The type of device to check. (default: 'playback')
 ---@return boolean # Whether the device is active.
 function audio.isStarted(type) end
 
 --- Creates a new Source from an ogg, wav, or mp3 file.
 ---@see Source:clone
----@see lovr.audio
----@overload fun(blob: Blob, options: table): Source
 ---@overload fun(sound: Sound, options: table): Source
----@param filename string # The filename of the sound to load.
----@param options table # Optional options.
+---@param file string | Blob # A filename or Blob containing audio data to load.
+---@param options table? # Optional options. (default: nil)
 ---@return Source # The new Source.
-function audio.newSource(filename, options) end
+function audio.newSource(file, options) end
 
 --- Sets the global air absorption coefficients for the medium.  This affects Sources that have the `absorption` effect enabled, causing audio volume to drop off with distance as it is absorbed by the medium it's traveling through (air, water, etc.).  The difference between absorption and the attenuation effect is that absorption is more subtle and is frequency-dependent, so higher-frequency bands can get absorbed more quickly than lower ones.  This can be used to apply "underwater" effects and stuff.
----@see lovr.audio.getAbsorption
----@see lovr.audio
 ---@param low number # The absorption coefficient for the low frequency band.
 ---@param mid number # The absorption coefficient for the mid frequency band.
 ---@param high number # The absorption coefficient for the high frequency band.
@@ -166,8 +146,6 @@ function audio.setAbsorption(low, mid, high) end
 ---@see lovr.audio.getDevices
 ---@see lovr.audio.start
 ---@see lovr.audio.stop
----@see lovr.audio.getDevice
----@see lovr.audio
 ---@param type AudioType? # The device to switch. (default: 'playback')
 ---@param id userdata? # The id of the device to use, or `nil` to use the default device. (default: nil)
 ---@param sink Sound? # An optional audio stream to use as a sink for the device. (default: nil)
@@ -179,7 +157,6 @@ function audio.setDevice(type, id, sink, mode) end
 --- An optional `AudioMaterial` may be provided to specify the acoustic properties of the geometry.
 ---@see lovr.audio.getSpatializer
 ---@see Source:setEffectEnabled
----@see lovr.audio
 ---@overload fun(model: Model, material: AudioMaterial): boolean
 ---@param vertices table # A flat table of vertices.  Each vertex is 3 numbers representing its x, y, and z position. The units used for audio coordinates are up to you, but meters are recommended.
 ---@param indices table # A list of indices, indicating how the vertices are connected into triangles.  Indices are 1-indexed and are 32 bits (they can be bigger than 65535).
@@ -191,8 +168,6 @@ function audio.setGeometry(vertices, indices, material) end
 ---@see lovr.audio.setPosition
 ---@see lovr.audio.setPose
 ---@see Source:setOrientation
----@see lovr.audio.getOrientation
----@see lovr.audio
 ---@overload fun(orientation: Quat)
 ---@param angle number # The number of radians the listener should be rotated around its rotation axis.
 ---@param ax number # The x component of the axis of rotation.
@@ -204,8 +179,6 @@ function audio.setOrientation(angle, ax, ay, az) end
 ---@see lovr.audio.setPosition
 ---@see lovr.audio.setOrientation
 ---@see Source:setPose
----@see lovr.audio.getPose
----@see lovr.audio
 ---@overload fun(position: Vec3, orientation: Quat)
 ---@param x number # The x position of the listener.
 ---@param y number # The y position of the listener.
@@ -220,8 +193,6 @@ function audio.setPose(x, y, z, angle, ax, ay, az) end
 ---@see lovr.audio.setOrientation
 ---@see lovr.audio.setPose
 ---@see Source:setPosition
----@see lovr.audio.getPosition
----@see lovr.audio
 ---@overload fun(position: Vec3)
 ---@param x number # The x position of the listener.
 ---@param y number # The y position of the listener.
@@ -229,8 +200,6 @@ function audio.setPose(x, y, z, angle, ax, ay, az) end
 function audio.setPosition(x, y, z) end
 
 --- Sets the master volume.  All audio sent to the playback device has its volume multiplied by this factor.
----@see lovr.audio.getVolume
----@see lovr.audio
 ---@param volume number # The master volume.
 ---@param units VolumeUnit? # The units of the value. (default: 'linear')
 function audio.setVolume(volume, units) end
@@ -242,7 +211,6 @@ function audio.setVolume(volume, units) end
 ---@see lovr.audio.isStarted
 ---@see lovr.system.requestPermission
 ---@see lovr.permission
----@see lovr.audio
 ---@param type AudioType? # The type of device to start. (default: 'playback')
 ---@return boolean # Whether the device was successfully started.
 function audio.start(type) end
@@ -254,17 +222,17 @@ function audio.start(type) end
 ---@see lovr.audio.setDevice
 ---@see lovr.audio.start
 ---@see lovr.audio.isStarted
----@see lovr.audio
 ---@param type AudioType? # The type of device to stop. (default: 'playback')
 ---@return boolean # Whether the device was successfully stopped.
 function audio.stop(type) end
 
 ---@class Source
+---@see lovr.audio.newSource # (Constructor)
+---@see Source:clone # (Constructor)
 local Source = {}
 
 --- Creates a copy of the Source, referencing the same `Sound` object and inheriting all of the settings of this Source.  However, it will be created in the stopped state and will be rewound to the beginning.
 ---@see lovr.audio.newSource
----@see Source
 ---@return Source # A genetically identical copy of the Source.
 function Source:clone() end
 
@@ -272,15 +240,12 @@ function Source:clone() end
 --- The directivity is controlled by two parameters: the weight and the power.
 --- The weight is a number between 0 and 1 controlling the general "shape" of the sound emitted. 0.0 results in a completely omnidirectional sound that can be heard from all directions.  1.0 results in a full dipole shape that can be heard only from the front and back.  0.5 results in a cardioid shape that can only be heard from one direction.  Numbers in between will smoothly transition between these.
 --- The power is a number that controls how "focused" or sharp the shape is.  Lower power values can be heard from a wider set of angles.  It is an exponent, so it can get arbitrarily large.  Note that a power of zero will still result in an omnidirectional source, regardless of the weight.
----@see Source:setDirectivity
----@see Source
 ---@return number # The dipole weight.  0.0 is omnidirectional, 1.0 is a dipole, 0.5 is cardioid.
 ---@return number # The dipole power, controlling how focused the directivity shape is.
 function Source:getDirectivity() end
 
 --- Returns the duration of the Source.
 ---@see Sound:getDuration
----@see Source
 ---@param unit TimeUnit? # The unit to return. (default: 'seconds')
 ---@return number # The duration of the Source.
 function Source:getDuration(unit) end
@@ -289,8 +254,6 @@ function Source:getDuration(unit) end
 ---@see Source:getPosition
 ---@see Source:getPose
 ---@see lovr.audio.getOrientation
----@see Source:setOrientation
----@see Source
 ---@return number # The number of radians the Source is rotated around its axis of rotation.
 ---@return number # The x component of the axis of rotation.
 ---@return number # The y component of the axis of rotation.
@@ -298,8 +261,6 @@ function Source:getDuration(unit) end
 function Source:getOrientation() end
 
 --- Returns the pitch of the Source.
----@see Source:setPitch
----@see Source
 ---@return number # The pitch.
 function Source:getPitch() end
 
@@ -307,8 +268,6 @@ function Source:getPitch() end
 ---@see Source:getPosition
 ---@see Source:getOrientation
 ---@see lovr.audio.getPose
----@see Source:setPose
----@see Source
 ---@return number # The x position of the Source, in meters.
 ---@return number # The y position of the Source, in meters.
 ---@return number # The z position of the Source, in meters.
@@ -322,8 +281,6 @@ function Source:getPose() end
 ---@see Source:getOrientation
 ---@see Source:getPose
 ---@see lovr.audio.getPosition
----@see Source:setPosition
----@see Source
 ---@return number # The x coordinate.
 ---@return number # The y coordinate.
 ---@return number # The z coordinate.
@@ -331,36 +288,27 @@ function Source:getPosition() end
 
 --- Returns the radius of the Source, in meters.
 --- This does not control falloff or attenuation.  It is only used for smoothing out occlusion.  If a Source doesn't have a radius, then when it becomes occluded by a wall its volume will instantly drop.  Giving the Source a radius that approximates its emitter's size will result in a smooth transition between audible and occluded, improving realism.
----@see Source:setRadius
----@see Source
 ---@return number # The radius of the Source, in meters.
 function Source:getRadius() end
 
 --- Returns the `Sound` object backing the Source.  Multiple Sources can share one Sound, allowing its data to only be loaded once.  An easy way to do this sharing is by using `Source:clone`.
 ---@see Source:clone
 ---@see lovr.audio.newSource
----@see Source
 ---@return Sound # The Sound object.
 function Source:getSound() end
 
 --- Returns the current volume factor for the Source.
----@see Source:setVolume
----@see Source
 ---@param units VolumeUnit? # The units to return (linear or db). (default: 'linear')
 ---@return number # The volume of the Source.
 function Source:getVolume(units) end
 
 --- Returns whether a given `Effect` is enabled for the Source.
 ---@see Source:isSpatial
----@see Source:setEffectEnabled
----@see Source
 ---@param effect Effect # The effect.
 ---@return boolean # Whether the effect is enabled.
 function Source:isEffectEnabled(effect) end
 
 --- Returns whether or not the Source will loop when it finishes.
----@see Source:setLooping
----@see Source
 ---@return boolean # Whether or not the Source is looping.
 function Source:isLooping() end
 
@@ -368,28 +316,23 @@ function Source:isLooping() end
 ---@see Source:play
 ---@see Source:pause
 ---@see Source:stop
----@see Source
 ---@return boolean # Whether the Source is playing.
 function Source:isPlaying() end
 
 --- Returns whether the Source was created with the `spatial` flag.  Non-spatial sources are routed directly to the speakers and can not use effects.
 ---@see Source:isEffectEnabled
 ---@see Source:setEffectEnabled
----@see Source
 ---@return boolean # Whether the source is spatial.
 function Source:isSpatial() end
 
 --- Pauses the source.  It can be resumed with `Source:resume` or `Source:play`. If a paused source is rewound, it will remain paused.
----@see Source
 function Source:pause() end
 
 --- Plays the Source.  This doesn't do anything if the Source is already playing.
----@see Source
 ---@return boolean # Whether the Source successfully started playing.
 function Source:play() end
 
 --- Seeks the Source to the specified position.
----@see Source
 ---@param position number # The position to seek to.
 ---@param unit TimeUnit? # The units for the seek position. (default: 'seconds')
 function Source:seek(position, unit) end
@@ -398,23 +341,17 @@ function Source:seek(position, unit) end
 --- The directivity is controlled by two parameters: the weight and the power.
 --- The weight is a number between 0 and 1 controlling the general "shape" of the sound emitted. 0.0 results in a completely omnidirectional sound that can be heard from all directions.  1.0 results in a full dipole shape that can be heard only from the front and back.  0.5 results in a cardioid shape that can only be heard from one direction.  Numbers in between will smoothly transition between these.
 --- The power is a number that controls how "focused" or sharp the shape is.  Lower power values can be heard from a wider set of angles.  It is an exponent, so it can get arbitrarily large.  Note that a power of zero will still result in an omnidirectional source, regardless of the weight.
----@see Source:getDirectivity
----@see Source
 ---@param weight number # The dipole weight.  0.0 is omnidirectional, 1.0 is a dipole, 0.5 is cardioid.
 ---@param power number # The dipole power, controlling how focused the directivity shape is.
 function Source:setDirectivity(weight, power) end
 
 --- Enables or disables an effect on the Source.
 ---@see Source:isSpatial
----@see Source:isEffectEnabled
----@see Source
 ---@param effect Effect # The effect.
 ---@param enable boolean # Whether the effect should be enabled.
 function Source:setEffectEnabled(effect, enable) end
 
 --- Sets whether or not the Source loops.
----@see Source:isLooping
----@see Source
 ---@param loop boolean # Whether or not the Source will loop.
 function Source:setLooping(loop) end
 
@@ -422,8 +359,6 @@ function Source:setLooping(loop) end
 ---@see Source:setPosition
 ---@see Source:setPose
 ---@see lovr.audio.setOrientation
----@see Source:getOrientation
----@see Source
 ---@overload fun(orientation: Quat)
 ---@param angle number # The number of radians the Source should be rotated around its rotation axis.
 ---@param ax number # The x component of the axis of rotation.
@@ -432,8 +367,6 @@ function Source:setLooping(loop) end
 function Source:setOrientation(angle, ax, ay, az) end
 
 --- Sets the pitch of the Source.
----@see Source:getPitch
----@see Source
 ---@param pitch number # The new pitch.
 function Source:setPitch(pitch) end
 
@@ -441,8 +374,6 @@ function Source:setPitch(pitch) end
 ---@see Source:setPosition
 ---@see Source:setOrientation
 ---@see lovr.audio.setPose
----@see Source:getPose
----@see Source
 ---@overload fun(position: Vec3, orientation: Quat)
 ---@param x number # The x position of the Source.
 ---@param y number # The y position of the Source.
@@ -457,8 +388,6 @@ function Source:setPose(x, y, z, angle, ax, ay, az) end
 --- Only mono sources can be positioned.  Setting the position of a stereo Source will cause an error.
 ---@see Source:setOrientation
 ---@see Source:setPose
----@see Source:getPosition
----@see Source
 ---@overload fun(position: Vec3)
 ---@param x number # The x coordinate of the position.
 ---@param y number # The y coordinate of the position.
@@ -467,14 +396,10 @@ function Source:setPosition(x, y, z) end
 
 --- Sets the radius of the Source, in meters.
 --- This does not control falloff or attenuation.  It is only used for smoothing out occlusion.  If a Source doesn't have a radius, then when it becomes occluded by a wall its volume will instantly drop.  Giving the Source a radius that approximates its emitter's size will result in a smooth transition between audible and occluded, improving realism.
----@see Source:getRadius
----@see Source
 ---@param radius number # The new radius of the Source, in meters.
 function Source:setRadius(radius) end
 
 --- Sets the current volume factor for the Source.
----@see Source:getVolume
----@see Source
 ---@param volume number # The new volume.
 ---@param units VolumeUnit? # The units of the value. (default: 'linear')
 function Source:setVolume(volume, units) end
@@ -483,11 +408,9 @@ function Source:setVolume(volume, units) end
 ---@see Source:play
 ---@see Source:pause
 ---@see Source:isPlaying
----@see Source
 function Source:stop() end
 
 --- Returns the current playback position of the Source.
----@see Source
 ---@param unit TimeUnit? # The unit to return. (default: 'seconds')
 ---@return number # The current playback position.
 function Source:tell(unit) end

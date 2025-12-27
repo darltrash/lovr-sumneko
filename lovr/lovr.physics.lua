@@ -32,7 +32,6 @@ local physics = {}
 ---@see lovr.physics.newHingeJoint
 ---@see lovr.physics.newSliderJoint
 ---@see lovr.physics.newWeldJoint
----@see lovr.physics
 ---@overload fun(colliderA: Collider, colliderB: Collider, anchor: Vec3): BallJoint
 ---@param colliderA Collider # The first collider to attach the Joint to, or `nil` to attach the joint to a fixed position in the World.
 ---@param colliderB Collider # The second collider to attach the Joint to.
@@ -50,7 +49,6 @@ function physics.newBallJoint(colliderA, colliderB, x, y, z) end
 ---@see lovr.physics.newConvexShape
 ---@see lovr.physics.newMeshShape
 ---@see lovr.physics.newTerrainShape
----@see lovr.physics
 ---@param width number? # The width of the box, in meters. (default: 1)
 ---@param height number? # The height of the box, in meters. (default: width)
 ---@param depth number? # The depth of the box, in meters. (default: width)
@@ -65,7 +63,6 @@ function physics.newBoxShape(width, height, depth) end
 ---@see lovr.physics.newConvexShape
 ---@see lovr.physics.newMeshShape
 ---@see lovr.physics.newTerrainShape
----@see lovr.physics
 ---@param radius number? # The radius of the capsule, in meters. (default: 1)
 ---@param length number? # The length of the capsule, not including the caps, in meters. (default: 1)
 ---@return CapsuleShape # The new CapsuleShape.
@@ -77,7 +74,6 @@ function physics.newCapsuleShape(radius, length) end
 ---@see lovr.physics.newDistanceJoint
 ---@see lovr.physics.newHingeJoint
 ---@see lovr.physics.newSliderJoint
----@see lovr.physics
 ---@overload fun(colliderA: Collider, colliderB: Collider, anchor: Vec3, axis: Vec3): ConeJoint
 ---@param colliderA Collider # The first collider to attach the Joint to, or `nil` to attach the joint to a fixed position in the World.
 ---@param colliderB Collider # The second collider to attach the Joint to.
@@ -98,10 +94,7 @@ function physics.newConeJoint(colliderA, colliderB, x, y, z, ax, ay, az) end
 ---@see lovr.physics.newCylinderShape
 ---@see lovr.physics.newMeshShape
 ---@see lovr.physics.newTerrainShape
----@see lovr.physics
----@overload fun(modelData: ModelData, scale: number): ConvexShape
----@overload fun(model: Model, scale: number): ConvexShape
----@overload fun(mesh: Mesh, scale: number): ConvexShape
+---@overload fun(object: ModelData | Model | Mesh, scale: number): ConvexShape
 ---@overload fun(template: ConvexShape, scale: number): ConvexShape
 ---@param points table # A list of vertices to compute a convex hull from.  Can be a table of tables (each with 3 numbers) or a table of numbers (every 3 numbers form a 3D point).
 ---@param scale number? # A scale to apply to the points. (default: 1.0)
@@ -116,7 +109,6 @@ function physics.newConvexShape(points, scale) end
 ---@see lovr.physics.newConvexShape
 ---@see lovr.physics.newMeshShape
 ---@see lovr.physics.newTerrainShape
----@see lovr.physics
 ---@param radius number? # The radius of the cylinder, in meters. (default: 1)
 ---@param length number? # The length of the cylinder, in meters. (default: 1)
 ---@return CylinderShape # The new CylinderShape.
@@ -128,7 +120,6 @@ function physics.newCylinderShape(radius, length) end
 ---@see lovr.physics.newHingeJoint
 ---@see lovr.physics.newSliderJoint
 ---@see lovr.physics.newWeldJoint
----@see lovr.physics
 ---@overload fun(colliderA: Collider, colliderB: Collider, first: Vec3, second: Vec3): DistanceJoint
 ---@param colliderA Collider # The first collider to attach the Joint to, or `nil` to attach the joint to a fixed position in the World.
 ---@param colliderB Collider # The second collider to attach the Joint to.
@@ -147,7 +138,6 @@ function physics.newDistanceJoint(colliderA, colliderB, x1, y1, z1, x2, y2, z2) 
 ---@see lovr.physics.newDistanceJoint
 ---@see lovr.physics.newSliderJoint
 ---@see lovr.physics.newWeldJoint
----@see lovr.physics
 ---@overload fun(colliderA: Collider, colliderB: Collider, anchor: Vec3, axis: Vec3): HingeJoint
 ---@param colliderA Collider # The first collider to attach the Joint to, or `nil` to attach the joint to a fixed position in the World.
 ---@param colliderB Collider # The second collider to attach the Joint to.
@@ -169,10 +159,7 @@ function physics.newHingeJoint(colliderA, colliderB, x, y, z, ax, ay, az) end
 ---@see lovr.physics.newConvexShape
 ---@see lovr.physics.newTerrainShape
 ---@see Model:getTriangles
----@see lovr.physics
----@overload fun(modelData: ModelData, scale: number): MeshShape
----@overload fun(model: Model, scale: number): MeshShape
----@overload fun(mesh: Mesh, scale: number): MeshShape
+---@overload fun(object: ModelData | Model | Mesh, scale: number): MeshShape
 ---@overload fun(template: MeshShape, scale: number): MeshShape
 ---@param vertices table # The table of vertices in the mesh.  Each vertex is a table with 3 numbers.
 ---@param indices table # A table of triangle indices representing how the vertices are connected in the Mesh.
@@ -186,7 +173,6 @@ function physics.newMeshShape(vertices, indices, scale) end
 ---@see lovr.physics.newDistanceJoint
 ---@see lovr.physics.newHingeJoint
 ---@see lovr.physics.newWeldJoint
----@see lovr.physics
 ---@overload fun(colliderA: Collider, colliderB: Collider, axis: Vec3): SliderJoint
 ---@param colliderA Collider # The first collider to attach the Joint to, or `nil` to attach the joint to a fixed position in the World.
 ---@param colliderB Collider # The second collider to attach the Joint to.
@@ -204,7 +190,6 @@ function physics.newSliderJoint(colliderA, colliderB, ax, ay, az) end
 ---@see lovr.physics.newConvexShape
 ---@see lovr.physics.newMeshShape
 ---@see lovr.physics.newTerrainShape
----@see lovr.physics
 ---@param radius number? # The radius of the sphere, in meters. (default: 1)
 ---@return SphereShape # The new SphereShape.
 function physics.newSphereShape(radius) end
@@ -218,7 +203,6 @@ function physics.newSphereShape(radius) end
 ---@see lovr.physics.newConvexShape
 ---@see lovr.physics.newMeshShape
 ---@see lovr.data.newImage
----@see lovr.physics
 ---@overload fun(scale: number, heightmap: Image, stretch: number): TerrainShape
 ---@overload fun(scale: number, callback: function, samples: number): TerrainShape
 ---@param scale number # The width and depth of the terrain, in meters.
@@ -231,7 +215,6 @@ function physics.newTerrainShape(scale) end
 ---@see lovr.physics.newDistanceJoint
 ---@see lovr.physics.newHingeJoint
 ---@see lovr.physics.newSliderJoint
----@see lovr.physics
 ---@param colliderA Collider # The first collider to attach the Joint to, or `nil` to attach the joint to a fixed position in the World.
 ---@param colliderB Collider # The second collider to attach the Joint to.
 ---@return WeldJoint # The new WeldJoint.
@@ -239,69 +222,69 @@ function physics.newWeldJoint(colliderA, colliderB) end
 
 --- Creates a new physics World.
 ---@see World:update
----@see lovr.physics
----@param settings table # An optional table with settings for the physics simulation.
+---@param settings table? # An optional table with settings for the physics simulation. (default: nil)
 ---@return World # A whole new World.
 function physics.newWorld(settings) end
 
 ---@class BallJoint
+---@see lovr.physics.newBallJoint # (Constructor)
 local BallJoint = {}
 
 ---@class BoxShape
+---@see lovr.physics.newBoxShape # (Constructor)
+---@see World:newBoxCollider # (Constructor)
 local BoxShape = {}
 
 --- Returns the width, height, and depth of the BoxShape.
----@see BoxShape:setDimensions
----@see BoxShape
 ---@return number # The width of the box, in meters.
 ---@return number # The height of the box, in meters.
 ---@return number # The depth of the box, in meters.
 function BoxShape:getDimensions() end
 
 --- Sets the width, height, and depth of the BoxShape.
----@see BoxShape:getDimensions
----@see BoxShape
 ---@param width number # The width of the box, in meters.
 ---@param height number # The height of the box, in meters.
 ---@param depth number # The depth of the box, in meters.
 function BoxShape:setDimensions(width, height, depth) end
 
 ---@class CapsuleShape
+---@see lovr.physics.newCapsuleShape # (Constructor)
+---@see World:newCapsuleCollider # (Constructor)
 local CapsuleShape = {}
 
 --- Returns the length of the CapsuleShape, not including the caps.
 ---@see CapsuleShape:getRadius
 ---@see CapsuleShape:setRadius
----@see CapsuleShape:setLength
----@see CapsuleShape
 ---@return number # The length of the capsule, in meters.
 function CapsuleShape:getLength() end
 
 --- Returns the radius of the CapsuleShape.
 ---@see CapsuleShape:getLength
 ---@see CapsuleShape:setLength
----@see CapsuleShape:setRadius
----@see CapsuleShape
 ---@return number # The radius of the capsule, in meters.
 function CapsuleShape:getRadius() end
 
 --- Sets the length of the CapsuleShape.
 ---@see CapsuleShape:getRadius
 ---@see CapsuleShape:setRadius
----@see CapsuleShape:getLength
----@see CapsuleShape
 ---@param length number # The new length, in meters, not including the caps.
 function CapsuleShape:setLength(length) end
 
 --- Sets the radius of the CapsuleShape.
 ---@see CapsuleShape:getLength
 ---@see CapsuleShape:setLength
----@see CapsuleShape:getRadius
----@see CapsuleShape
 ---@param radius number # The new radius, in meters.
 function CapsuleShape:setRadius(radius) end
 
 ---@class Collider
+---@see World:newCollider # (Constructor)
+---@see World:newBoxCollider # (Constructor)
+---@see World:newSphereCollider # (Constructor)
+---@see World:newCapsuleCollider # (Constructor)
+---@see World:newCylinderCollider # (Constructor)
+---@see World:newConvexCollider # (Constructor)
+---@see World:newMeshCollider # (Constructor)
+---@see World:newTerrainCollider # (Constructor)
 local Collider = {}
 
 --- Attaches a Shape to the collider.
@@ -309,7 +292,6 @@ local Collider = {}
 ---@see Collider:getShapes
 ---@see Collider:getShape
 ---@see Shape
----@see Collider
 ---@param shape Shape # The Shape to attach.
 function Collider:addShape(shape) end
 
@@ -318,7 +300,6 @@ function Collider:addShape(shape) end
 ---@see Collider:applyTorque
 ---@see Collider:applyForce
 ---@see Collider:applyLinearImpulse
----@see Collider
 ---@overload fun(impulse: Vec3)
 ---@param x number # The x component of the world-space impulse vector, in newton meter seconds.
 ---@param y number # The y component of the world-space impulse vector, in newton meter seconds.
@@ -329,7 +310,6 @@ function Collider:applyAngularImpulse(x, y, z) end
 ---@see Collider:applyLinearImpulse
 ---@see Collider:applyTorque
 ---@see Collider:applyAngularImpulse
----@see Collider
 ---@overload fun(x: number, y: number, z: number, px: number, py: number, pz: number)
 ---@overload fun(force: Vec3)
 ---@overload fun(force: Vec3, position: Vec3)
@@ -343,7 +323,6 @@ function Collider:applyForce(x, y, z) end
 ---@see Collider:applyForce
 ---@see Collider:applyTorque
 ---@see Collider:applyAngularImpulse
----@see Collider
 ---@overload fun(x: number, y: number, z: number, px: number, py: number, pz: number)
 ---@overload fun(impulse: Vec3)
 ---@overload fun(impulse: Vec3, position: Vec3)
@@ -356,7 +335,6 @@ function Collider:applyLinearImpulse(x, y, z) end
 ---@see Collider:applyAngularImpulse
 ---@see Collider:applyForce
 ---@see Collider:applyLinearImpulse
----@see Collider
 ---@overload fun(torque: Vec3)
 ---@param x number # The x component of the world-space torque vector, in newton meters.
 ---@param y number # The y component of the world-space torque vector, in newton meters.
@@ -369,13 +347,11 @@ function Collider:applyTorque(x, y, z) end
 ---@see World:destroy
 ---@see Shape:destroy
 ---@see Joint:destroy
----@see Collider
 function Collider:destroy() end
 
 --- Returns the world-space axis-aligned bounding box of the Collider, computed from attached shapes.
 ---@see Shape:getAABB
 ---@see World:queryBox
----@see Collider
 ---@return number # The minimum x coordinate of the box.
 ---@return number # The maximum x coordinate of the box.
 ---@return number # The minimum y coordinate of the box.
@@ -389,8 +365,6 @@ function Collider:getAABB() end
 ---@see Collider:setLinearDamping
 ---@see Collider:getInertia
 ---@see Collider:setInertia
----@see Collider:setAngularDamping
----@see Collider
 ---@return number # The angular damping.
 function Collider:getAngularDamping() end
 
@@ -400,8 +374,6 @@ function Collider:getAngularDamping() end
 ---@see Collider:applyTorque
 ---@see Collider:getOrientation
 ---@see Collider:setOrientation
----@see Collider:setAngularVelocity
----@see Collider
 ---@return number # The x component of the angular velocity.
 ---@return number # The y component of the angular velocity.
 ---@return number # The z component of the angular velocity.
@@ -422,8 +394,6 @@ function Collider:getAngularVelocity() end
 ---@see Collider:setInertia
 ---@see Collider:getCenterOfMass
 ---@see Collider:setCenterOfMass
----@see Collider:setAutomaticMass
----@see Collider
 ---@return boolean # Whether automatic mass is enabled.
 function Collider:getAutomaticMass() end
 
@@ -438,16 +408,12 @@ function Collider:getAutomaticMass() end
 ---@see Collider:resetMassData
 ---@see Shape:getOffset
 ---@see Shape:setOffset
----@see Collider:setCenterOfMass
----@see Collider
 ---@return number # The x component of the center of mass.
 ---@return number # The y component of the center of mass.
 ---@return number # The z component of the center of mass.
 function Collider:getCenterOfMass() end
 
 --- Get the degrees of freedom of the Collider.
----@see Collider:setDegreesOfFreedom
----@see Collider
 ---@return string # A string containing the world-space axes the Collider is allowed to move on.  The string will have 'x', 'y', and 'z' letters representing which axes are enabled.  If no axes are enabled then it will be an empty string.
 ---@return string # A string containing the world-space axes the Collider is allowed to rotate around.  The string will have 'x', 'y', and 'z' letters representing which axes are enabled.  If no axes are enabled then it will be an empty string.
 function Collider:getDegreesOfFreedom() end
@@ -457,8 +423,6 @@ function Collider:getDegreesOfFreedom() end
 ---@see Contact:setFriction
 ---@see Collider:getRestitution
 ---@see Collider:setRestitution
----@see Collider:setFriction
----@see Collider
 ---@return number # The friction of the Collider.
 function Collider:getFriction() end
 
@@ -467,8 +431,6 @@ function Collider:getFriction() end
 ---@see World:setGravity
 ---@see Collider:getLinearDamping
 ---@see Collider:setLinearDamping
----@see Collider:setGravityScale
----@see Collider
 ---@return number # The gravity scale.
 function Collider:getGravityScale() end
 
@@ -484,8 +446,6 @@ function Collider:getGravityScale() end
 ---@see Collider:setAutomaticMass
 ---@see Collider:resetMassData
 ---@see Shape:getInertia
----@see Collider:setInertia
----@see Collider
 ---@return number # The x component of the diagonal matrix.
 ---@return number # The y component of the diagonal matrix.
 ---@return number # The z component of the diagonal matrix.
@@ -499,7 +459,6 @@ function Collider:getInertia() end
 ---@see World:getJoints
 ---@see Joint:getColliders
 ---@see Joint:destroy
----@see Collider
 ---@return table # A list of `Joint` objects attached to the Collider.
 function Collider:getJoints() end
 
@@ -508,8 +467,6 @@ function Collider:getJoints() end
 ---@see Collider:setAngularDamping
 ---@see Collider:getGravityScale
 ---@see Collider:setGravityScale
----@see Collider:setLinearDamping
----@see Collider
 ---@return number # The linear damping.
 function Collider:getLinearDamping() end
 
@@ -521,8 +478,6 @@ function Collider:getLinearDamping() end
 ---@see Collider:setAngularVelocity
 ---@see Collider:getPosition
 ---@see Collider:setPosition
----@see Collider:setLinearVelocity
----@see Collider
 ---@return number # The x component of the velocity.
 ---@return number # The y component of the velocity.
 ---@return number # The z component of the velocity.
@@ -531,7 +486,6 @@ function Collider:getLinearVelocity() end
 --- Returns the linear velocity of a point on the Collider.  This includes the velocity of the center of mass plus the angular velocity at that point.
 ---@see Collider:getLinearVelocity
 ---@see Collider:getLinearVelocityFromWorldPoint
----@see Collider
 ---@overload fun(point: Vec3): number, number, number
 ---@param x number # The x position in local space.
 ---@param y number # The y position in local space.
@@ -544,7 +498,6 @@ function Collider:getLinearVelocityFromLocalPoint(x, y, z) end
 --- Returns the linear velocity of a point on the Collider.  This includes the velocity of the center of mass plus the angular velocity at that point.
 ---@see Collider:getLinearVelocity
 ---@see Collider:getLinearVelocityFromLocalPoint
----@see Collider
 ---@overload fun(point: Vec3): number, number, number
 ---@param x number # The x position in world space.
 ---@param y number # The y position in world space.
@@ -558,7 +511,6 @@ function Collider:getLinearVelocityFromWorldPoint(x, y, z) end
 ---@see Collider:getWorldPoint
 ---@see Collider:getLocalVector
 ---@see Collider:getWorldVector
----@see Collider
 ---@overload fun(point: Vec3): number, number, number
 ---@param wx number # The x component of the world point.
 ---@param wy number # The y component of the world point.
@@ -572,7 +524,6 @@ function Collider:getLocalPoint(wx, wy, wz) end
 ---@see Collider:getWorldVector
 ---@see Collider:getLocalPoint
 ---@see Collider:getWorldPoint
----@see Collider
 ---@overload fun(vector: Vec3): number, number, number
 ---@param wx number # The x component of the world vector.
 ---@param wy number # The y component of the world vector.
@@ -597,8 +548,6 @@ function Collider:getLocalVector(wx, wy, wz) end
 ---@see Shape:setDensity
 ---@see Shape:getVolume
 ---@see Shape:getMass
----@see Collider:setMass
----@see Collider
 ---@return number # The mass of the Collider, in kilograms.
 function Collider:getMass() end
 
@@ -610,8 +559,6 @@ function Collider:getMass() end
 ---@see Collider:setPosition
 ---@see Collider:getPose
 ---@see Collider:setPose
----@see Collider:setOrientation
----@see Collider
 ---@return number # The number of radians the Collider is rotated around its axis of rotation.
 ---@return number # The x component of the axis of rotation.
 ---@return number # The y component of the axis of rotation.
@@ -621,8 +568,6 @@ function Collider:getOrientation() end
 --- Returns the position and orientation of the Collider.
 ---@see Collider:getPosition
 ---@see Collider:getOrientation
----@see Collider:setPose
----@see Collider
 ---@return number # The x position of the Collider, in meters.
 ---@return number # The y position of the Collider, in meters.
 ---@return number # The z position of the Collider, in meters.
@@ -640,8 +585,6 @@ function Collider:getPose() end
 ---@see Collider:setOrientation
 ---@see Collider:getPose
 ---@see Collider:setPose
----@see Collider:setPosition
----@see Collider
 ---@return number # The x position of the Collider, in meters.
 ---@return number # The y position of the Collider, in meters.
 ---@return number # The z position of the Collider, in meters.
@@ -652,8 +595,6 @@ function Collider:getPosition() end
 ---@see Contact:setRestitution
 ---@see Collider:getFriction
 ---@see Collider:setFriction
----@see Collider:setRestitution
----@see Collider
 ---@return number # The restitution of the Collider.
 function Collider:getRestitution() end
 
@@ -663,8 +604,7 @@ function Collider:getRestitution() end
 ---@see Collider:addShape
 ---@see Collider:removeShape
 ---@see Shape
----@see Collider
----@return Shape # One of the `Shape` objects attached to the Collider.
+---@return Shape | nil # One of the `Shape` objects attached to the Collider, or `nil` if the Collider doesn't have any shapes attached to it.
 function Collider:getShape() end
 
 --- Returns a list of Shapes attached to the Collider.
@@ -672,7 +612,6 @@ function Collider:getShape() end
 ---@see Collider:addShape
 ---@see Collider:removeShape
 ---@see Shape
----@see Collider
 ---@return table # A list of `Shape` objects attached to the Collider.
 function Collider:getShapes() end
 
@@ -684,9 +623,7 @@ function Collider:getShapes() end
 ---@see World:enableCollisionBetween
 ---@see World:isCollisionEnabledBetween
 ---@see lovr.physics.newWorld
----@see Collider:setTag
----@see Collider
----@return string # The Collider's tag.
+---@return string | nil # The Collider's tag.
 function Collider:getTag() end
 
 --- Returns the Lua value associated with the Collider.
@@ -694,13 +631,10 @@ function Collider:getTag() end
 ---@see Shape:setUserData
 ---@see Joint:getUserData
 ---@see Joint:setUserData
----@see Collider:setUserData
----@see Collider
 ---@return any # The custom value associated with the Collider.
 function Collider:getUserData() end
 
 --- Returns the World the Collider is in.
----@see Collider
 ---@return World # The World the Collider is in.
 function Collider:getWorld() end
 
@@ -708,7 +642,6 @@ function Collider:getWorld() end
 ---@see Collider:getLocalPoint
 ---@see Collider:getLocalVector
 ---@see Collider:getWorldVector
----@see Collider
 ---@overload fun(point: Vec3): number, number, number
 ---@param x number # The x component of the local point.
 ---@param y number # The y component of the local point.
@@ -722,7 +655,6 @@ function Collider:getWorldPoint(x, y, z) end
 ---@see Collider:getLocalVector
 ---@see Collider:getLocalPoint
 ---@see Collider:getWorldPoint
----@see Collider
 ---@overload fun(vector: Vec3): number, number, number
 ---@param x number # The x component of the local vector.
 ---@param y number # The y component of the local vector.
@@ -735,15 +667,11 @@ function Collider:getWorldVector(x, y, z) end
 --- Returns whether the Collider is awake.
 ---@see Collider:isSleepingAllowed
 ---@see Collider:setSleepingAllowed
----@see Collider:setAwake
----@see Collider
 ---@return boolean # Whether the Collider is finally awake.
 function Collider:isAwake() end
 
 --- Returns whether the Collider uses continuous collision detection.
 --- Normally on each timestep a Collider will "teleport" to its new position based on its velocity. Usually this works fine, but if a Collider is going really fast relative to its size, then it might miss collisions with objects or pass through walls.  Enabling continuous collision detection means the Collider will check for obstacles along its path before moving to the new location.  This prevents the Collider from going through walls, but reduces performance.  It's usually used for projectiles, which tend to be small and really fast.
----@see Collider:setContinuous
----@see Collider
 ---@return boolean # Whether the Collider uses continuous collision detection.
 function Collider:isContinuous() end
 
@@ -752,27 +680,20 @@ function Collider:isContinuous() end
 ---@see World:destroy
 ---@see Shape:destroy
 ---@see Joint:destroy
----@see Collider
 ---@return boolean # Whether the collider has been destroyed.
 function Collider:isDestroyed() end
 
 --- Returns whether the Collider is enabled.  When a Collider is disabled, it is removed from the World and does not impact the physics simulation in any way.  The Collider keeps all of its state and can be re-enabled to add it back to the World.
 ---@see Collider:destroy
----@see Collider:setEnabled
----@see Collider
 ---@return boolean # Whether the Collider is enabled.
 function Collider:isEnabled() end
 
 --- Returns whether the Collider is currently ignoring gravity.
----@see Collider:setGravityIgnored
----@see Collider
 ---@return boolean # Whether gravity is ignored for this Collider.
 function Collider:isGravityIgnored() end
 
 --- Returns whether the Collider is kinematic.
 --- Kinematic colliders behave like they have infinite mass.  They ignore forces applied to them from gravity, joints, and collisions, but they can still move if given a velocity.  Kinematic colliders don't collide with other kinematic colliders.  They're useful for static environment objects in a level, or for objects that have their position managed outside of the physics system like tracked hands.
----@see Collider:setKinematic
----@see Collider
 ---@return boolean # Whether the Collider is kinematic.
 function Collider:isKinematic() end
 
@@ -781,8 +702,6 @@ function Collider:isKinematic() end
 ---@see Collider:setEnabled
 ---@see World:overlapShape
 ---@see World:setCallbacks
----@see Collider:setSensor
----@see Collider
 ---@return boolean # Whether the Collider is a sensor.
 function Collider:isSensor() end
 
@@ -790,8 +709,6 @@ function Collider:isSensor() end
 --- When enabled, the Collider will go to sleep if it hasn't moved in a while.  The physics engine does not simulate movement for colliders that are asleep, which saves a lot of CPU for a typical physics world where most objects are at rest at any given time.
 ---@see Collider:isAwake
 ---@see Collider:setAwake
----@see Collider:setSleepingAllowed
----@see Collider
 ---@return boolean # Whether the Collider can go to sleep.
 function Collider:isSleepingAllowed() end
 
@@ -800,7 +717,6 @@ function Collider:isSleepingAllowed() end
 ---@see Collider:setAngularVelocity
 ---@see Collider:applyForce
 ---@see Collider:applyTorque
----@see Collider
 ---@overload fun(position: Vec3, orientation: Quat, dt: number)
 ---@param x number # The x position of the target, in meters.
 ---@param y number # The y position of the target, in meters.
@@ -816,7 +732,6 @@ function Collider:moveKinematic(x, y, z, angle, ax, ay, az, dt) end
 ---@see Collider:addShape
 ---@see Collider:getShapes
 ---@see Shape
----@see Collider
 ---@param shape Shape # The Shape to remove.
 function Collider:removeShape(shape) end
 
@@ -830,7 +745,6 @@ function Collider:removeShape(shape) end
 ---@see Collider:setInertia
 ---@see Collider:getCenterOfMass
 ---@see Collider:setCenterOfMass
----@see Collider
 function Collider:resetMassData() end
 
 --- Sets the angular damping of the Collider.  Angular damping is similar to drag or air resistance, reducing the Collider's angular velocity over time.
@@ -838,8 +752,6 @@ function Collider:resetMassData() end
 ---@see Collider:setLinearDamping
 ---@see Collider:getInertia
 ---@see Collider:setInertia
----@see Collider:getAngularDamping
----@see Collider
 ---@param damping number # The angular damping.
 function Collider:setAngularDamping(damping) end
 
@@ -850,8 +762,6 @@ function Collider:setAngularDamping(damping) end
 ---@see Collider:setLinearVelocity
 ---@see Collider:getOrientation
 ---@see Collider:setOrientation
----@see Collider:getAngularVelocity
----@see Collider
 ---@overload fun(velocity: Vec3)
 ---@param vx number # The x component of the angular velocity.
 ---@param vy number # The y component of the angular velocity.
@@ -873,16 +783,12 @@ function Collider:setAngularVelocity(vx, vy, vz) end
 ---@see Collider:setInertia
 ---@see Collider:getCenterOfMass
 ---@see Collider:setCenterOfMass
----@see Collider:getAutomaticMass
----@see Collider
 ---@param enable boolean # Whether automatic mass should be enabled.
 function Collider:setAutomaticMass(enable) end
 
 --- Puts the Collider to sleep or wakes it up manually.
 ---@see Collider:isSleepingAllowed
 ---@see Collider:setSleepingAllowed
----@see Collider:isAwake
----@see Collider
 ---@param awake boolean # Whether the Collider should be awake.
 function Collider:setAwake(awake) end
 
@@ -898,8 +804,6 @@ function Collider:setAwake(awake) end
 ---@see Collider:resetMassData
 ---@see Shape:getOffset
 ---@see Shape:setOffset
----@see Collider:getCenterOfMass
----@see Collider
 ---@overload fun(center: Vec3)
 ---@param x number # The x component of the center of mass.
 ---@param y number # The y component of the center of mass.
@@ -908,22 +812,16 @@ function Collider:setCenterOfMass(x, y, z) end
 
 --- Sets whether the Collider uses continuous collision detection.
 --- Normally on each timestep a Collider will "teleport" to its new position based on its velocity. Usually this works fine, but if a Collider is going really fast relative to its size, then it might miss collisions with objects or pass through walls.  Enabling continuous collision detection means the Collider will check for obstacles along its path before moving to the new location.  This prevents the Collider from going through walls, but reduces performance.  It's usually used for projectiles, which tend to be small and really fast.
----@see Collider:isContinuous
----@see Collider
 ---@param continuous boolean # Whether the Collider uses continuous collision detection.
 function Collider:setContinuous(continuous) end
 
 --- Set the degrees of freedom of the Collider.
----@see Collider:getDegreesOfFreedom
----@see Collider
----@param translation string # A string containing the world-space axes the Collider is allowed to move on.  The string should have 'x', 'y', and 'z' letters representing the axes to enable.  Use nil or an empty string to disable all translation.
----@param rotation string # A string containing the world-space axes the Collider is allowed to rotate on.  The string should have 'x', 'y', and 'z' letters representing the axes to enable.  Use nil or an empty string to disable all rotation.
+---@param translation string? # A string containing the world-space axes the Collider is allowed to move on.  The string should have 'x', 'y', and 'z' letters representing the axes to enable.  Use nil or an empty string to disable all translation. (default: '')
+---@param rotation string? # A string containing the world-space axes the Collider is allowed to rotate on.  The string should have 'x', 'y', and 'z' letters representing the axes to enable.  Use nil or an empty string to disable all rotation. (default: '')
 function Collider:setDegreesOfFreedom(translation, rotation) end
 
 --- Enables or disables the Collider.  When a Collider is disabled, it is removed from the World and does not impact the physics simulation in any way.  The Collider keeps all of its state and can be re-enabled to add it back to the World.
 ---@see Collider:destroy
----@see Collider:isEnabled
----@see Collider
 ---@param enable boolean # Whether the Collider should be enabled.
 function Collider:setEnabled(enable) end
 
@@ -932,14 +830,10 @@ function Collider:setEnabled(enable) end
 ---@see Contact:setFriction
 ---@see Collider:getRestitution
 ---@see Collider:setRestitution
----@see Collider:getFriction
----@see Collider
 ---@param friction number # The friction of the Collider.
 function Collider:setFriction(friction) end
 
 --- Sets whether the Collider should ignore gravity.
----@see Collider:isGravityIgnored
----@see Collider
 ---@param ignored boolean # Whether gravity should be ignored.
 function Collider:setGravityIgnored(ignored) end
 
@@ -948,8 +842,6 @@ function Collider:setGravityIgnored(ignored) end
 ---@see World:setGravity
 ---@see Collider:getLinearDamping
 ---@see Collider:setLinearDamping
----@see Collider:getGravityScale
----@see Collider
 ---@param scale number # The gravity scale.
 function Collider:setGravityScale(scale) end
 
@@ -965,8 +857,6 @@ function Collider:setGravityScale(scale) end
 ---@see Collider:setAutomaticMass
 ---@see Collider:resetMassData
 ---@see Shape:getInertia
----@see Collider:getInertia
----@see Collider
 ---@overload fun(diagonal: Vec3, rotation: Quat)
 ---@param dx number # The x component of the diagonal matrix.
 ---@param dy number # The y component of the diagonal matrix.
@@ -979,8 +869,6 @@ function Collider:setInertia(dx, dy, dz, angle, ax, ay, az) end
 
 --- Sets whether the Collider is kinematic.
 --- Kinematic colliders behave like they have infinite mass.  They ignore forces applied to them from gravity, joints, and collisions, but they can still move if given a velocity.  Kinematic colliders don't collide with other kinematic colliders.  They're useful for static environment objects in a level, or for objects that have their position managed outside of the physics system like tracked hands.
----@see Collider:isKinematic
----@see Collider
 ---@param kinematic boolean # Whether the Collider should be kinematic.
 function Collider:setKinematic(kinematic) end
 
@@ -989,8 +877,6 @@ function Collider:setKinematic(kinematic) end
 ---@see Collider:setAngularDamping
 ---@see Collider:getGravityScale
 ---@see Collider:setGravityScale
----@see Collider:getLinearDamping
----@see Collider
 ---@param damping number # The linear damping.
 function Collider:setLinearDamping(damping) end
 
@@ -1003,8 +889,6 @@ function Collider:setLinearDamping(damping) end
 ---@see Collider:setAngularVelocity
 ---@see Collider:getPosition
 ---@see Collider:setPosition
----@see Collider:getLinearVelocity
----@see Collider
 ---@overload fun(velocity: Vec3)
 ---@param vx number # The x component of the new velocity, in meters per second.
 ---@param vy number # The y component of the new velocity, in meters per second.
@@ -1026,8 +910,6 @@ function Collider:setLinearVelocity(vx, vy, vz) end
 ---@see Shape:setDensity
 ---@see Shape:getVolume
 ---@see Shape:getMass
----@see Collider:getMass
----@see Collider
 ---@param mass number # The new mass for the Collider, in kilograms.
 function Collider:setMass(mass) end
 
@@ -1039,8 +921,6 @@ function Collider:setMass(mass) end
 ---@see Collider:setPosition
 ---@see Collider:getPose
 ---@see Collider:setPose
----@see Collider:getOrientation
----@see Collider
 ---@overload fun(orientation: Quat)
 ---@param angle number # The number of radians the Collider is rotated around its axis of rotation.
 ---@param ax number # The x component of the axis of rotation.
@@ -1051,8 +931,6 @@ function Collider:setOrientation(angle, ax, ay, az) end
 --- Sets the position and orientation of the Collider.
 ---@see Collider:setPosition
 ---@see Collider:setOrientation
----@see Collider:getPose
----@see Collider
 ---@overload fun(position: Vec3, orientation: Quat)
 ---@param x number # The x position of the Collider, in meters.
 ---@param y number # The y position of the Collider, in meters.
@@ -1071,8 +949,6 @@ function Collider:setPose(x, y, z, angle, ax, ay, az) end
 ---@see Collider:setOrientation
 ---@see Collider:getPose
 ---@see Collider:setPose
----@see Collider:getPosition
----@see Collider
 ---@overload fun(position: Vec3)
 ---@param x number # The x position of the Collider, in meters.
 ---@param y number # The y position of the Collider, in meters.
@@ -1084,8 +960,6 @@ function Collider:setPosition(x, y, z) end
 ---@see Contact:setRestitution
 ---@see Collider:getFriction
 ---@see Collider:setFriction
----@see Collider:getRestitution
----@see Collider
 ---@param restitution number # The restitution of the Collider.
 function Collider:setRestitution(restitution) end
 
@@ -1094,8 +968,6 @@ function Collider:setRestitution(restitution) end
 ---@see Collider:setEnabled
 ---@see World:overlapShape
 ---@see World:setCallbacks
----@see Collider:isSensor
----@see Collider
 ---@param sensor boolean # Whether the Collider should be a sensor.
 function Collider:setSensor(sensor) end
 
@@ -1103,8 +975,6 @@ function Collider:setSensor(sensor) end
 --- When enabled, the Collider will go to sleep if it hasn't moved in a while.  The physics engine does not simulate movement for colliders that are asleep, which saves a lot of CPU for a typical physics world where most objects are at rest at any given time.
 ---@see Collider:isAwake
 ---@see Collider:setAwake
----@see Collider:isSleepingAllowed
----@see Collider
 ---@param sleepy boolean # Whether the Collider can go to sleep.
 function Collider:setSleepingAllowed(sleepy) end
 
@@ -1116,8 +986,6 @@ function Collider:setSleepingAllowed(sleepy) end
 ---@see World:enableCollisionBetween
 ---@see World:isCollisionEnabledBetween
 ---@see lovr.physics.newWorld
----@see Collider:getTag
----@see Collider
 ---@overload fun()
 ---@param tag string # The Collider's tag.
 function Collider:setTag(tag) end
@@ -1127,8 +995,6 @@ function Collider:setTag(tag) end
 ---@see Shape:setUserData
 ---@see Joint:getUserData
 ---@see Joint:setUserData
----@see Collider:getUserData
----@see Collider
 ---@param data any # The custom value to associate with the Collider.
 function Collider:setUserData(data) end
 
@@ -1136,21 +1002,16 @@ function Collider:setUserData(data) end
 local ConeJoint = {}
 
 --- Returns the axis of the ConeJoint, in world space.  The axis is relative to the first Collider connected to the Joint, so it will rotate as the collider does.  The relative angle between the axis and the second collider will be constrained based on the ConeJoint's angle limit.
----@see ConeJoint
 ---@return number # The x component of the axis.
 ---@return number # The y component of the axis.
 ---@return number # The z component of the axis.
 function ConeJoint:getAxis() end
 
 --- Returns the angle limit of the ConeJoint.  The relative angle between the ConeJoint's axis and the second Collider will be constrained to this limit.
----@see ConeJoint:setLimit
----@see ConeJoint
 ---@return number # The angle limit, in radians.
 function ConeJoint:getLimit() end
 
 --- Sets the angle limit of the ConeJoint.  The relative angle between the ConeJoint's axis and the second Collider will be constrained to this limit.
----@see ConeJoint:getLimit
----@see ConeJoint
 ---@param limit number # The new limit in radians, between 0 and pi.
 function ConeJoint:setLimit(limit) end
 
@@ -1159,7 +1020,6 @@ local Contact = {}
 
 --- Returns the two Colliders that are in contact.
 ---@see Contact:getShapes
----@see Contact
 ---@return Collider # The first collider.
 ---@return Collider # The second collider.
 function Contact:getColliders() end
@@ -1169,15 +1029,12 @@ function Contact:getColliders() end
 ---@see Collider:setFriction
 ---@see Contact:getRestitution
 ---@see Contact:setRestitution
----@see Contact:setFriction
----@see Contact
 ---@return number # The contact friction.
 function Contact:getFriction() end
 
 --- Returns the normal vector of the Contact.  This is a direction vector that represents which direction the second collider should move to resolve the collision.
 ---@see Contact:getOverlap
 ---@see Contact:getPoints
----@see Contact
 ---@return number # The x component of the normal vector.
 ---@return number # The y component of the normal vector.
 ---@return number # The z component of the normal vector.
@@ -1185,12 +1042,10 @@ function Contact:getNormal() end
 
 --- Returns the amount of overlap between the colliders.
 ---@see Contact:getNormal
----@see Contact
 ---@return number # The amount of overlap, in meters.
 function Contact:getOverlap() end
 
 --- Returns the contact points of the Contact.  These are the points where the colliders are intersecting.
----@see Contact
 ---@return number # Triplets of x/y/z numbers, one for each contact point.
 function Contact:getPoints() end
 
@@ -1199,21 +1054,16 @@ function Contact:getPoints() end
 ---@see Collider:setRestitution
 ---@see Contact:getFriction
 ---@see Contact:setFriction
----@see Contact:setRestitution
----@see Contact
 ---@return number # The contact restitution.
 function Contact:getRestitution() end
 
 --- Returns the two Shapes that are in contact.
 ---@see Contact:getColliders
----@see Contact
 ---@return Shape # The first shape.
 ---@return Shape # The second shape.
 function Contact:getShapes() end
 
 --- Returns the world space surface velocity of the Contact.  This can be used to achieve a conveyor belt effect.
----@see Contact:setSurfaceVelocity
----@see Contact
 ---@return number # The x component of the surface velocity.
 ---@return number # The y component of the surface velocity.
 ---@return number # The z component of the surface velocity.
@@ -1223,14 +1073,10 @@ function Contact:getSurfaceVelocity() end
 ---@see Collider:isEnabled
 ---@see Collider:setEnabled
 ---@see World:setCallbacks
----@see Contact:setEnabled
----@see Contact
 ---@return boolean # Whether the Contact is enabled.
 function Contact:isEnabled() end
 
 --- Enables or disables the Contact.  Disabled contacts do not generate any collision response.
----@see Contact:isEnabled
----@see Contact
 ---@param enable boolean # Whether the Contact should be enabled.
 function Contact:setEnabled(enable) end
 
@@ -1239,8 +1085,6 @@ function Contact:setEnabled(enable) end
 ---@see Collider:setFriction
 ---@see Contact:getRestitution
 ---@see Contact:setRestitution
----@see Contact:getFriction
----@see Contact
 ---@param friction number # The contact friction.
 function Contact:setFriction(friction) end
 
@@ -1249,14 +1093,10 @@ function Contact:setFriction(friction) end
 ---@see Collider:setRestitution
 ---@see Contact:getFriction
 ---@see Contact:setFriction
----@see Contact:getRestitution
----@see Contact
 ---@param restitution number # The contact restitution.
 function Contact:setRestitution(restitution) end
 
 --- Sets the world space surface velocity of the Contact.  This can be used to achieve a conveyor belt effect.
----@see Contact:getSurfaceVelocity
----@see Contact
 ---@overload fun(velocity: Vec3)
 ---@param x number # The x component of the surface velocity.
 ---@param y number # The y component of the surface velocity.
@@ -1264,25 +1104,24 @@ function Contact:setRestitution(restitution) end
 function Contact:setSurfaceVelocity(x, y, z) end
 
 ---@class ConvexShape
+---@see lovr.physics.newConvexShape # (Constructor)
+---@see World:newConvexCollider # (Constructor)
 local ConvexShape = {}
 
 --- Returns the indices of points that make up one of the faces of the convex hull.
 ---@see ConvexShape:getPoint
 ---@see ConvexShape:getFaceCount
----@see ConvexShape
 ---@param index number # The index of the face.
 ---@return table # A table with point indices.  Use `ConvexShape:getPoint` to get the coordinates.  The points are given in counterclockwise order.
 function ConvexShape:getFace(index) end
 
 --- Returns the number of faces in the convex hull.
 ---@see ConvexShape:getFace
----@see ConvexShape
 ---@return number # The number of faces.
 function ConvexShape:getFaceCount() end
 
 --- Returns one of the points in the convex hull, in local space.
 ---@see ConvexShape:getPointCount
----@see ConvexShape
 ---@param index number # The index of the point.
 ---@return number # The x coordinate.
 ---@return number # The y coordinate.
@@ -1291,114 +1130,94 @@ function ConvexShape:getPoint(index) end
 
 --- Returns the number of points in the convex hull.
 ---@see ConvexShape:getPoint
----@see ConvexShape
 ---@return number # The number of points.
 function ConvexShape:getPointCount() end
 
 --- Returns the scale the ConvexShape was created with.
 ---@see lovr.physics.newConvexShape
 ---@see World:newConvexCollider
----@see ConvexShape
 ---@return number # The scale.
 function ConvexShape:getScale() end
 
 ---@class CylinderShape
+---@see lovr.physics.newCylinderShape # (Constructor)
+---@see World:newCylinderCollider # (Constructor)
 local CylinderShape = {}
 
 --- Returns the length of the CylinderShape.
 ---@see CylinderShape:getRadius
 ---@see CylinderShape:setRadius
----@see CylinderShape:setLength
----@see CylinderShape
 ---@return number # The length of the cylinder, in meters.
 function CylinderShape:getLength() end
 
 --- Returns the radius of the CylinderShape.
 ---@see CylinderShape:getLength
 ---@see CylinderShape:setLength
----@see CylinderShape:setRadius
----@see CylinderShape
 ---@return number # The radius of the cylinder, in meters.
 function CylinderShape:getRadius() end
 
 --- Sets the length of the CylinderShape.
 ---@see CylinderShape:getRadius
 ---@see CylinderShape:setRadius
----@see CylinderShape:getLength
----@see CylinderShape
 ---@param length number # The new length, in meters.
 function CylinderShape:setLength(length) end
 
 --- Sets the radius of the CylinderShape.
 ---@see CylinderShape:getLength
 ---@see CylinderShape:setLength
----@see CylinderShape:getRadius
----@see CylinderShape
 ---@param radius number # The new radius, in meters.
 function CylinderShape:setRadius(radius) end
 
 ---@class DistanceJoint
+---@see lovr.physics.newDistanceJoint # (Constructor)
 local DistanceJoint = {}
 
 --- Returns the minimum and maximum distance allowed between the Colliders.
----@see DistanceJoint:setLimits
----@see DistanceJoint
 ---@return number # The minimum distance, in meters.  The Colliders won't be able to get closer than this.
 ---@return number # The maximum distance, in meters.  The Colliders won't be able to get further than this.
 function DistanceJoint:getLimits() end
 
 --- Returns the DistanceJoint's spring parameters.  Use this to control how fast the joint pulls the colliders back together at the distance limits.
----@see DistanceJoint:setSpring
----@see DistanceJoint
 ---@return number # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled.
 ---@return number # The damping ratio of the spring.
 function DistanceJoint:getSpring() end
 
 --- Sets the minimum and maximum distance allowed between the Colliders.
----@see DistanceJoint:getLimits
----@see DistanceJoint
 ---@overload fun()
 ---@param min number? # The minimum distance, in meters.  The Colliders won't be able to get closer than this. (default: 0)
 ---@param max number? # The maximum distance, in meters.  The Colliders won't be able to get further than this. (default: min)
 function DistanceJoint:setLimits(min, max) end
 
 --- Sets the DistanceJoint's spring parameters.  Use this to control how fast the joint pulls the colliders back together at the distance limits.
----@see DistanceJoint:getSpring
----@see DistanceJoint
 ---@param frequency number? # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled. (default: 0.0)
 ---@param damping number? # The damping ratio of the spring. (default: 1.0)
 function DistanceJoint:setSpring(frequency, damping) end
 
 ---@class HingeJoint
+---@see lovr.physics.newHingeJoint # (Constructor)
 local HingeJoint = {}
 
 --- Returns the current angle of the HingeJoint, relative to the rest position.
 ---@see HingeJoint:getAxis
 ---@see HingeJoint:getLimits
 ---@see HingeJoint:setLimits
----@see HingeJoint
 ---@return number # The hinge angle, in radians.
 function HingeJoint:getAngle() end
 
 --- Returns the axis of the hinge, in world space.
 ---@see HingeJoint:getAngle
 ---@see Joint:getAnchors
----@see HingeJoint
 ---@return number # The x component of the axis.
 ---@return number # The y component of the axis.
 ---@return number # The z component of the axis.
 function HingeJoint:getAxis() end
 
 --- Returns the friction of the HingeJoint.  This is a maximum torque force that will be applied, in newton meters.
----@see HingeJoint:setFriction
----@see HingeJoint
 ---@return number # The friction, in newton meters.
 function HingeJoint:getFriction() end
 
 --- Returns the angle limits of the HingeJoint.  The "zero" angle is determined by the relative position of the colliders at the time the joint was created.
 ---@see HingeJoint:getAngle
----@see HingeJoint:setLimits
----@see HingeJoint
 ---@return number # The minimum angle, in radians.  Always between -π and 0.
 ---@return number # The maximum angle, in radians.  Always between 0 and π.
 function HingeJoint:getLimits() end
@@ -1406,8 +1225,6 @@ function HingeJoint:getLimits() end
 --- Returns the maximum amount of torque the motor can use to reach its target, in newton meters.
 --- There are separate limits for each direction the hinge can move.  They're usually kept the same, but one of them can be set to zero to make a motor that can only push in one direction.  Note that both limits are positive.
 ---@see HingeJoint:getMotorTorque
----@see HingeJoint:setMaxMotorTorque
----@see HingeJoint
 ---@return number # The maximum amount of torque the motor can use to push the hinge in the "positive" direction, in newton meters.
 ---@return number # The maximum amount of torque the motor can use to push the hinge in the "negative" direction, in newton meters.
 function HingeJoint:getMaxMotorTorque() end
@@ -1415,8 +1232,6 @@ function HingeJoint:getMaxMotorTorque() end
 --- Returns the motor mode of the HingeJoint.  When enabled, the motor will drive the hinge to a target angle (for the `position` mode) or a target speed (for the `velocity` mode), set by `HingeJoint:setMotorTarget`.
 ---@see HingeJoint:getMotorTarget
 ---@see HingeJoint:setMotorTarget
----@see HingeJoint:setMotorMode
----@see HingeJoint
 ---@return MotorMode # The mode of the motor, or `nil` if the motor is disabled.
 function HingeJoint:getMotorMode() end
 
@@ -1425,8 +1240,6 @@ function HingeJoint:getMotorMode() end
 ---@see HingeJoint:setSpring
 ---@see HingeJoint:getMotorTarget
 ---@see HingeJoint:setMotorTarget
----@see HingeJoint:setMotorSpring
----@see HingeJoint
 ---@return number # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled.
 ---@return number # The damping ratio of the spring.
 function HingeJoint:getMotorSpring() end
@@ -1434,36 +1247,28 @@ function HingeJoint:getMotorSpring() end
 --- Returns the target value for the HingeJoint's motor.  This is either a target angle or a target velocity, based on the mode set by `HingeJoint:setMotorMode`.
 ---@see HingeJoint:getMotorMode
 ---@see HingeJoint:setMotorMode
----@see HingeJoint
 ---@return number # The target value, in radians or radians per second, depending on the mode.
 function HingeJoint:getMotorTarget() end
 
 --- Returns the current torque the motor is using to reach its target, in newton meters.
 ---@see HingeJoint:getMaxMotorTorque
 ---@see HingeJoint:setMaxMotorTorque
----@see HingeJoint
 ---@return number # The current torque, in newton meters.
 function HingeJoint:getMotorTorque() end
 
 --- Returns the spring parameters of the HingeJoint.  Use this to make the angle limits of the hinge "soft".  When the motor is active, a separate set of spring parameters can be set on the motor, see `HingeJoint:setMotorSpring`.
 ---@see HingeJoint:getMotorSpring
 ---@see HingeJoint:setMotorSpring
----@see HingeJoint:setSpring
----@see HingeJoint
 ---@return number # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled.
 ---@return number # The damping ratio of the spring.
 function HingeJoint:getSpring() end
 
 --- Sets the friction of the HingeJoint.  This is a maximum torque force that will be applied, in newton meters.
----@see HingeJoint:getFriction
----@see HingeJoint
 ---@param friction number # The friction, in newton meters.
 function HingeJoint:setFriction(friction) end
 
 --- Sets the angle limits of the HingeJoint.  The "zero" angle is determined by the relative position of the colliders at the time the joint was created.
 ---@see HingeJoint:getAngle
----@see HingeJoint:getLimits
----@see HingeJoint
 ---@overload fun()
 ---@param min number # The minimum angle, in radians.  Should be between -π and 0.
 ---@param max number # The maximum angle, in radians.  Should be between 0 and π.
@@ -1472,8 +1277,6 @@ function HingeJoint:setLimits(min, max) end
 --- Sets the maximum amount of torque the motor can use to reach its target, in newton meters.
 --- There are separate limits for each direction the hinge can move.  They're usually kept the same, but one of them can be set to zero to make a motor that can only push in one direction.  Note that both limits are positive.
 ---@see HingeJoint:getMotorTorque
----@see HingeJoint:getMaxMotorTorque
----@see HingeJoint
 ---@param positive number? # The maximum amount of torque the motor can use to push the hinge in the "positive" direction, in newton meters. (default: math.huge)
 ---@param negative number? # The maximum amount of torque the motor can use to push the hinge in the "negative" direction, in newton meters. (default: positive)
 function HingeJoint:setMaxMotorTorque(positive, negative) end
@@ -1481,8 +1284,6 @@ function HingeJoint:setMaxMotorTorque(positive, negative) end
 --- Sets the motor mode of the HingeJoint.  When enabled, the motor will drive the hinge to a target angle (for the `position` mode) or a target speed (for the `velocity` mode), set by `HingeJoint:setMotorTarget`.
 ---@see HingeJoint:getMotorTarget
 ---@see HingeJoint:setMotorTarget
----@see HingeJoint:getMotorMode
----@see HingeJoint
 ---@overload fun()
 ---@param mode MotorMode # The mode of the motor.
 function HingeJoint:setMotorMode(mode) end
@@ -1492,8 +1293,6 @@ function HingeJoint:setMotorMode(mode) end
 ---@see HingeJoint:setSpring
 ---@see HingeJoint:getMotorTarget
 ---@see HingeJoint:setMotorTarget
----@see HingeJoint:getMotorSpring
----@see HingeJoint
 ---@param frequency number? # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled. (default: 0.0)
 ---@param damping number? # The damping ratio of the spring. (default: 1.0)
 function HingeJoint:setMotorSpring(frequency, damping) end
@@ -1501,21 +1300,23 @@ function HingeJoint:setMotorSpring(frequency, damping) end
 --- Sets the target value for the HingeJoint's motor.  This is either a target angle or a target velocity, based on the mode set by `HingeJoint:setMotorMode`.
 ---@see HingeJoint:getMotorMode
 ---@see HingeJoint:setMotorMode
----@see HingeJoint:getMotorTarget
----@see HingeJoint
 ---@param target number # The target value, in radians or radians per second, depending on the mode.
 function HingeJoint:setMotorTarget(target) end
 
 --- Sets the spring parameters of the HingeJoint.  Use this to make the angle limits of the hinge "soft".  When the motor is active, a separate set of spring parameters can be set on the motor, see `HingeJoint:setMotorSpring`.
 ---@see HingeJoint:getMotorSpring
 ---@see HingeJoint:setMotorSpring
----@see HingeJoint:getSpring
----@see HingeJoint
 ---@param frequency number? # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled. (default: 0.0)
 ---@param damping number? # The damping ratio of the spring. (default: 1.0)
 function HingeJoint:setSpring(frequency, damping) end
 
 ---@class Joint
+---@see lovr.physics.newWeldJoint # (Constructor)
+---@see lovr.physics.newBallJoint # (Constructor)
+---@see lovr.physics.newConeJoint # (Constructor)
+---@see lovr.physics.newDistanceJoint # (Constructor)
+---@see lovr.physics.newHingeJoint # (Constructor)
+---@see lovr.physics.newSliderJoint # (Constructor)
 local Joint = {}
 
 --- Destroys the Joint, removing it from the World and breaking the connection between its Colliders.  There is no way to get the Joint back after destroying it, and attempting to use it will throw an error.  To temporarily disable a Joint, use `Joint:setEnabled`.
@@ -1524,12 +1325,10 @@ local Joint = {}
 ---@see Collider:destroy
 ---@see Shape:destroy
 ---@see World:destroy
----@see Joint
 function Joint:destroy() end
 
 --- Returns the world space anchor points of the Joint.  Joints are attached to each collider at a single point, which is defined when the Joint is created.
 ---@see Joint:getColliders
----@see Joint
 ---@return number # The x coordinate of the anchor point on the first Collider, in world space.
 ---@return number # The y coordinate of the anchor point on the first Collider, in world space.
 ---@return number # The z coordinate of the anchor point on the first Collider, in world space.
@@ -1540,7 +1339,6 @@ function Joint:getAnchors() end
 
 --- Returns the Colliders the Joint is attached to.
 ---@see Collider:getJoints
----@see Joint
 ---@return Collider # The first Collider.
 ---@return Collider # The second Collider.
 function Joint:getColliders() end
@@ -1549,13 +1347,10 @@ function Joint:getColliders() end
 --- This is useful for breakable joints.  Use `Joint:destroy` to break the joint if its force goes above a threshold.
 ---@see Joint:getTorque
 ---@see SliderJoint:getMotorForce
----@see Joint
 ---@return number # The magnitude of the force used to satisfy the Joint's constraint.
 function Joint:getForce() end
 
 --- Returns the priority of the Joint.  Joints with a higher priority are more likely to be solved correctly.  Priority values are non-negative integers.
----@see Joint:setPriority
----@see Joint
 ---@return number # The integer priority value.
 function Joint:getPriority() end
 
@@ -1563,12 +1358,10 @@ function Joint:getPriority() end
 --- This is useful for breakable joints.  Use `Joint:destroy` to break the joint if its torque goes above a threshold.
 ---@see Joint:getForce
 ---@see HingeJoint:getMotorTorque
----@see Joint
 ---@return number # The magnitude of the torque used to satisfy the Joint's constraint.
 function Joint:getTorque() end
 
 --- Returns the type of the Joint.
----@see Joint
 ---@return JointType # The type of the Joint.
 function Joint:getType() end
 
@@ -1577,8 +1370,6 @@ function Joint:getType() end
 ---@see Collider:setUserData
 ---@see Shape:getUserData
 ---@see Shape:setUserData
----@see Joint:setUserData
----@see Joint
 ---@return any # The custom value associated with the Joint.
 function Joint:getUserData() end
 
@@ -1589,27 +1380,20 @@ function Joint:getUserData() end
 ---@see Collider:destroy
 ---@see Shape:destroy
 ---@see World:destroy
----@see Joint
 ---@return boolean # Whether the Joint has been destroyed.
 function Joint:isDestroyed() end
 
 --- Returns whether the Joint is enabled.  Disabled joints do not affect the simulation in any way. Use `Joint:setEnabled` to reactivate the Joint later.  If the Joint is no longer needed, `Joint:destroy` is a better option that completely removes the Joint from the simulation.
 ---@see Joint:destroy
----@see Joint:setEnabled
----@see Joint
 ---@return boolean # Whether the Joint is enabled.
 function Joint:isEnabled() end
 
 --- Enable or disable the Joint.  Disabled joints do not affect the simulation in any way.  If the Joint is no longer needed, `Joint:destroy` is a better option that completely removes the Joint from the simulation.
 ---@see Joint:destroy
----@see Joint:isEnabled
----@see Joint
 ---@param enabled boolean # Whether the Joint should be enabled.
 function Joint:setEnabled(enabled) end
 
 --- Sets the priority of the Joint.  Joints with a higher priority are more likely to be solved correctly.  Priority values are non-negative integers.
----@see Joint:getPriority
----@see Joint
 ---@param priority number # The integer priority value.
 function Joint:setPriority(priority) end
 
@@ -1618,22 +1402,35 @@ function Joint:setPriority(priority) end
 ---@see Collider:setUserData
 ---@see Shape:getUserData
 ---@see Shape:setUserData
----@see Joint:getUserData
----@see Joint
 ---@param data any # The custom value to associate with the Joint.
 function Joint:setUserData(data) end
 
 ---@class MeshShape
+---@see lovr.physics.newMeshShape # (Constructor)
+---@see World:newMeshCollider # (Constructor)
 local MeshShape = {}
 
 --- Returns the scale the MeshShape was created with.
 ---@see lovr.physics.newMeshShape
 ---@see World:newMeshCollider
----@see MeshShape
 ---@return number # The scale.
 function MeshShape:getScale() end
 
 ---@class Shape
+---@see lovr.physics.newBoxShape # (Constructor)
+---@see lovr.physics.newSphereShape # (Constructor)
+---@see lovr.physics.newCapsuleShape # (Constructor)
+---@see lovr.physics.newCylinderShape # (Constructor)
+---@see lovr.physics.newConvexShape # (Constructor)
+---@see lovr.physics.newMeshShape # (Constructor)
+---@see lovr.physics.newTerrainShape # (Constructor)
+---@see World:newBoxCollider # (Constructor)
+---@see World:newSphereCollider # (Constructor)
+---@see World:newCapsuleCollider # (Constructor)
+---@see World:newCylinderCollider # (Constructor)
+---@see World:newConvexCollider # (Constructor)
+---@see World:newMeshCollider # (Constructor)
+---@see World:newTerrainCollider # (Constructor)
 local Shape = {}
 
 --- Returns whether a point is inside the Shape.
@@ -1644,7 +1441,6 @@ local Shape = {}
 ---@see World:overlapShape
 ---@see World:queryBox
 ---@see World:querySphere
----@see Shape
 ---@overload fun(point: Vec3): boolean
 ---@param x number # The x coordinate of the point.
 ---@param y number # The y coordinate of the point.
@@ -1657,12 +1453,10 @@ function Shape:containsPoint(x, y, z) end
 ---@see Collider:destroy
 ---@see Joint:destroy
 ---@see World:destroy
----@see Shape
 function Shape:destroy() end
 
 --- Returns the axis aligned bounding box of the Shape.
 ---@see Collider:getAABB
----@see Shape
 ---@return number # The minimum x coordinate of the box.
 ---@return number # The maximum x coordinate of the box.
 ---@return number # The minimum y coordinate of the box.
@@ -1675,7 +1469,6 @@ function Shape:getAABB() end
 ---@see Collider:getCenterOfMass
 ---@see Shape:getOffset
 ---@see Shape:setOffset
----@see Shape
 ---@return number # The x position of the center of mass.
 ---@return number # The y position of the center of mass.
 ---@return number # The z position of the center of mass.
@@ -1688,15 +1481,12 @@ function Shape:getCenterOfMass() end
 ---@see Collider:getShapes
 ---@see Collider:addShape
 ---@see Collider:removeShape
----@see Shape
 ---@return Collider # The Collider the Shape is attached to, or nil if the Shape isn't attached to a Collider.
 function Shape:getCollider() end
 
 --- Returns the density of the Shape, in kilograms per cubic meter.  The density, combined with the volume of the Shape, determines the Shape's overall mass.
 ---@see Shape:getVolume
 ---@see Shape:getMass
----@see Shape:setDensity
----@see Shape
 ---@return number # The density of the Shape, in kilograms per cubic meter.
 function Shape:getDensity() end
 
@@ -1707,7 +1497,6 @@ function Shape:getDensity() end
 ---@see Shape:getMass
 ---@see Shape:getCenterOfMass
 ---@see Collider:getInertia
----@see Shape
 ---@return number # The x component of the diagonal matrix.
 ---@return number # The y component of the diagonal matrix.
 ---@return number # The z component of the diagonal matrix.
@@ -1726,7 +1515,6 @@ function Shape:getInertia() end
 ---@see Shape:setDensity
 ---@see Shape:getInertia
 ---@see Shape:getCenterOfMass
----@see Shape
 ---@return number # The mass of the Shape, in kilograms.
 function Shape:getMass() end
 
@@ -1734,8 +1522,6 @@ function Shape:getMass() end
 ---@see Shape:getPosition
 ---@see Shape:getOrientation
 ---@see Shape:getPose
----@see Shape:setOffset
----@see Shape
 ---@return number # The local x offset of the Shape, in meters.
 ---@return number # The local y offset of the Shape, in meters.
 ---@return number # The local z offset of the Shape, in meters.
@@ -1750,7 +1536,6 @@ function Shape:getOffset() end
 ---@see Shape:getPose
 ---@see Shape:getOffset
 ---@see Shape:setOffset
----@see Shape
 ---@return number # The number of radians the Shape is rotated.
 ---@return number # The x component of the rotation axis.
 ---@return number # The y component of the rotation axis.
@@ -1762,7 +1547,6 @@ function Shape:getOrientation() end
 ---@see Shape:getOrientation
 ---@see Shape:getOffset
 ---@see Shape:setOffset
----@see Shape
 ---@return number # The x position of the Shape, in meters.
 ---@return number # The y position of the Shape, in meters.
 ---@return number # The z position of the Shape, in meters.
@@ -1777,14 +1561,12 @@ function Shape:getPose() end
 ---@see Shape:getPose
 ---@see Shape:getOffset
 ---@see Shape:setOffset
----@see Shape
 ---@return number # The x position, in world space.
 ---@return number # The y position, in world space.
 ---@return number # The z position, in world space.
 function Shape:getPosition() end
 
 --- Returns the type of the Shape.
----@see Shape
 ---@return ShapeType # The type of the Shape.
 function Shape:getType() end
 
@@ -1793,8 +1575,6 @@ function Shape:getType() end
 ---@see Collider:setUserData
 ---@see Joint:getUserData
 ---@see Joint:setUserData
----@see Shape:setUserData
----@see Shape
 ---@return any # The custom value associated with the Shape.
 function Shape:getUserData() end
 
@@ -1803,7 +1583,6 @@ function Shape:getUserData() end
 ---@see Shape:setDensity
 ---@see Shape:getMass
 ---@see Shape:getAABB
----@see Shape
 ---@return number # The volume of the shape, in cubic meters.
 function Shape:getVolume() end
 
@@ -1812,7 +1591,6 @@ function Shape:getVolume() end
 ---@see Collider:isDestroyed
 ---@see Joint:isDestroyed
 ---@see World:isDestroyed
----@see Shape
 ---@return boolean # Whether the Shape has been destroyed.
 function Shape:isDestroyed() end
 
@@ -1822,8 +1600,7 @@ function Shape:isDestroyed() end
 ---@see Shape:containsPoint
 ---@see World:shapecast
 ---@see World:overlapShape
----@see Shape
----@overload fun(origin: Vec3, endpoint: Vec3): number, number, number, number, number, number, number
+---@overload fun(origin: Vec3, endpoint: Vec3): number, number, number, number, number, number, number | nil
 ---@param x1 number # The x coordinate of the origin of the ray.
 ---@param y1 number # The y coordinate of the origin of the ray.
 ---@param z1 number # The z coordinate of the origin of the ray.
@@ -1836,14 +1613,12 @@ function Shape:isDestroyed() end
 ---@return number # The x component of the normal vector.
 ---@return number # The y component of the normal vector.
 ---@return number # The z component of the normal vector.
----@return number # The index of the triangle that was hit, or `nil` if this is not a MeshShape.
+---@return number | nil # The index of the triangle that was hit, or `nil` if this is not a MeshShape.
 function Shape:raycast(x1, y1, z1, x2, y2, z2) end
 
 --- Sets the density of the Shape, in kilograms per cubic meter.  The density, combined with the volume of the Shape, determines the Shape's overall mass.
 ---@see Shape:getVolume
 ---@see Shape:getMass
----@see Shape:getDensity
----@see Shape
 ---@param density number # The density of the Shape, in kilograms per cubic meter.
 function Shape:setDensity(density) end
 
@@ -1851,7 +1626,6 @@ function Shape:setDensity(density) end
 ---@see Shape:getPosition
 ---@see Shape:getOrientation
 ---@see Shape:getPose
----@see Shape
 ---@overload fun(position: Vec3, rotation: Quat)
 ---@param x number # The local x offset of the Shape, in meters.
 ---@param y number # The local y offset of the Shape, in meters.
@@ -1867,32 +1641,26 @@ function Shape:setOffset(x, y, z, angle, ax, ay, az) end
 ---@see Collider:setUserData
 ---@see Joint:getUserData
 ---@see Joint:setUserData
----@see Shape:getUserData
----@see Shape
 ---@param data any # The custom value to associate with the Shape.
 function Shape:setUserData(data) end
 
 ---@class SliderJoint
+---@see lovr.physics.newSliderJoint # (Constructor)
 local SliderJoint = {}
 
 --- Returns the axis of the slider, in world space.
 ---@see SliderJoint:getPosition
----@see SliderJoint
 ---@return number # The x component of the axis.
 ---@return number # The y component of the axis.
 ---@return number # The z component of the axis.
 function SliderJoint:getAxis() end
 
 --- Returns the friction of the SliderJoint.  This is a maximum friction force that will be applied, in newtons, opposing movement along the slider axis.
----@see SliderJoint:setFriction
----@see SliderJoint
 ---@return number # The maximum friction force, in newtons.
 function SliderJoint:getFriction() end
 
 --- Returns the position limits of the SliderJoint.  The "zero" position is determined by the relative position of the colliders at the time the joint was created, and positive positions are further apart along the slider axis.
 ---@see SliderJoint:getPosition
----@see SliderJoint:setLimits
----@see SliderJoint
 ---@return number # The minimum position, in meters.  Must be less than or equal to zero.
 ---@return number # The maximum position, in meters.  Must be greater than or equal to zero.
 function SliderJoint:getLimits() end
@@ -1900,8 +1668,6 @@ function SliderJoint:getLimits() end
 --- Returns the maximum amount of force the motor can use to reach its target, in newtons.
 --- There are separate limits for each direction the slider can move.  They're usually kept the same, but one of them can be set to zero to make a motor that can only push in one direction. Note that both limits are positive.
 ---@see SliderJoint:getMotorForce
----@see SliderJoint:setMaxMotorForce
----@see SliderJoint
 ---@return number # The maximum amount of force the motor can use to push the slider in the "positive" direction, in newtons.
 ---@return number # The maximum amount of force the motor can use to push the slider in the "negative" direction, in newtons.
 function SliderJoint:getMaxMotorForce() end
@@ -1909,15 +1675,12 @@ function SliderJoint:getMaxMotorForce() end
 --- Returns the current force the motor is using to reach its target, in newtons.
 ---@see SliderJoint:getMaxMotorForce
 ---@see SliderJoint:setMaxMotorForce
----@see SliderJoint
 ---@return number # The current force, in newtons.
 function SliderJoint:getMotorForce() end
 
 --- Returns the motor mode of the SliderJoint.  When enabled, the motor will drive the slider to a target position (for the `position` mode) or a target speed (for the `velocity` mode), set by `SliderJoint:setMotorTarget`.
 ---@see SliderJoint:getMotorTarget
 ---@see SliderJoint:setMotorTarget
----@see SliderJoint:setMotorMode
----@see SliderJoint
 ---@return MotorMode # The mode of the motor, or `nil` if the motor is disabled.
 function SliderJoint:getMotorMode() end
 
@@ -1926,8 +1689,6 @@ function SliderJoint:getMotorMode() end
 ---@see SliderJoint:setSpring
 ---@see SliderJoint:getMotorTarget
 ---@see SliderJoint:setMotorTarget
----@see SliderJoint:setMotorSpring
----@see SliderJoint
 ---@return number # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled.
 ---@return number # The damping ratio of the spring.
 function SliderJoint:getMotorSpring() end
@@ -1935,36 +1696,28 @@ function SliderJoint:getMotorSpring() end
 --- Returns the target value for the SliderJoint's motor.  This is either a target position or a target velocity, based on the mode set by `SliderJoint:setMotorMode`.
 ---@see SliderJoint:getMotorMode
 ---@see SliderJoint:setMotorMode
----@see SliderJoint
 ---@return number # The target value, in meters or meters per second, depending on the mode.
 function SliderJoint:getMotorTarget() end
 
 --- Returns the position of the slider joint.  The "zero" position is the relative distance the colliders were at when the joint is created, and positive positions are further apart along the slider's axis.
 ---@see SliderJoint:getAxis
 ---@see SliderJoint:setLimits
----@see SliderJoint
 ---@return number # The position of the slider joint, in meters.
 function SliderJoint:getPosition() end
 
 --- Returns the spring parameters of the SliderJoint.  Use this to make the position limits of the slider "soft".  When the motor is active, a separate set of spring parameters can be set on the motor, see `SliderJoint:setMotorSpring`.
 ---@see SliderJoint:getMotorSpring
 ---@see SliderJoint:setMotorSpring
----@see SliderJoint:setSpring
----@see SliderJoint
 ---@return number # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled.
 ---@return number # The damping ratio of the spring.
 function SliderJoint:getSpring() end
 
 --- Sets the friction of the SliderJoint.  This is a maximum friction force that will be applied, in newtons, opposing movement along the slider axis.
----@see SliderJoint:getFriction
----@see SliderJoint
 ---@param friction number # The maximum friction force, in newtons.
 function SliderJoint:setFriction(friction) end
 
 --- Sets the position limits of the SliderJoint.  The "zero" position is determined by the relative position of the colliders at the time the joint was created, and positive distances are further apart on the slider axis.
 ---@see SliderJoint:getPosition
----@see SliderJoint:getLimits
----@see SliderJoint
 ---@overload fun()
 ---@param min number # The minimum position, in meters.  Must be less than or equal to zero.
 ---@param max number # The maximum position, in meters.  Must be greater than or equal to zero.
@@ -1973,8 +1726,6 @@ function SliderJoint:setLimits(min, max) end
 --- Sets the maximum amount of force the motor can use to reach its target, in newtons.
 --- There are separate limits for each direction the slider can move.  They're usually kept the same, but one of them can be set to zero to make a motor that can only push in one direction. Note that both limits are positive.
 ---@see SliderJoint:getMotorForce
----@see SliderJoint:getMaxMotorForce
----@see SliderJoint
 ---@param positive number? # The maximum amount of force the motor can use to push the slider in the "positive" direction, in newtons. (default: math.huge)
 ---@param negative number? # The maximum amount of force the motor can use to push the slider in the "negative" direction, in newtons. (default: positive)
 function SliderJoint:setMaxMotorForce(positive, negative) end
@@ -1982,8 +1733,6 @@ function SliderJoint:setMaxMotorForce(positive, negative) end
 --- Sets the motor mode of the SliderJoint.  When enabled, the motor will drive the slider to a target position (for the `position` mode) or a target speed (for the `velocity` mode), set by `SliderJoint:setMotorTarget`.
 ---@see SliderJoint:getMotorTarget
 ---@see SliderJoint:setMotorTarget
----@see SliderJoint:getMotorMode
----@see SliderJoint
 ---@overload fun()
 ---@param mode MotorMode # The mode of the motor.
 function SliderJoint:setMotorMode(mode) end
@@ -1993,8 +1742,6 @@ function SliderJoint:setMotorMode(mode) end
 ---@see SliderJoint:setSpring
 ---@see SliderJoint:getMotorTarget
 ---@see SliderJoint:setMotorTarget
----@see SliderJoint:getMotorSpring
----@see SliderJoint
 ---@param frequency number? # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled. (default: 0.0)
 ---@param damping number? # The damping ratio of the spring. (default: 1.0)
 function SliderJoint:setMotorSpring(frequency, damping) end
@@ -2002,49 +1749,46 @@ function SliderJoint:setMotorSpring(frequency, damping) end
 --- Sets the target value for the SliderJoint's motor.  This is either a target position or a target velocity, based on the mode set by `SliderJoint:setMotorMode`.
 ---@see SliderJoint:getMotorMode
 ---@see SliderJoint:setMotorMode
----@see SliderJoint:getMotorTarget
----@see SliderJoint
 ---@param target number # The target value, in meters or meters per second, depending on the mode.
 function SliderJoint:setMotorTarget(target) end
 
 --- Sets the spring parameters of the SliderJoint.  Use this to make the position limits of the slider "soft".  When the motor is active, a separate set of spring parameters can be set on the motor, see `SliderJoint:setMotorSpring`.
 ---@see SliderJoint:getMotorSpring
 ---@see SliderJoint:setMotorSpring
----@see SliderJoint:getSpring
----@see SliderJoint
 ---@param frequency number? # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled. (default: 0.0)
 ---@param damping number? # The damping ratio of the spring. (default: 1.0)
 function SliderJoint:setSpring(frequency, damping) end
 
 ---@class SphereShape
+---@see lovr.physics.newSphereShape # (Constructor)
+---@see World:newSphereCollider # (Constructor)
 local SphereShape = {}
 
 --- Returns the radius of the SphereShape.
----@see SphereShape:setRadius
----@see SphereShape
 ---@return number # The radius of the sphere, in meters.
 function SphereShape:getRadius() end
 
 --- Sets the radius of the SphereShape.
----@see SphereShape:getRadius
----@see SphereShape
 ---@param radius number # The radius of the sphere, in meters.
 function SphereShape:setRadius(radius) end
 
 ---@class TerrainShape
+---@see lovr.physics.newTerrainShape # (Constructor)
+---@see World:newTerrainCollider # (Constructor)
 local TerrainShape = {}
 
 ---@class WeldJoint
+---@see lovr.physics.newWeldJoint # (Constructor)
 local WeldJoint = {}
 
 ---@class World
+---@see lovr.physics.newWorld # (Constructor)
 local World = {}
 
 --- Destroys the World.  This will destroy all colliders, shapes, and joints in the world.  After calling this function, the world can no longer be used.  Attempting to call a method on the World after destroying it will error, with the exception of `World:isDestroyed`.
 ---@see Collider:destroy
 ---@see Shape:destroy
 ---@see Joint:destroy
----@see World
 function World:destroy() end
 
 --- Disables collision between two tags.  Use `Collider:setTag` to set a Collider's tag.
@@ -2053,7 +1797,6 @@ function World:destroy() end
 ---@see lovr.physics.newWorld
 ---@see World:getTags
 ---@see Collider:setTag
----@see World
 ---@param tag1 string # The first tag.
 ---@param tag2 string # The second tag.
 function World:disableCollisionBetween(tag1, tag2) end
@@ -2064,7 +1807,6 @@ function World:disableCollisionBetween(tag1, tag2) end
 ---@see lovr.physics.newWorld
 ---@see World:getTags
 ---@see Collider:setTag
----@see World
 ---@param tag1 string # The first tag.
 ---@param tag2 string # The second tag.
 function World:enableCollisionBetween(tag1, tag2) end
@@ -2072,31 +1814,25 @@ function World:enableCollisionBetween(tag1, tag2) end
 --- Returns the angular damping parameters of the World.  Angular damping makes things less "spinny", making them slow down their angular velocity over time.
 ---@see Collider:getAngularDamping
 ---@see Collider:setAngularDamping
----@see World:setAngularDamping
----@see World
 ---@return number # The angular damping.
 ---@return number # Velocity limit below which the damping is not applied.
 function World:getAngularDamping() end
 
 --- - Returns the callbacks assigned to the World.
 --- - The callbacks are described in more detail on `World:setCallbacks`.
----@see World:setCallbacks
----@see World
 ---@return table # The World collision callbacks.
 function World:getCallbacks() end
 
 --- Returns the number of colliders in the world.  This includes sleeping and disabled colliders.
 ---@see World:getColliders
 ---@see World:getJointCount
----@see World
 ---@return number # The number of colliders in the World.
 function World:getColliderCount() end
 
 --- Returns a list of colliders in the world.  This includes sleeping and disabled colliders.
 ---@see World:getColliderCount
 ---@see World:getJoints
----@see World
----@return table # The list of `Collider` objects in the World.
+---@return {Collider} # The list of `Collider` objects in the World.
 function World:getColliders() end
 
 --- Returns the World's gravity.  Gravity is a constant acceleration applied to all colliders.  The default is `(0, -9.81, 0)` meters per second squared, causing colliders to fall downward.
@@ -2105,8 +1841,6 @@ function World:getColliders() end
 ---@see Collider:setGravityScale
 ---@see Collider:getLinearDamping
 ---@see Collider:setLinearDamping
----@see World:setGravity
----@see World
 ---@return number # The x component of the gravity force, in meters per second squared.
 ---@return number # The y component of the gravity force, in meters per second squared.
 ---@return number # The z component of the gravity force, in meters per second squared.
@@ -2115,22 +1849,18 @@ function World:getGravity() end
 --- Returns the number of joints in the world.  This includes disabled joints.
 ---@see World:getJoints
 ---@see World:getColliderCount
----@see World
 ---@return number # The number of joints in the World.
 function World:getJointCount() end
 
 --- Returns a table with all the joints in the World.  This includes disabled joints.
 ---@see World:getJointCount
 ---@see World:getColliders
----@see World
----@return table # The list of `Joint` objects in the World.
+---@return {Joint} # The list of `Joint` objects in the World.
 function World:getJoints() end
 
 --- Returns the linear damping parameters of the World.  Linear damping is similar to drag or air resistance, slowing down colliders over time as they move.
 ---@see Collider:getLinearDamping
 ---@see Collider:setLinearDamping
----@see World:setLinearDamping
----@see World
 ---@return number # The linear damping.
 ---@return number # Velocity limit below which the damping is not applied.
 function World:getLinearDamping() end
@@ -2138,15 +1868,11 @@ function World:getLinearDamping() end
 --- Returns the response time factor of the World.
 --- The response time controls how relaxed collisions and joints are in the physics simulation, and functions similar to inertia.  A low response time means collisions are resolved quickly, and higher values make objects more spongy and soft.
 --- The value can be any positive number.  It can be changed on a per-joint basis for `DistanceJoint` and `BallJoint` objects.
----@see World:setResponseTime
----@see World
 ---@return number # The response time setting for the World.
 function World:getResponseTime() end
 
 --- Returns the step count of the World.  The step count influences how many steps are taken during a call to `World:update`.  A higher number of steps will be slower, but more accurate.  The default step count is 20.
 ---@see World:update
----@see World:setStepCount
----@see World
 ---@return number # The step count.
 function World:getStepCount() end
 
@@ -2157,21 +1883,17 @@ function World:getStepCount() end
 ---@see World:enableCollisionBetween
 ---@see World:disableCollisionBetween
 ---@see World:isCollisionEnabledBetween
----@see World
----@return table # A table of collision tags (strings).
+---@return {string} # A table of collision tags (strings).
 function World:getTags() end
 
 --- Returns the tightness of joints in the World.
 --- The tightness controls how much force is applied to colliders connected by joints.  With a value of 0, no force will be applied and joints won't have any effect.  With a tightness of 1, a strong force will be used to try to keep the Colliders constrained.  A tightness larger than 1 will overcorrect the joints, which can sometimes be desirable.  Negative tightness values are not supported.
----@see World:setTightness
----@see World
 ---@return number # The tightness of the World.
 function World:getTightness() end
 
 --- Interpolates collider poses between their previous pose and their current pose.  Methods like `Collider:getPosition` and `Collider:getOrientation` will return the smoothed values.
 --- After `World:update` is called, any interpolation is reset and `World:interpolate` will need to be called again to recompute the interpolated poses.
 --- This can be used to decouple the physics tick rate from the rendering rate.  For example, the physics simulation can be run at a fixed rate of 30Hz, and collider poses can be interpolated before rendering.  This leads to a more stable simulation, and allows the physics rate to be increased or decreased as desired, independent of the current display refresh rate.
----@see World
 ---@param alpha number # The interpolation parameter.  An alpha of zero will use the previous collider pose, an alpha of 1.0 will use the latest collider pose, etc.  Can be less than zero or greater than one.
 function World:interpolate(alpha) end
 
@@ -2181,7 +1903,6 @@ function World:interpolate(alpha) end
 ---@see lovr.physics.newWorld
 ---@see World:getTags
 ---@see Collider:setTag
----@see World
 ---@param tag1 string # The first tag.
 ---@param tag2 string # The second tag.
 ---@return boolean # Whether or not two colliders with the specified tags will collide.
@@ -2192,7 +1913,6 @@ function World:isCollisionEnabledBetween(tag1, tag2) end
 ---@see Collider:isDestroyed
 ---@see Shape:isDestroyed
 ---@see Joint:isDestroyed
----@see World
 ---@return boolean # Whether the World has been destroyed.
 function World:isDestroyed() end
 
@@ -2201,8 +1921,6 @@ function World:isDestroyed() end
 ---@see Collider:setSleepingAllowed
 ---@see Collider:isAwake
 ---@see Collider:setAwake
----@see World:setSleepingAllowed
----@see World
 ---@return boolean # Whether colliders can sleep.
 function World:isSleepingAllowed() end
 
@@ -2216,7 +1934,6 @@ function World:isSleepingAllowed() end
 ---@see World:newConvexCollider
 ---@see World:newMeshCollider
 ---@see World:newTerrainCollider
----@see World
 ---@overload fun(position: Vec3, size: Vec3): Collider
 ---@param x number? # The x coordinate of the center of the box, in meters. (default: 0)
 ---@param y number? # The y coordinate of the center of the box, in meters. (default: 0)
@@ -2237,7 +1954,6 @@ function World:newBoxCollider(x, y, z, width, height, depth) end
 ---@see World:newConvexCollider
 ---@see World:newMeshCollider
 ---@see World:newTerrainCollider
----@see World
 ---@overload fun(position: Vec3, radius: number, length: number): Collider
 ---@param x number? # The x coordinate of the center of the capsule, in meters. (default: 0)
 ---@param y number? # The y coordinate of the center of the capsule, in meters. (default: 0)
@@ -2258,7 +1974,6 @@ function World:newCapsuleCollider(x, y, z, radius, length) end
 ---@see Collider:addShape
 ---@see Collider
 ---@see Shape
----@see World
 ---@overload fun(position: Vec3): Collider
 ---@param x number # The x position of the Collider.
 ---@param y number # The y position of the Collider.
@@ -2276,7 +1991,6 @@ function World:newCollider(x, y, z) end
 ---@see World:newCylinderCollider
 ---@see World:newMeshCollider
 ---@see World:newTerrainCollider
----@see World
 ---@overload fun(position: Vec3, points: table, scale: number): Collider
 ---@overload fun(x: number, y: number, z: number, modelData: ModelData, scale: number): Collider
 ---@overload fun(position: Vec3, modelData: ModelData, scale: number): Collider
@@ -2304,7 +2018,6 @@ function World:newConvexCollider(x, y, z, points, scale) end
 ---@see World:newConvexCollider
 ---@see World:newMeshCollider
 ---@see World:newTerrainCollider
----@see World
 ---@overload fun(position: Vec3, radius: number, length: number): Collider
 ---@param x number? # The x coordinate of the center of the cylinder, in meters. (default: 0)
 ---@param y number? # The y coordinate of the center of the cylinder, in meters. (default: 0)
@@ -2327,7 +2040,6 @@ function World:newCylinderCollider(x, y, z, radius, length) end
 ---@see World:newConvexCollider
 ---@see World:newTerrainCollider
 ---@see Model:getTriangles
----@see World
 ---@overload fun(modelData: ModelData): Collider
 ---@overload fun(model: Model): Collider
 ---@overload fun(mesh: Mesh): Collider
@@ -2347,7 +2059,6 @@ function World:newMeshCollider(vertices, indices) end
 ---@see World:newConvexCollider
 ---@see World:newMeshCollider
 ---@see World:newTerrainCollider
----@see World
 ---@overload fun(position: Vec3, radius: number): Collider
 ---@param x number? # The x coordinate of the center of the sphere, in meters. (default: 0)
 ---@param y number? # The y coordinate of the center of the sphere, in meters. (default: 0)
@@ -2368,7 +2079,6 @@ function World:newSphereCollider(x, y, z, radius) end
 ---@see World:newSphereCollider
 ---@see World:newMeshCollider
 ---@see lovr.data.newImage
----@see World
 ---@overload fun(scale: number, heightmap: Image, stretch: number): Collider
 ---@overload fun(scale: number, callback: function, samples: number): Collider
 ---@param scale number # The width and depth of the terrain, in meters.
@@ -2386,7 +2096,6 @@ function World:newTerrainCollider(scale) end
 ---@see World:raycast
 ---@see World:queryBox
 ---@see World:querySphere
----@see World
 ---@overload fun(shape: Shape, position: Vec3, orientation: Quat, maxDistance: number, filter: string, callback: function)
 ---@overload fun(shape: Shape, x: number, y: number, z: number, angle: number, ax: number, ay: number, az: number, maxDistance: number, filter: string): Collider, Shape, number, number, number, number, number, number
 ---@overload fun(shape: Shape, position: Vec3, orientation: Quat, maxDistance: number, filter: string): Collider, Shape, number, number, number, number, number, number
@@ -2400,7 +2109,7 @@ function World:newTerrainCollider(scale) end
 ---@param az number # The z component of the axis of rotation.
 ---@param maxDistance number? # The maximum distance at which a shape can be detected, in meters.  Zero will detect shapes touching the input shape, 1.0 will detect shapes within 1 meter of the input shape, etc. (default: 0)
 ---@param filter string? # Tags to filter by, or nil for no filter. (default: nil)
----@param callback function # The callback to call for each intersection detected.
+---@param callback function? # The callback to call for each intersection detected. (default: nil)
 function World:overlapShape(shape, x, y, z, angle, ax, ay, az, maxDistance, filter, callback) end
 
 --- Find colliders within an axis-aligned bounding box.  This is a fast but imprecise query that only checks a rough box around colliders.  Use `World:overlapShape` for an exact collision test.
@@ -2410,7 +2119,6 @@ function World:overlapShape(shape, x, y, z, angle, ax, ay, az, maxDistance, filt
 ---@see World:overlapShape
 ---@see World:shapecast
 ---@see World:raycast
----@see World
 ---@overload fun(position: Vec3, size: Vec3, filter: string, callback: function)
 ---@overload fun(x: number, y: number, z: number, width: number, height: number, depth: number, filter: string): Collider
 ---@overload fun(position: Vec3, size: Vec3, filter: string): Collider
@@ -2421,7 +2129,7 @@ function World:overlapShape(shape, x, y, z, angle, ax, ay, az, maxDistance, filt
 ---@param height number # The height of the box, in meters
 ---@param depth number # The depth of the box, in meters.
 ---@param filter string? # An optional tag filter.  Pass one or more tags separated by spaces to only return colliders with those tags.  Or, put `~` in front of the tags to exclude colliders with those tags. (default: nil)
----@param callback function # A function to call when a collider is detected.  The function will be called with a single `Collider` argument.
+---@param callback function? # A function to call when a collider is detected.  The function will be called with a single `Collider` argument. (default: nil)
 function World:queryBox(x, y, z, width, height, depth, filter, callback) end
 
 --- Find colliders within a sphere.  This is a fast but imprecise query that only checks a rough box around colliders.  Use `World:overlapShape` for an exact collision test.
@@ -2431,7 +2139,6 @@ function World:queryBox(x, y, z, width, height, depth, filter, callback) end
 ---@see World:overlapShape
 ---@see World:shapecast
 ---@see World:raycast
----@see World
 ---@overload fun(position: Vec3, radius: number, filter: string, callback: function)
 ---@overload fun(x: number, y: number, z: number, radius: number, filter: string): Collider
 ---@overload fun(position: Vec3, radius: number, filter: string): Collider
@@ -2440,7 +2147,7 @@ function World:queryBox(x, y, z, width, height, depth, filter, callback) end
 ---@param z number # The z coordinate of the center of the sphere.
 ---@param radius number # The radius of the sphere, in meters
 ---@param filter string? # An optional tag filter.  Pass one or more tags separated by spaces to only return colliders with those tags.  Or, put `~` in front of the tags to exclude colliders with those tags. (default: nil)
----@param callback function # A function to call when an intersection is detected.  The function will be called with a single `Collider` argument.
+---@param callback function? # A function to call when an intersection is detected.  The function will be called with a single `Collider` argument. (default: nil)
 function World:querySphere(x, y, z, radius, filter, callback) end
 
 --- Traces a ray through the world and calls a function for each collider that was hit.
@@ -2450,10 +2157,9 @@ function World:querySphere(x, y, z, radius, filter, callback) end
 ---@see World:overlapShape
 ---@see World:queryBox
 ---@see World:querySphere
----@see World
 ---@overload fun(origin: Vec3, endpoint: Vec3, filter: string, callback: function)
----@overload fun(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, filter: string): Collider, Shape, number, number, number, number, number, number, number
----@overload fun(origin: Vec3, endpoint: Vec3, filter: string): Collider, Shape, number, number, number, number, number, number, number
+---@overload fun(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, filter: string): Collider, Shape, number, number, number, number, number, number, number | nil
+---@overload fun(origin: Vec3, endpoint: Vec3, filter: string): Collider, Shape, number, number, number, number, number, number, number | nil
 ---@param x1 number # The x coordinate of the origin of the ray.
 ---@param y1 number # The y coordinate of the origin of the ray.
 ---@param z1 number # The z coordinate of the origin of the ray.
@@ -2461,14 +2167,12 @@ function World:querySphere(x, y, z, radius, filter, callback) end
 ---@param y2 number # The y coordinate of the endpoint of the ray.
 ---@param z2 number # The z coordinate of the endpoint of the ray.
 ---@param filter string? # An optional tag filter.  Pass one or more tags separated by spaces to only return colliders with those tags.  Or, put `~` in front the tags to exclude colliders with those tags. (default: nil)
----@param callback function # The function to call when an intersection is detected (see notes).
+---@param callback function? # The function to call when an intersection is detected (see notes). (default: nil)
 function World:raycast(x1, y1, z1, x2, y2, z2, filter, callback) end
 
 --- Sets the angular damping of the World.  Angular damping makes things less "spinny", making them slow down their angular velocity over time. Damping is only applied when angular velocity is over the threshold value.
 ---@see Collider:getAngularDamping
 ---@see Collider:setAngularDamping
----@see World:getAngularDamping
----@see World
 ---@param damping number # The angular damping.
 ---@param threshold number? # Velocity limit below which the damping is not applied. (default: 0)
 function World:setAngularDamping(damping, threshold) end
@@ -2484,9 +2188,7 @@ function World:setAngularDamping(damping, threshold) end
 --- Called continuously while two colliders are touching.  Receives two colliders and a `Contact` object with more information about the collision.  The contact can also be disabled to disable the collision response, and its friction/resitution/velocity can be changed.  There can be multiple active contact areas (called "manifolds") between a pair of colliders; this callback will be called for each one.
 ---@see World:update
 ---@see Contact
----@see World:getCallbacks
----@see World
----@param callbacks table # The World collision callbacks.
+---@param callbacks table # The World collision callbacks.  All of them are optional.
 function World:setCallbacks(callbacks) end
 
 --- Sets the World's gravity.  Gravity is a constant acceleration applied to all colliders.  The default is `(0, -9.81, 0)` meters per second squared, causing colliders to fall downward.
@@ -2495,8 +2197,6 @@ function World:setCallbacks(callbacks) end
 ---@see Collider:setGravityScale
 ---@see Collider:getLinearDamping
 ---@see Collider:setLinearDamping
----@see World:getGravity
----@see World
 ---@overload fun(gravity: Vec3)
 ---@param xg number # The x component of the gravity force.
 ---@param yg number # The y component of the gravity force.
@@ -2506,8 +2206,6 @@ function World:setGravity(xg, yg, zg) end
 --- Sets the linear damping of the World.  Linear damping is similar to drag or air resistance, slowing down colliders over time as they move. Damping is only applied when linear velocity is over the threshold value.
 ---@see Collider:getLinearDamping
 ---@see Collider:setLinearDamping
----@see World:getLinearDamping
----@see World
 ---@param damping number # The linear damping.
 ---@param threshold number? # Velocity limit below which the damping is not applied. (default: 0)
 function World:setLinearDamping(damping, threshold) end
@@ -2515,8 +2213,6 @@ function World:setLinearDamping(damping, threshold) end
 --- Sets the response time factor of the World.
 --- The response time controls how relaxed collisions and joints are in the physics simulation, and functions similar to inertia.  A low response time means collisions are resolved quickly, and higher values make objects more spongy and soft.
 --- The value can be any positive number.  It can be changed on a per-joint basis for `DistanceJoint` and `BallJoint` objects.
----@see World:getResponseTime
----@see World
 ---@param responseTime number # The new response time setting for the World.
 function World:setResponseTime(responseTime) end
 
@@ -2525,22 +2221,16 @@ function World:setResponseTime(responseTime) end
 ---@see Collider:setSleepingAllowed
 ---@see Collider:isAwake
 ---@see Collider:setAwake
----@see World:isSleepingAllowed
----@see World
 ---@param allowed boolean # Whether colliders can sleep.
 function World:setSleepingAllowed(allowed) end
 
 --- Sets the step count of the World.  The step count influences how many steps are taken during a call to `World:update`.  A higher number of steps will be slower, but more accurate.  The default step count is 20.
 ---@see World:update
----@see World:getStepCount
----@see World
 ---@param steps number # The new step count.
 function World:setStepCount(steps) end
 
 --- Sets the tightness of joints in the World.
 --- The tightness controls how much force is applied to colliders connected by joints.  With a value of 0, no force will be applied and joints won't have any effect.  With a tightness of 1, a strong force will be used to try to keep the Colliders constrained.  A tightness larger than 1 will overcorrect the joints, which can sometimes be desirable.  Negative tightness values are not supported.
----@see World:getTightness
----@see World
 ---@param tightness number # The new tightness for the World.
 function World:setTightness(tightness) end
 
@@ -2550,7 +2240,6 @@ function World:setTightness(tightness) end
 ---@see World:overlapShape
 ---@see World:queryBox
 ---@see World:querySphere
----@see World
 ---@overload fun(shape: Shape, position: Vec3, destination: Vec3, orientation: Quat, filter: string, callback: function)
 ---@overload fun(shape: Shape, x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, angle: number, ax: number, ay: number, az: number, filter: string): Collider, Shape, number, number, number, number, number, number, number, number
 ---@overload fun(shape: Shape, position: Vec3, destination: Vec3, orientation: Quat, filter: string): Collider, Shape, number, number, number, number, number, number, number, number
@@ -2571,7 +2260,6 @@ function World:shapecast(shape, x1, y1, z1, x2, y2, z2, angle, ax, ay, az, filte
 
 --- Updates the World, advancing the physics simulation forward in time and moving all the colliders.
 ---@see lovr.physics.newWorld
----@see World
 ---@param dt number # The amount of time to advance the simulation forward.
 function World:update(dt) end
 

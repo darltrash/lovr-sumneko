@@ -116,18 +116,15 @@ local event = {}
 ---| '"numlock"' # The numlock key.
 
 --- Clears the event queue, removing any unprocessed events.
----@see lovr.event
 function event.clear() end
 
 --- This function returns a Lua iterator for all of the unprocessed items in the event queue.  Each event consists of a name as a string, followed by event-specific arguments.  This function is called in the default implementation of `lovr.run`, so it is normally not necessary to poll for events yourself.
----@see lovr.event
 ---@return function # The iterator function, usable in a for loop.
 function event.poll() end
 
 --- Pushes an event onto the event queue.  It will be processed the next time `lovr.event.poll` is called.  For an event to be processed properly, there needs to be a function in the `lovr.handlers` table with a key that's the same as the event name.
 ---@see lovr.event.poll
 ---@see lovr.event.quit
----@see lovr.event
 ---@param name string # The name of the event.
 ---@param ... any # The arguments for the event.  Currently, up to 4 are supported.
 function event.push(name, ...) end
@@ -136,7 +133,6 @@ function event.push(name, ...) end
 ---@see lovr.quit
 ---@see lovr.event.poll
 ---@see lovr.event.restart
----@see lovr.event
 ---@param code number? # The exit code of the program. (default: 0)
 function event.quit(code) end
 
@@ -144,7 +140,6 @@ function event.quit(code) end
 ---@see lovr.restart
 ---@see lovr.event.poll
 ---@see lovr.event.quit
----@see lovr.event
 function event.restart() end
 
 _G.lovr.event = event
