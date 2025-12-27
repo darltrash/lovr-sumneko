@@ -190,7 +190,7 @@ local function writeFunction(func, namespace, is_method, f)
                 f:write(")")
             end
             f:write("\n")
-            table.insert(params, arg.name)
+            table.insert(params, handleParam(arg.name))
         end
 
         for _, ret in ipairs(first.returns) do

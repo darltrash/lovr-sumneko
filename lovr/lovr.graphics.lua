@@ -261,7 +261,7 @@ function graphics.getWindowPass() end
 ---@param ... TextureFeature # Zero or more features to check.  If no features are given, this function will return whether the GPU supports *any* feature for this format.  Otherwise, this function will only return true if *all* of the input features are supported.
 ---@return boolean # Whether the GPU supports these operations for textures with this format, when created with the `linear` flag set to `true`.
 ---@return boolean # Whether the GPU supports these operations for textures with this format, when created with the `linear` flag set to `false`.
-function graphics.isFormatSupported(format, ...features) end
+function graphics.isFormatSupported(format, ...) end
 
 --- Returns whether the **super experimental** HDR mode is active.
 --- To enable HDR, add `t.graphics.hdr` to `lovr.conf`.  When enabled, LÖVR will try to create an HDR10 window.  If the GPU supports it, then this function will return true and the window texture will be HDR:
@@ -339,7 +339,7 @@ function graphics.newModel(file, options) end
 ---@overload fun(): Pass
 ---@param ... Texture # One or more textures the pass will render to.  This can be changed later using `Pass:setCanvas`.
 ---@return Pass # The new Pass.
-function graphics.newPass(...textures) end
+function graphics.newPass(...) end
 
 --- Creates a new Sampler.  Samplers are immutable, meaning their parameters can not be changed after the sampler is created.  Instead, a new sampler should be created with the updated properties.
 ---@see Pass:setSampler
@@ -1560,7 +1560,7 @@ function Pass:getWidth() end
 ---@param y2 number # The y coordinate of the next point.
 ---@param z2 number # The z coordinate of the next point.
 ---@param ... number # More points to add to the line.
-function Pass:line(x1, y1, z1, x2, y2, z2, ...numbers) end
+function Pass:line(x1, y1, z1, x2, y2, z2, ...) end
 
 --- Draws a mesh.
 ---@see Pass:setMeshMode
@@ -1724,7 +1724,7 @@ function Pass:setBlendMode(blend, alphaBlend) end
 ---@overload fun(canvas: table)
 ---@overload fun()
 ---@param ... Texture # One or more color textures the pass will render to.
-function Pass:setCanvas(...textures) end
+function Pass:setCanvas(...) end
 
 --- Sets the clear values of the pass.  This controls the initial colors of the canvas texture pixels at the beginning of the render pass.  For each color texture, it can be one of the following:
 --- - A specific RGBA color value (or number for the depth texture).

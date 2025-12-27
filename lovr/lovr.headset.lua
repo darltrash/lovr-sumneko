@@ -463,7 +463,7 @@ function headset.setFoveation(level, dynamic) end
 ---@see Layer
 ---@overload fun(t: table)
 ---@param ... Layer # Zero or more layers to render in the headset.
-function headset.setLayers(...layers) end
+function headset.setLayers(...) end
 
 --- Sets a new passthrough mode.  Not all headsets support all passthrough modes.  Use `lovr.headset.getPassthroughModes` to see which modes are supported.
 ---@see lovr.headset.getPassthroughModes
