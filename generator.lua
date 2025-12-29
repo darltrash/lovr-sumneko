@@ -376,7 +376,18 @@ local function processModule(module)
         writeFunction(func, key, false, f)
     end
 
-    if not is_main_module then
+    if is_main_module then
+        f:write("vec2 = lovr.math.vec2\n")
+        f:write("Vec2 = lovr.math.newVec2\n")
+        f:write("vec3 = lovr.math.vec3\n")
+        f:write("Vec3 = lovr.math.newVec3\n")
+        f:write("vec4 = lovr.math.vec4\n")
+        f:write("Vec4 = lovr.math.newVec4\n")
+        f:write("mat4 = lovr.math.mat4\n")
+        f:write("Mat4 = lovr.math.newMat4\n")
+        f:write("quat = lovr.math.quat\n")
+        f:write("Quat = lovr.math.newQuat\n")
+    else
         f:write("return ")
         f:write(key)
     end
@@ -385,34 +396,11 @@ local function processModule(module)
     print("OK")
 end
 
-local modules = {} -- Somewhat of a hack, don't mind me.
 do
     print("Processing modules")
     for _, v in ipairs(data.modules) do
         processModule(v)
-        if not v.external then
-            table.insert(modules, v.key)
-        end
     end
-end
-
--- Because we register each namespace as it's own class, effectively, we have
--- forced ourselves to write a little index of subclasses :(
-do
-    local f = assert(io.open(API_OUTPUT .. "lovr.lua", "a+"))
-
-    f:write("vec2 = lovr.math.vec2\n")
-    f:write("Vec2 = lovr.math.newVec2\n")
-    f:write("vec3 = lovr.math.vec3\n")
-    f:write("Vec3 = lovr.math.newVec3\n")
-    f:write("vec4 = lovr.math.vec4\n")
-    f:write("Vec4 = lovr.math.newVec4\n")
-    f:write("mat4 = lovr.math.mat4\n")
-    f:write("Mat4 = lovr.math.newMat4\n")
-    f:write("quat = lovr.math.quat\n")
-    f:write("Quat = lovr.math.newQuat\n")
-
-    f:close()
 end
 
 do
