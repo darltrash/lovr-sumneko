@@ -4,7 +4,7 @@
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.data)
 ---@class lovr.data
-local data = {}
+lovr.data = {}
 
 --- This indicates the different node properties that can be animated.
 ---@alias AnimationProperty
@@ -1382,7 +1382,7 @@ function Sound:setFrames(source, count, dstOffset, srcOffset) end
 ---@return Blob # The new Blob.
 ---@overload fun(contents: string, name?: string): Blob
 ---@overload fun(source: Blob, name?: string): Blob
-function data.newBlob(size, name) end
+function lovr.data.newBlob(size, name) end
 
 --- Creates a new Image.  Image data can be loaded and decoded from an image file.  Alternatively, a blank image can be created with a given width, height, and format.
 ---
@@ -1391,14 +1391,14 @@ function data.newBlob(size, name) end
 ---@return Image # The new Image.
 ---@overload fun(width: number, height: number, format?: TextureFormat, data?: Blob): Image
 ---@overload fun(source: Image): Image
-function data.newImage(file) end
+function lovr.data.newImage(file) end
 
 --- Loads a 3D model from a file.  The supported 3D file formats are OBJ and glTF.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.data.newModelData)
 ---@param file string | Blob # A filename or Blob containing the model data to import.
 ---@return ModelData # The new ModelData.
-function data.newModelData(file) end
+function lovr.data.newModelData(file) end
 
 --- Creates a new Rasterizer from a TTF or BMFont file.
 ---
@@ -1407,7 +1407,7 @@ function data.newModelData(file) end
 ---@param size number? # The resolution to render the font at, in pixels (TTF only).  Higher resolutions use more memory and processing power but may provide better quality results for some fonts/situations. (default: 32)
 ---@return Rasterizer # The new Rasterizer.
 ---@overload fun(size?: number): Rasterizer
-function data.newRasterizer(file, size) end
+function lovr.data.newRasterizer(file, size) end
 
 --- Creates a new Sound.  A sound can be loaded from an audio file, or it can be created empty with capacity for a certain number of audio frames.
 --- When loading audio from a file, use the `decode` option to control whether compressed audio should remain compressed or immediately get decoded to raw samples.
@@ -1421,6 +1421,6 @@ function data.newRasterizer(file, size) end
 ---@param contents Blob | string | nil? # A Blob containing raw audio samples to use as the initial contents, 'stream' to create an audio stream, or `nil` to leave the data initialized to zero. (default: nil)
 ---@return Sound # Sounds good.
 ---@overload fun(file: string | Blob, decode?: boolean): Sound
-function data.newSound(frames, format, channels, sampleRate, contents) end
+function lovr.data.newSound(frames, format, channels, sampleRate, contents) end
 
-_G.lovr.data = data
+return lovr.data

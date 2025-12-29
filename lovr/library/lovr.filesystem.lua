@@ -26,7 +26,7 @@
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem)
 ---@class lovr.filesystem
-local filesystem = {}
+lovr.filesystem = {}
 
 --- The different actions that can be taken on files, reported by `lovr.filechanged` when filesystem watching is active.
 ---@alias FileAction
@@ -123,7 +123,7 @@ function File:write(string, size) end
 ---@param content string | Blob # A string or Blob to append to the file.
 ---@return boolean # Whether the operation was successful.
 ---@return string | nil # The error message, or `nil` if there was no error.
-function filesystem.append(filename, content) end
+function lovr.filesystem.append(filename, content) end
 
 --- Creates a directory in the save directory.  Also creates any intermediate directories that don't exist.
 ---
@@ -131,7 +131,7 @@ function filesystem.append(filename, content) end
 ---@param path string # The directory to create, recursively.
 ---@return boolean # Whether the directory was created.
 ---@return string | nil # The error message.
-function filesystem.createDirectory(path) end
+function lovr.filesystem.createDirectory(path) end
 
 --- Returns the application data directory.  This will be something like:
 --- - `C:\Users\user\AppData\Roaming` on Windows.
@@ -140,26 +140,26 @@ function filesystem.createDirectory(path) end
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.getAppdataDirectory)
 ---@return string | nil # The absolute path to the appdata directory.
-function filesystem.getAppdataDirectory() end
+function lovr.filesystem.getAppdataDirectory() end
 
 --- Returns a sorted table containing all files and folders in a single directory.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.getDirectoryItems)
 ---@param path string # The directory.
 ---@return string[] # A table with a string for each file and subfolder in the directory.
-function filesystem.getDirectoryItems(path) end
+function lovr.filesystem.getDirectoryItems(path) end
 
 --- Returns the absolute path of the LÖVR executable.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.getExecutablePath)
 ---@return string | nil # The absolute path of the LÖVR executable, or `nil` if it is unknown.
-function filesystem.getExecutablePath() end
+function lovr.filesystem.getExecutablePath() end
 
 --- Returns the identity of the game, which is used as the name of the save directory.  The default is `default`.  It can be changed using `t.identity` in `lovr.conf`.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.getIdentity)
 ---@return string | nil # The name of the save directory, or `nil` if it isn't set.
-function filesystem.getIdentity() end
+function lovr.filesystem.getIdentity() end
 
 --- Returns when a file was last modified, since some arbitrary time in the past.
 ---
@@ -167,20 +167,20 @@ function filesystem.getIdentity() end
 ---@param path string # The file to check.
 ---@return number | nil # The modification time of the file, in seconds, or `nil` if there was an error.
 ---@return string | nil # The error message, if there was an error.
-function filesystem.getLastModified(path) end
+function lovr.filesystem.getLastModified(path) end
 
 --- Get the absolute path of the mounted archive containing a path in the virtual filesystem.  This can be used to determine if a file is in the game's source directory or the save directory.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.getRealDirectory)
 ---@param path string # The path to check.
 ---@return string | nil # The absolute path of the mounted archive containing `path`, or `nil` if the file is not in the virtual filesystem.
-function filesystem.getRealDirectory(path) end
+function lovr.filesystem.getRealDirectory(path) end
 
 --- Returns the require path.  The require path is a semicolon-separated list of patterns that LÖVR will use to search for files when they are `require`d.  Any question marks in the pattern will be replaced with the module that is being required.  It is similar to Lua\'s `package.path` variable, but the main difference is that the patterns are relative to the virtual filesystem.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.getRequirePath)
 ---@return string # The semicolon separated list of search patterns.
-function filesystem.getRequirePath() end
+function lovr.filesystem.getRequirePath() end
 
 --- Returns the absolute path to the save directory.
 ---
@@ -188,7 +188,7 @@ function filesystem.getRequirePath() end
 ---@see lovr.filesystem.getIdentity
 ---@see lovr.filesystem.getAppdataDirectory
 ---@return string # The absolute path to the save directory.
-function filesystem.getSaveDirectory() end
+function lovr.filesystem.getSaveDirectory() end
 
 --- Returns the size of a file, in bytes.
 ---
@@ -197,25 +197,25 @@ function filesystem.getSaveDirectory() end
 ---@param file string # The file.
 ---@return number | nil # The size of the file, in bytes, or `nil` if there was an error.
 ---@return string | nil # The error message, if the operation was not successful.
-function filesystem.getSize(file) end
+function lovr.filesystem.getSize(file) end
 
 --- Get the absolute path of the project's source directory or archive.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.getSource)
 ---@return string | nil # The absolute path of the project's source, or `nil` if it's unknown.
-function filesystem.getSource() end
+function lovr.filesystem.getSource() end
 
 --- Returns the absolute path of the user's home directory.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.getUserDirectory)
 ---@return string | nil # The absolute path of the user's home directory.
-function filesystem.getUserDirectory() end
+function lovr.filesystem.getUserDirectory() end
 
 --- Returns the absolute path of the working directory.  Usually this is where the executable was started from.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.getWorkingDirectory)
 ---@return string | nil # The current working directory, or `nil` if it's unknown.
-function filesystem.getWorkingDirectory() end
+function lovr.filesystem.getWorkingDirectory() end
 
 --- Check if a path exists and is a directory.
 ---
@@ -223,7 +223,7 @@ function filesystem.getWorkingDirectory() end
 ---@see lovr.filesystem.isFile
 ---@param path string # The path to check.
 ---@return boolean # Whether or not the path is a directory.
-function filesystem.isDirectory(path) end
+function lovr.filesystem.isDirectory(path) end
 
 --- Check if a path exists and is a file.
 ---
@@ -231,13 +231,13 @@ function filesystem.isDirectory(path) end
 ---@see lovr.filesystem.isDirectory
 ---@param path string # The path to check.
 ---@return boolean # Whether or not the path is a file.
-function filesystem.isFile(path) end
+function lovr.filesystem.isFile(path) end
 
 --- Returns whether the current project source is fused to the executable.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.isFused)
 ---@return boolean # Whether or not the project is fused.
-function filesystem.isFused() end
+function lovr.filesystem.isFused() end
 
 --- Load a file containing Lua code, returning a Lua chunk that can be run.
 ---
@@ -245,7 +245,7 @@ function filesystem.isFused() end
 ---@param filename string # The file to load.
 ---@param mode string? # The type of code that can be loaded.  `t` allows text, `b` allows binary, and `bt` allows both. (default: 'bt')
 ---@return function # The runnable chunk.
-function filesystem.load(filename, mode) end
+function lovr.filesystem.load(filename, mode) end
 
 --- Mounts a directory or `.zip` archive, adding it to the virtual filesystem.  This allows you to read files from it.
 ---
@@ -257,7 +257,7 @@ function filesystem.load(filename, mode) end
 ---@param root string? # A subdirectory inside the archive to use as the root.  If `nil`, the actual root of the archive is used. (default: nil)
 ---@return boolean # Whether the archive was successfully mounted.
 ---@return string | nil # The error message, if the archive failed to mount.
-function filesystem.mount(path, mountpoint, append, root) end
+function lovr.filesystem.mount(path, mountpoint, append, root) end
 
 --- Creates a new Blob that contains the contents of a file.
 ---
@@ -266,7 +266,7 @@ function filesystem.mount(path, mountpoint, append, root) end
 ---@see Blob
 ---@param filename string # The file to load.
 ---@return Blob # The new Blob.
-function filesystem.newBlob(filename) end
+function lovr.filesystem.newBlob(filename) end
 
 --- Opens a file, returning a `File` object that can be used to read/write the file contents.
 --- Normally you can just use `lovr.filesystem.read`, `lovr.filesystem.write`, etc.  However, those methods open and close the file each time they are called.  So, when performing multiple operations on a file, creating a File object and keeping it open will have less overhead.
@@ -279,7 +279,7 @@ function filesystem.newBlob(filename) end
 ---@param mode OpenMode # The mode to open the file in (`r`, `w`, or `a`).
 ---@return File # A new file object, or nil if an error occurred.
 ---@return string # The error message, if an error occurred.
-function filesystem.newFile(path, mode) end
+function lovr.filesystem.newFile(path, mode) end
 
 --- Read the contents of a file.
 ---
@@ -287,7 +287,7 @@ function filesystem.newFile(path, mode) end
 ---@param filename string # The name of the file to read.
 ---@return string | nil # The contents of the file, or nil if the file could not be read.
 ---@return string | nil # The error message, if any.
-function filesystem.read(filename) end
+function lovr.filesystem.read(filename) end
 
 --- Remove a file or directory in the save directory.
 ---
@@ -295,7 +295,7 @@ function filesystem.read(filename) end
 ---@param path string # The file or directory to remove.
 ---@return boolean # Whether the path was removed.
 ---@return string | nil # The error message, if any.
-function filesystem.remove(path) end
+function lovr.filesystem.remove(path) end
 
 --- Set the name of the save directory.  This function can only be called once and is called automatically at startup, so this function normally isn't called manually.  However, the identity can be changed by setting the `t.identity` option in `lovr.conf`.
 ---
@@ -303,13 +303,13 @@ function filesystem.remove(path) end
 ---@see lovr.conf
 ---@see lovr.filesystem.getSaveDirectory
 ---@param identity string # The name of the save directory.
-function filesystem.setIdentity(identity) end
+function lovr.filesystem.setIdentity(identity) end
 
 --- Sets the require path.  The require path is a semicolon-separated list of patterns that LÖVR will use to search for files when they are `require`d.  Any question marks in the pattern will be replaced with the module that is being required.  It is similar to Lua\'s `package.path` variable, except the patterns will be checked using `lovr.filesystem` APIs. This allows `require` to work even when the project is packaged into a zip archive, or when the project is launched from a different directory.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.setRequirePath)
 ---@param path string? # An optional semicolon separated list of search patterns. (default: nil)
-function filesystem.setRequirePath(path) end
+function lovr.filesystem.setRequirePath(path) end
 
 --- Unmounts a directory or archive previously mounted with `lovr.filesystem.mount`.
 ---
@@ -317,14 +317,14 @@ function filesystem.setRequirePath(path) end
 ---@see lovr.filesystem.mount
 ---@param path string # The path to unmount.
 ---@return boolean # Whether the archive was unmounted.
-function filesystem.unmount(path) end
+function lovr.filesystem.unmount(path) end
 
 --- Stops watching files.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.unwatch)
 ---@see lovr.filesystem.watch
 ---@see lovr.filechanged
-function filesystem.unwatch() end
+function lovr.filesystem.unwatch() end
 
 --- Starts watching the filesystem for changes.  File events will be reported by the `lovr.filechanged` callback.
 --- Currently, on PC, only files in the source directory will be watched.  On Android, files in the save directory will be watched instead, so that pushing new files with `adb` can be detected.
@@ -332,7 +332,7 @@ function filesystem.unwatch() end
 --- [Open in browser](https://lovr.org/docs/lovr.filesystem.watch)
 ---@see lovr.filesystem.unwatch
 ---@see lovr.filechanged
-function filesystem.watch() end
+function lovr.filesystem.watch() end
 
 --- Write to a file in the save directory.
 ---
@@ -344,6 +344,6 @@ function filesystem.watch() end
 ---@param content string | Blob # A string or Blob to write to the file.
 ---@return boolean # Whether the write was successful.
 ---@return string # The error message, if there was an error.
-function filesystem.write(filename, content) end
+function lovr.filesystem.write(filename, content) end
 
-_G.lovr.filesystem = filesystem
+return lovr.filesystem

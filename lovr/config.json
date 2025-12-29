@@ -1,7 +1,7 @@
 {
-  "name": "LÖVR",
-  "words": ["lovr%.%w+"],
-  "settings": {
-    "Lua.runtime.version": "LuaJIT"
-  }
+    "name": "LÖVR",
+    "words": ["lovr%.%w+"],
+    "settings": {
+        "Lua.runtime.version" : "LuaJIT"
+    }
 }

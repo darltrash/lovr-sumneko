@@ -5,7 +5,7 @@
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.event)
 ---@class lovr.event
-local event = {}
+lovr.event = {}
 
 --- This enum is used to distinguish whether a display is the headset display or the desktop window.
 ---@alias DisplayType
@@ -120,13 +120,13 @@ local event = {}
 --- Clears the event queue, removing any unprocessed events.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.event.clear)
-function event.clear() end
+function lovr.event.clear() end
 
 --- This function returns a Lua iterator for all of the unprocessed items in the event queue.  Each event consists of a name as a string, followed by event-specific arguments.  This function is called in the default implementation of `lovr.run`, so it is normally not necessary to poll for events yourself.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.event.poll)
 ---@return function # The iterator function, usable in a for loop.
-function event.poll() end
+function lovr.event.poll() end
 
 --- Pushes an event onto the event queue.  It will be processed the next time `lovr.event.poll` is called.  For an event to be processed properly, there needs to be a function in the `lovr.handlers` table with a key that's the same as the event name.
 ---
@@ -135,7 +135,7 @@ function event.poll() end
 ---@see lovr.event.quit
 ---@param name string # The name of the event.
 ---@param ... any # The arguments for the event.  Currently, up to 4 are supported.
-function event.push(name, ...) end
+function lovr.event.push(name, ...) end
 
 --- Pushes an event to quit.  An optional number can be passed to set the exit code for the application.  An exit code of zero indicates normal termination, whereas a nonzero exit code indicates that an error occurred.
 ---
@@ -144,7 +144,7 @@ function event.push(name, ...) end
 ---@see lovr.event.poll
 ---@see lovr.event.restart
 ---@param code number? # The exit code of the program. (default: 0)
-function event.quit(code) end
+function lovr.event.quit(code) end
 
 --- Pushes an event to restart the framework.
 ---
@@ -152,6 +152,6 @@ function event.quit(code) end
 ---@see lovr.restart
 ---@see lovr.event.poll
 ---@see lovr.event.quit
-function event.restart() end
+function lovr.event.restart() end
 
-_G.lovr.event = event
+return lovr.event

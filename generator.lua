@@ -359,9 +359,8 @@ local function processModule(module)
         end
     end
 
-    --# local audio = {}
-    f:write("local ")
-    f:write(name)
+    --# lovr.audio = {}
+    f:write(key)
     f:write(" = {}\n\n")
 
     for _, enum in ipairs(module.enums) do
@@ -373,16 +372,11 @@ local function processModule(module)
     end
 
     for _, func in ipairs(module.functions) do
-        writeFunction(func, name, false, f)
+        writeFunction(func, key, false, f)
     end
 
-    --# _G.lovr.audio = audio
-    f:write("_G.")
+    f:write("return ")
     f:write(key)
-    f:write(" = ")
-    f:write(name)
-    f:write("\n")
-
     f:close()
 
     print("OK")
@@ -403,19 +397,6 @@ end
 -- forced ourselves to write a little index of subclasses :(
 do
     local f = assert(io.open(API_OUTPUT .. "lovr.lua", "a+"))
-
-    for _, key in ipairs(modules) do
-        local name = key:match("([^.]+)$")
-
-        f:write("---@module '")
-        f:write(key)
-        f:write("'\n")
-        f:write("lovr.")
-        f:write(name)
-        f:write(" = ")
-        f:write(key)
-        f:write("\n\n")
-    end
 
     f:write("vec2 = lovr.math.vec2\n")
     f:write("Vec2 = lovr.math.newVec2\n")

@@ -4,7 +4,7 @@
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.audio)
 ---@class lovr.audio
-local audio = {}
+lovr.audio = {}
 
 --- Different types of audio material presets, for use with `lovr.audio.setGeometry`.
 ---@alias AudioMaterial
@@ -303,7 +303,7 @@ function Source:tell(unit) end
 ---@return number # The absorption coefficient for the low frequency band.
 ---@return number # The absorption coefficient for the mid frequency band.
 ---@return number # The absorption coefficient for the high frequency band.
-function audio.getAbsorption() end
+function lovr.audio.getAbsorption() end
 
 --- Returns information about the active playback or capture device.
 ---
@@ -313,7 +313,7 @@ function audio.getAbsorption() end
 ---@param type AudioType? # The type of device to query. (default: 'playback')
 ---@return string | nil # The name of the device, or `nil` if no device is set.
 ---@return userdata | nil # The opaque id of the device, or `nil` if no device is set.
-function audio.getDevice(type) end
+function lovr.audio.getDevice(type) end
 
 --- Returns a list of playback or capture devices.  Each device has an `id`, `name`, and a `default` flag indicating whether it's the default device.
 --- To use a specific device id for playback or capture, pass it to `lovr.audio.setDevice`.
@@ -325,7 +325,7 @@ function audio.getDevice(type) end
 ---@see lovr.audio.stop
 ---@param type AudioType? # The type of devices to query (playback or capture). (default: 'playback')
 ---@return table # The list of devices.
-function audio.getDevices(type) end
+function lovr.audio.getDevices(type) end
 
 --- Returns the orientation of the virtual audio listener in angle/axis representation.
 ---
@@ -337,7 +337,7 @@ function audio.getDevices(type) end
 ---@return number # The x component of the axis of rotation.
 ---@return number # The y component of the axis of rotation.
 ---@return number # The z component of the axis of rotation.
-function audio.getOrientation() end
+function lovr.audio.getOrientation() end
 
 --- Returns the position and orientation of the virtual audio listener.
 ---
@@ -352,7 +352,7 @@ function audio.getOrientation() end
 ---@return number # The x component of the axis of rotation.
 ---@return number # The y component of the axis of rotation.
 ---@return number # The z component of the axis of rotation.
-function audio.getPose() end
+function lovr.audio.getPose() end
 
 --- Returns the position of the virtual audio listener, in meters.
 ---
@@ -360,14 +360,14 @@ function audio.getPose() end
 ---@return number # The x position of the listener.
 ---@return number # The y position of the listener.
 ---@return number # The z position of the listener.
-function audio.getPosition() end
+function lovr.audio.getPosition() end
 
 --- Returns the sample rate used by the playback device.  This can be changed using `lovr.conf`.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.audio.getSampleRate)
 ---@see lovr.conf
 ---@return number # The sample rate of the playback device, in Hz.
-function audio.getSampleRate() end
+function lovr.audio.getSampleRate() end
 
 --- Returns the name of the active spatializer (`simple`, `oculus`, or `phonon`).
 --- The `t.audio.spatializer` setting in `lovr.conf` can be used to express a preference for a particular spatializer.  If it's `nil`, all spatializers will be tried in the following order: `phonon`, `oculus`, `simple`.
@@ -375,14 +375,14 @@ function audio.getSampleRate() end
 --- [Open in browser](https://lovr.org/docs/lovr.audio.getSpatializer)
 ---@see lovr.conf
 ---@return string # The name of the active spatializer.
-function audio.getSpatializer() end
+function lovr.audio.getSpatializer() end
 
 --- Returns the master volume.  All audio sent to the playback device has its volume multiplied by this factor.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.audio.getVolume)
 ---@param units VolumeUnit? # The units to return (linear or db). (default: 'linear')
 ---@return number # The master volume.
-function audio.getVolume(units) end
+function lovr.audio.getVolume(units) end
 
 --- Returns whether an audio device is started.
 ---
@@ -391,7 +391,7 @@ function audio.getVolume(units) end
 ---@see lovr.audio.stop
 ---@param type AudioType? # The type of device to check. (default: 'playback')
 ---@return boolean # Whether the device is active.
-function audio.isStarted(type) end
+function lovr.audio.isStarted(type) end
 
 --- Creates a new Source from an ogg, wav, or mp3 file.
 ---
@@ -401,7 +401,7 @@ function audio.isStarted(type) end
 ---@param options table? # Optional options. (default: nil)
 ---@return Source # The new Source.
 ---@overload fun(sound: Sound, options?: table): Source
-function audio.newSource(file, options) end
+function lovr.audio.newSource(file, options) end
 
 --- Sets the global air absorption coefficients for the medium.  This affects Sources that have the `absorption` effect enabled, causing audio volume to drop off with distance as it is absorbed by the medium it's traveling through (air, water, etc.).  The difference between absorption and the attenuation effect is that absorption is more subtle and is frequency-dependent, so higher-frequency bands can get absorbed more quickly than lower ones.  This can be used to apply "underwater" effects and stuff.
 ---
@@ -409,7 +409,7 @@ function audio.newSource(file, options) end
 ---@param low number # The absorption coefficient for the low frequency band.
 ---@param mid number # The absorption coefficient for the mid frequency band.
 ---@param high number # The absorption coefficient for the high frequency band.
-function audio.setAbsorption(low, mid, high) end
+function lovr.audio.setAbsorption(low, mid, high) end
 
 --- Switches either the playback or capture device to a new one.
 --- If a device for the given type is already active, it will be stopped and destroyed.  The new device will not be started automatically, use `lovr.audio.start` to start it.
@@ -427,7 +427,7 @@ function audio.setAbsorption(low, mid, high) end
 ---@param sink Sound? # An optional audio stream to use as a sink for the device. (default: nil)
 ---@param mode AudioShareMode? # The sharing mode for the device. (default: shared)
 ---@return boolean # Whether creating the audio device succeeded.
-function audio.setDevice(type, id, sink, mode) end
+function lovr.audio.setDevice(type, id, sink, mode) end
 
 --- Sets a mesh of triangles to use for modeling audio effects, using a table of vertices or a Model.  When the appropriate effects are enabled, audio from `Source` objects will correctly be occluded by walls and bounce around to create realistic reverb.
 --- An optional `AudioMaterial` may be provided to specify the acoustic properties of the geometry.
@@ -440,7 +440,7 @@ function audio.setDevice(type, id, sink, mode) end
 ---@param material AudioMaterial? # The acoustic material to use. (default: 'generic')
 ---@return boolean # Whether audio geometry is supported by the current spatializer and the geometry was loaded successfully.
 ---@overload fun(model: Model, material?: AudioMaterial): boolean
-function audio.setGeometry(vertices, indices, material) end
+function lovr.audio.setGeometry(vertices, indices, material) end
 
 --- Sets the orientation of the virtual audio listener in angle/axis representation.
 ---
@@ -453,7 +453,7 @@ function audio.setGeometry(vertices, indices, material) end
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
 ---@overload fun(orientation: Quat)
-function audio.setOrientation(angle, ax, ay, az) end
+function lovr.audio.setOrientation(angle, ax, ay, az) end
 
 --- Sets the position and orientation of the virtual audio listener.
 ---
@@ -469,7 +469,7 @@ function audio.setOrientation(angle, ax, ay, az) end
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
 ---@overload fun(position: Vec3, orientation: Quat)
-function audio.setPose(x, y, z, angle, ax, ay, az) end
+function lovr.audio.setPose(x, y, z, angle, ax, ay, az) end
 
 --- Sets the position of the virtual audio listener.  The position doesn't have any specific units, but usually they can be thought of as meters, to match the headset module.
 ---
@@ -481,14 +481,14 @@ function audio.setPose(x, y, z, angle, ax, ay, az) end
 ---@param y number # The y position of the listener.
 ---@param z number # The z position of the listener.
 ---@overload fun(position: Vec3)
-function audio.setPosition(x, y, z) end
+function lovr.audio.setPosition(x, y, z) end
 
 --- Sets the master volume.  All audio sent to the playback device has its volume multiplied by this factor.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.audio.setVolume)
 ---@param volume number # The master volume.
 ---@param units VolumeUnit? # The units of the value. (default: 'linear')
-function audio.setVolume(volume, units) end
+function lovr.audio.setVolume(volume, units) end
 
 --- Starts the active playback or capture device.  By default the playback device is initialized and started, but this can be controlled using the `t.audio.start` flag in `lovr.conf`.
 ---
@@ -501,7 +501,7 @@ function audio.setVolume(volume, units) end
 ---@see lovr.permission
 ---@param type AudioType? # The type of device to start. (default: 'playback')
 ---@return boolean # Whether the device was successfully started.
-function audio.start(type) end
+function lovr.audio.start(type) end
 
 --- Stops the active playback or capture device.  This may fail if:
 --- - The device is not started
@@ -514,6 +514,6 @@ function audio.start(type) end
 ---@see lovr.audio.isStarted
 ---@param type AudioType? # The type of device to stop. (default: 'playback')
 ---@return boolean # Whether the device was successfully stopped.
-function audio.stop(type) end
+function lovr.audio.stop(type) end
 
-_G.lovr.audio = audio
+return lovr.audio

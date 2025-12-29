@@ -5,7 +5,7 @@
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.graphics)
 ---@class lovr.graphics
-local graphics = {}
+lovr.graphics = {}
 
 --- Controls whether premultiplied alpha is enabled.
 ---@alias BlendAlphaMode
@@ -2552,7 +2552,7 @@ function Texture:setSampler(mode) end
 ---@param stage ShaderStage # The type of shader to compile.
 ---@param source string | Blob # A string, filename, or Blob with shader code.
 ---@return Blob # A Blob containing compiled SPIR-V code.
-function graphics.compileShader(stage, source) end
+function lovr.graphics.compileShader(stage, source) end
 
 --- Returns the global background color.  The textures in a render pass will be cleared to this color at the beginning of the pass if no other clear option is specified.  Additionally, the headset and window will be cleared to this color before rendering.
 ---
@@ -2565,7 +2565,7 @@ function graphics.compileShader(stage, source) end
 ---@return number # The green component of the background color.
 ---@return number # The blue component of the background color.
 ---@return number # The alpha component of the background color.
-function graphics.getBackgroundColor() end
+function lovr.graphics.getBackgroundColor() end
 
 --- Returns the default Font.  The default font is Varela Round, created at 32px with a spread value of `4.0`.  It's used by `Pass:text` if no Font is provided.
 ---
@@ -2573,7 +2573,7 @@ function graphics.getBackgroundColor() end
 ---@see Pass.text
 ---@see lovr.graphics.newFont
 ---@return Font # The default Font object.
-function graphics.getDefaultFont() end
+function lovr.graphics.getDefaultFont() end
 
 --- Returns information about the graphics device and driver.
 ---
@@ -2581,7 +2581,7 @@ function graphics.getDefaultFont() end
 ---@see lovr.graphics.getFeatures
 ---@see lovr.graphics.getLimits
 ---@return table
-function graphics.getDevice() end
+function lovr.graphics.getDevice() end
 
 --- Returns a table indicating which features are supported by the GPU.
 ---
@@ -2590,7 +2590,7 @@ function graphics.getDevice() end
 ---@see lovr.graphics.getDevice
 ---@see lovr.graphics.getLimits
 ---@return table # 
-function graphics.getFeatures() end
+function lovr.graphics.getFeatures() end
 
 --- Returns limits of the current GPU.
 ---
@@ -2599,13 +2599,13 @@ function graphics.getFeatures() end
 ---@see lovr.graphics.getDevice
 ---@see lovr.graphics.getFeatures
 ---@return table # 
-function graphics.getLimits() end
+function lovr.graphics.getLimits() end
 
 --- Returns the window pass.  This is a builtin render `Pass` object that renders to the desktop window texture.  If the desktop window was not open when the graphics module was initialized, this function will return `nil`.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.graphics.getWindowPass)
 ---@return Pass | nil # The window pass, or `nil` if there is no window.
-function graphics.getWindowPass() end
+function lovr.graphics.getWindowPass() end
 
 --- Returns the type of operations the GPU supports for a texture format, if any.
 ---
@@ -2617,7 +2617,7 @@ function graphics.getWindowPass() end
 ---@param ... TextureFeature # Zero or more features to check.  If no features are given, this function will return whether the GPU supports *any* feature for this format.  Otherwise, this function will only return true if *all* of the input features are supported.
 ---@return boolean # Whether the GPU supports these operations for textures with this format, when created with the `linear` flag set to `true`.
 ---@return boolean # Whether the GPU supports these operations for textures with this format, when created with the `linear` flag set to `false`.
-function graphics.isFormatSupported(format, ...) end
+function lovr.graphics.isFormatSupported(format, ...) end
 
 --- Returns whether the **super experimental** HDR mode is active.
 --- To enable HDR, add `t.graphics.hdr` to `lovr.conf`.  When enabled, LÖVR will try to create an HDR10 window.  If the GPU supports it, then this function will return true and the window texture will be HDR:
@@ -2628,14 +2628,14 @@ function graphics.isFormatSupported(format, ...) end
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.graphics.isHDR)
 ---@return boolean # Whether HDR is enabled.
-function graphics.isHDR() end
+function lovr.graphics.isHDR() end
 
 --- Returns whether timing stats are enabled.  When enabled, `Pass:getStats` will return `submitTime` and `gpuTime` durations.  Timing is enabled by default when `t.graphics.debug` is set in `lovr.conf`.  Timing has a small amount of overhead, so it should only be enabled when needed.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.graphics.isTimingEnabled)
 ---@see Pass.getStats
 ---@return boolean # Whether timing is enabled.
-function graphics.isTimingEnabled() end
+function lovr.graphics.isTimingEnabled() end
 
 --- Creates a Buffer.
 ---
@@ -2646,7 +2646,7 @@ function graphics.isTimingEnabled() end
 ---@overload fun(blob: Blob): Buffer
 ---@overload fun(format: table | DataType, length?: number): Buffer
 ---@overload fun(format: table | DataType, data: table | Blob): Buffer
-function graphics.newBuffer(size) end
+function lovr.graphics.newBuffer(size) end
 
 --- Creates a new Font.
 ---
@@ -2660,14 +2660,14 @@ function graphics.newBuffer(size) end
 ---@return Font # The new Font.
 ---@overload fun(size?: number, spread?: number): Font
 ---@overload fun(rasterizer: Rasterizer, spread?: number): Font
-function graphics.newFont(file, size, spread) end
+function lovr.graphics.newFont(file, size, spread) end
 
 --- Creates a new Material from a table of properties and textures.  All fields are optional.  Once a Material is created, its properties can not be changed.  Instead, a new Material should be created with the updated properties.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.graphics.newMaterial)
 ---@param properties table # Material properties.
 ---@return Material # The new material.
-function graphics.newMaterial(properties) end
+function lovr.graphics.newMaterial(properties) end
 
 --- Creates a Mesh.  The capacity of the Mesh must be provided upfront, using either a vertex count or the vertex data itself.  A custom vertex format can be given to specify the set of attributes in each vertex, which get sent to the vertex shader.  If the format isn't given, the default vertex format will be used:
 ---     {
@@ -2688,7 +2688,7 @@ function graphics.newMaterial(properties) end
 ---@overload fun(format: table, vertices: table, storage?: MeshStorage): Mesh
 ---@overload fun(format: table, blob: Blob, storage?: MeshStorage): Mesh
 ---@overload fun(buffer: Buffer): Mesh
-function graphics.newMesh(count, storage) end
+function lovr.graphics.newMesh(count, storage) end
 
 --- Loads a 3D model from a file.  Currently, OBJ, glTF, and binary STL files are supported.
 ---
@@ -2699,7 +2699,7 @@ function graphics.newMesh(count, storage) end
 ---@param options table? # An optional table of Model options. (default: nil)
 ---@return Model # The new Model.
 ---@overload fun(modelData: ModelData, options?: table): Model
-function graphics.newModel(file, options) end
+function lovr.graphics.newModel(file, options) end
 
 --- Creates and returns a new Pass object.  The canvas (the set of textures the Pass renders to) can be specified when creating the Pass, or later using `Pass:setCanvas`.
 ---
@@ -2711,7 +2711,7 @@ function graphics.newModel(file, options) end
 ---@return Pass # The new Pass.
 ---@overload fun(canvas: table): Pass
 ---@overload fun(): Pass
-function graphics.newPass(...) end
+function lovr.graphics.newPass(...) end
 
 --- Creates a new Sampler.  Samplers are immutable, meaning their parameters can not be changed after the sampler is created.  Instead, a new sampler should be created with the updated properties.
 ---
@@ -2719,7 +2719,7 @@ function graphics.newPass(...) end
 ---@see Pass.setSampler
 ---@param parameters table # Parameters for the sampler.
 ---@return Sampler # The new sampler.
-function graphics.newSampler(parameters) end
+function lovr.graphics.newSampler(parameters) end
 
 --- Creates a Shader, which is a small program that runs on the GPU.
 --- Shader code is usually written in GLSL and compiled to SPIR-V bytecode.  SPIR-V is faster to load but requires a build step.  Either form can be used to create a shader.
@@ -2735,7 +2735,7 @@ function graphics.newSampler(parameters) end
 ---@return Shader # The new shader.
 ---@overload fun(compute: string | Blob, options?: table): Shader
 ---@overload fun(defaultshader: DefaultShader, options?: table): Shader
-function graphics.newShader(vertex, fragment, options) end
+function lovr.graphics.newShader(vertex, fragment, options) end
 
 --- Creates a new Texture.  Image filenames or `Image` objects can be used to provide the initial pixel data and the dimensions, format, and type.  Alternatively, dimensions can be provided, which will create an empty texture.
 ---
@@ -2748,7 +2748,7 @@ function graphics.newShader(vertex, fragment, options) end
 ---@overload fun(width: number, height: number, layers: number, options?: table): Texture
 ---@overload fun(image: string, options?: table): Texture
 ---@overload fun(images: (string|Blob|Image)[], options?: table): Texture
-function graphics.newTexture(file, options) end
+function lovr.graphics.newTexture(file, options) end
 
 --- Creates a new Texture view.  A texture view does not store any pixels on its own, but instead uses the pixel data of a "parent" Texture object.  The width, height, format, sample count, and usage flags all match the parent.  The view may have a different `TextureType`, and it may reference a subset of the parent texture's layers and mipmap levels.
 --- Texture views are used for:
@@ -2762,14 +2762,14 @@ function graphics.newTexture(file, options) end
 ---@param parent Texture # The parent Texture to create a view of.
 ---@param options table? # Options for the texture view. (default: nil)
 ---@return Texture # The new texture view.
-function graphics.newTextureView(parent, options) end
+function lovr.graphics.newTextureView(parent, options) end
 
 --- Presents the window texture to the desktop window.  This function is called automatically by the default implementation of `lovr.run`, so it normally does not need to be called.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.graphics.present)
 ---@see lovr.graphics.submit
 ---@see lovr.graphics.getWindowPass
-function graphics.present() end
+function lovr.graphics.present() end
 
 --- Changes the global background color.  The textures in a render pass will be cleared to this color at the beginning of the pass if no other clear option is specified.  Additionally, the headset and window will be cleared to this color before rendering.
 ---
@@ -2784,14 +2784,14 @@ function graphics.present() end
 ---@param a number? # The alpha component of the background color. (default: 1.0)
 ---@overload fun(hex: number, a?: number)
 ---@overload fun(table: number[])
-function graphics.setBackgroundColor(r, g, b, a) end
+function lovr.graphics.setBackgroundColor(r, g, b, a) end
 
 --- Enables or disables timing stats.  When enabled, `Pass:getStats` will return `submitTime` and `gpuTime` durations.  Timing is enabled by default when `t.graphics.debug` is set in `lovr.conf`.  Timing has a small amount of overhead, so it should only be enabled when needed.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.graphics.setTimingEnabled)
 ---@see Pass.getStats
 ---@param enable boolean # Whether timing should be enabled.
-function graphics.setTimingEnabled(enable) end
+function lovr.graphics.setTimingEnabled(enable) end
 
 --- Submits work to the GPU.
 ---
@@ -2800,12 +2800,12 @@ function graphics.setTimingEnabled(enable) end
 ---@param ... Pass | boolean | nil # The pass objects to submit.  Falsy values will be skipped.
 ---@return boolean # Always returns true, for convenience when returning from `lovr.draw`.
 ---@overload fun(t: (Pass|boolean)[]): boolean
-function graphics.submit(...) end
+function lovr.graphics.submit(...) end
 
 --- Waits for all submitted GPU work to finish.  A normal application that is trying to render graphics at a high framerate should never use this function, since waiting like this prevents the CPU from doing other useful work.  Otherwise, reasons to use this function might be for debugging or to force a `Readback` to finish immediately.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.graphics.wait)
 ---@see lovr.graphics.submit
-function graphics.wait() end
+function lovr.graphics.wait() end
 
-_G.lovr.graphics = graphics
+return lovr.graphics

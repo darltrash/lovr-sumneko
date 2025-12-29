@@ -4,7 +4,7 @@
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.math)
 ---@class lovr.math
-local math = {}
+lovr.math = {}
 
 --- A Curve is an object that represents a Bézier curve in three dimensions.  Curves are defined by an arbitrary number of control points (note that the curve only passes through the first and last control point).
 --- Once a Curve is created with `lovr.math.newCurve`, you can use `Curve:evaluate` to get a point on the curve or `Curve:render` to get a list of all of the points on the curve.  These points can be passed directly to `Pass:points` or `Pass:line` to render the curve.
@@ -1019,7 +1019,7 @@ local Vectors = {}
 --- This is called automatically at the end of each frame.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.math.drain)
-function math.drain() end
+function lovr.math.drain() end
 
 --- Converts a color from gamma space to linear space.
 ---
@@ -1033,13 +1033,13 @@ function math.drain() end
 ---@return number # The blue component of the resulting linear-space color.
 ---@overload fun(color: number[]): number, number, number
 ---@overload fun(x: number): number
-function math.gammaToLinear(gr, gg, gb) end
+function lovr.math.gammaToLinear(gr, gg, gb) end
 
 --- Get the seed used to initialize the random generator.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.math.getRandomSeed)
 ---@return number # The new seed.
-function math.getRandomSeed() end
+function lovr.math.getRandomSeed() end
 
 --- Converts a color from linear space to gamma space.
 ---
@@ -1053,7 +1053,7 @@ function math.getRandomSeed() end
 ---@return number # The blue component of the resulting gamma-space color.
 ---@overload fun(color: number[]): number, number, number
 ---@overload fun(x: number): number
-function math.linearToGamma(lr, lg, lb) end
+function lovr.math.linearToGamma(lr, lg, lb) end
 
 --- Creates a temporary 4D matrix.  This function takes the same arguments as `Mat4:set`.
 ---
@@ -1067,7 +1067,7 @@ function math.linearToGamma(lr, lg, lb) end
 ---@overload fun(position?: Vec3, rotation?: Quat): Mat4
 ---@overload fun(...: number): Mat4
 ---@overload fun(d: number): Mat4
-function math.mat4() end
+function lovr.math.mat4() end
 
 --- Creates a new `Curve` from a list of control points.
 ---
@@ -1080,7 +1080,7 @@ function math.mat4() end
 ---@overload fun(v: Vec3, ...: any): Curve
 ---@overload fun(points: table): Curve
 ---@overload fun(n: number): Curve
-function math.newCurve(x, y, z, ...) end
+function lovr.math.newCurve(x, y, z, ...) end
 
 --- Creates a new 4D matrix.  This function takes the same arguments as `Mat4:set`.
 ---
@@ -1094,7 +1094,7 @@ function math.newCurve(x, y, z, ...) end
 ---@overload fun(position?: Vec3, rotation?: Quat): Mat4
 ---@overload fun(...: number): Mat4
 ---@overload fun(d: number): Mat4
-function math.newMat4() end
+function lovr.math.newMat4() end
 
 --- Creates a new quaternion.  This function takes the same arguments as `Quat:set`.
 ---
@@ -1113,7 +1113,7 @@ function math.newMat4() end
 ---@overload fun(v: Vec3, u: Vec3): Quat
 ---@overload fun(m: Mat4): Quat
 ---@overload fun(): Quat
-function math.newQuat(angle, ax, ay, az, raw) end
+function lovr.math.newQuat(angle, ax, ay, az, raw) end
 
 --- Creates a new `RandomGenerator`, which can be used to generate random numbers. If you just want some random numbers, you can use `lovr.math.random`. Individual RandomGenerator objects are useful if you need more control over the random sequence used or need a random generator isolated from other instances.
 ---
@@ -1121,7 +1121,7 @@ function math.newQuat(angle, ax, ay, az, raw) end
 ---@return RandomGenerator # The new RandomGenerator.
 ---@overload fun(seed: number): RandomGenerator
 ---@overload fun(low: number, high: number): RandomGenerator
-function math.newRandomGenerator() end
+function lovr.math.newRandomGenerator() end
 
 --- Creates a new 2D vector.  This function takes the same arguments as `Vec2:set`.
 ---
@@ -1133,7 +1133,7 @@ function math.newRandomGenerator() end
 ---@param y number? # The y value of the vector. (default: x)
 ---@return Vec2 # The new vector.
 ---@overload fun(u: Vec2): Vec2
-function math.newVec2(x, y) end
+function lovr.math.newVec2(x, y) end
 
 --- Creates a new 3D vector.  This function takes the same arguments as `Vec3:set`.
 ---
@@ -1148,7 +1148,7 @@ function math.newVec2(x, y) end
 ---@overload fun(u: Vec3): Vec3
 ---@overload fun(m: Mat4): Vec3
 ---@overload fun(q: Quat): Vec3
-function math.newVec3(x, y, z) end
+function lovr.math.newVec3(x, y, z) end
 
 --- Creates a new 4D vector.  This function takes the same arguments as `Vec4:set`.
 ---
@@ -1162,7 +1162,7 @@ function math.newVec3(x, y, z) end
 ---@param w number? # The w value of the vector. (default: x)
 ---@return Vec4 # The new vector.
 ---@overload fun(u: Vec4): Vec4
-function math.newVec4(x, y, z, w) end
+function lovr.math.newVec4(x, y, z, w) end
 
 --- Returns a 1D, 2D, 3D, or 4D simplex noise value.  The number will be between 0 and 1.
 ---
@@ -1173,7 +1173,7 @@ function math.newVec4(x, y, z, w) end
 ---@overload fun(x: number, y: number): number
 ---@overload fun(x: number, y: number, z: number): number
 ---@overload fun(x: number, y: number, z: number, w: number): number
-function math.noise(x) end
+function lovr.math.noise(x) end
 
 --- Creates a temporary quaternion.  This function takes the same arguments as `Quat:set`.
 ---
@@ -1192,7 +1192,7 @@ function math.noise(x) end
 ---@overload fun(v: Vec3, u: Vec3): Quat
 ---@overload fun(m: Mat4): Quat
 ---@overload fun(): Quat
-function math.quat(angle, ax, ay, az, raw) end
+function lovr.math.quat(angle, ax, ay, az, raw) end
 
 --- Returns a uniformly distributed pseudo-random number.  This function has improved randomness over Lua's `math.random` and also guarantees that the sequence of random numbers will be the same on all platforms (given the same seed).
 ---
@@ -1203,7 +1203,7 @@ function math.quat(angle, ax, ay, az, raw) end
 ---@return number # A pseudo-random number.
 ---@overload fun(high: number): number
 ---@overload fun(low: number, high: number): number
-function math.random() end
+function lovr.math.random() end
 
 --- Returns a pseudo-random number from a normal distribution (a bell curve).  You can control the center of the bell curve (the mean value) and the overall width (sigma, or standard deviation).
 ---
@@ -1213,13 +1213,13 @@ function math.random() end
 ---@param sigma number? # The standard deviation of the distribution.  This can be thought of how "wide" the range of numbers is or how much variability there is. (default: 1)
 ---@param mu number? # The average value returned. (default: 0)
 ---@return number # A normally distributed pseudo-random number.
-function math.randomNormal(sigma, mu) end
+function lovr.math.randomNormal(sigma, mu) end
 
 --- Seed the random generator with a new seed.  Each seed will cause `lovr.math.random` and `lovr.math.randomNormal` to produce a unique sequence of random numbers.  This is done once automatically at startup by `lovr.run`.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.math.setRandomSeed)
 ---@param seed number # The new seed.
-function math.setRandomSeed(seed) end
+function lovr.math.setRandomSeed(seed) end
 
 --- Creates a temporary 2D vector.  This function takes the same arguments as `Vec2:set`.
 ---
@@ -1231,7 +1231,7 @@ function math.setRandomSeed(seed) end
 ---@param y number? # The y value of the vector. (default: x)
 ---@return Vec2 # The new vector.
 ---@overload fun(u: Vec2): Vec2
-function math.vec2(x, y) end
+function lovr.math.vec2(x, y) end
 
 --- Creates a temporary 3D vector.  This function takes the same arguments as `Vec3:set`.
 ---
@@ -1246,7 +1246,7 @@ function math.vec2(x, y) end
 ---@overload fun(u: Vec3): Vec3
 ---@overload fun(m: Mat4): Vec3
 ---@overload fun(q: Quat): Vec3
-function math.vec3(x, y, z) end
+function lovr.math.vec3(x, y, z) end
 
 --- Creates a temporary 4D vector.  This function takes the same arguments as `Vec4:set`.
 ---
@@ -1260,6 +1260,6 @@ function math.vec3(x, y, z) end
 ---@param w number? # The w value of the vector. (default: x)
 ---@return Vec4 # The new vector.
 ---@overload fun(u: Vec4): Vec4
-function math.vec4(x, y, z, w) end
+function lovr.math.vec4(x, y, z, w) end
 
-_G.lovr.math = math
+return lovr.math

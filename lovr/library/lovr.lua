@@ -116,7 +116,7 @@
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.wheelmoved)
 ---@field wheelmoved fun(dx: number, dy: number)
-local lovr = {}
+lovr = {}
 
 --- The superclass of all LÖVR objects.  All objects have these methods.
 ---
@@ -145,43 +145,18 @@ function Object:type() end
 ---@return string # The commit hash (not available in all builds).
 function lovr.getVersion() end
 
-_G.lovr = lovr
----@module 'lovr'
-lovr.lovr = lovr
-
+return lovr---@module 'lovr'
 ---@module 'lovr.audio'
-lovr.audio = lovr.audio
-
 ---@module 'lovr.data'
-lovr.data = lovr.data
-
 ---@module 'lovr.event'
-lovr.event = lovr.event
-
 ---@module 'lovr.filesystem'
-lovr.filesystem = lovr.filesystem
-
 ---@module 'lovr.graphics'
-lovr.graphics = lovr.graphics
-
 ---@module 'lovr.headset'
-lovr.headset = lovr.headset
-
 ---@module 'lovr.math'
-lovr.math = lovr.math
-
 ---@module 'lovr.physics'
-lovr.physics = lovr.physics
-
 ---@module 'lovr.system'
-lovr.system = lovr.system
-
 ---@module 'lovr.thread'
-lovr.thread = lovr.thread
-
 ---@module 'lovr.timer'
-lovr.timer = lovr.timer
-
 vec2 = lovr.math.vec2
 Vec2 = lovr.math.newVec2
 vec3 = lovr.math.vec3

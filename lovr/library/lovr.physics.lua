@@ -4,7 +4,7 @@
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.physics)
 ---@class lovr.physics
-local physics = {}
+lovr.physics = {}
 
 --- Represents the different types of physics Joints available.
 ---@alias JointType
@@ -2525,7 +2525,7 @@ function World:update(dt) end
 ---@param z number # The z position of the joint anchor point, in world coordinates.
 ---@return BallJoint # The new BallJoint.
 ---@overload fun(colliderA: Collider, colliderB: Collider, anchor: Vec3): BallJoint
-function physics.newBallJoint(colliderA, colliderB, x, y, z) end
+function lovr.physics.newBallJoint(colliderA, colliderB, x, y, z) end
 
 --- Creates a new BoxShape.
 ---
@@ -2541,7 +2541,7 @@ function physics.newBallJoint(colliderA, colliderB, x, y, z) end
 ---@param height number? # The height of the box, in meters. (default: width)
 ---@param depth number? # The depth of the box, in meters. (default: width)
 ---@return BoxShape # The new BoxShape.
-function physics.newBoxShape(width, height, depth) end
+function lovr.physics.newBoxShape(width, height, depth) end
 
 --- Creates a new CapsuleShape.  Capsules are cylinders with hemispheres on each end.
 ---
@@ -2556,7 +2556,7 @@ function physics.newBoxShape(width, height, depth) end
 ---@param radius number? # The radius of the capsule, in meters. (default: 1)
 ---@param length number? # The length of the capsule, not including the caps, in meters. (default: 1)
 ---@return CapsuleShape # The new CapsuleShape.
-function physics.newCapsuleShape(radius, length) end
+function lovr.physics.newCapsuleShape(radius, length) end
 
 --- Creates a new ConeJoint.
 ---
@@ -2576,7 +2576,7 @@ function physics.newCapsuleShape(radius, length) end
 ---@param az number # The z component of the cone axis, in world space.
 ---@return ConeJoint # The new ConeJoint.
 ---@overload fun(colliderA: Collider, colliderB: Collider, anchor: Vec3, axis: Vec3): ConeJoint
-function physics.newConeJoint(colliderA, colliderB, x, y, z, ax, ay, az) end
+function lovr.physics.newConeJoint(colliderA, colliderB, x, y, z, ax, ay, az) end
 
 --- Creates a new ConvexShape.
 ---
@@ -2593,7 +2593,7 @@ function physics.newConeJoint(colliderA, colliderB, x, y, z, ax, ay, az) end
 ---@return ConvexShape # The new ConvexShape.
 ---@overload fun(object: ModelData | Model | Mesh, scale?: number): ConvexShape
 ---@overload fun(template: ConvexShape, scale?: number): ConvexShape
-function physics.newConvexShape(points, scale) end
+function lovr.physics.newConvexShape(points, scale) end
 
 --- Creates a new CylinderShape.
 ---
@@ -2608,7 +2608,7 @@ function physics.newConvexShape(points, scale) end
 ---@param radius number? # The radius of the cylinder, in meters. (default: 1)
 ---@param length number? # The length of the cylinder, in meters. (default: 1)
 ---@return CylinderShape # The new CylinderShape.
-function physics.newCylinderShape(radius, length) end
+function lovr.physics.newCylinderShape(radius, length) end
 
 --- Creates a new DistanceJoint.
 ---
@@ -2628,7 +2628,7 @@ function physics.newCylinderShape(radius, length) end
 ---@param z2 number # The z position of the second anchor point, in world coordinates.
 ---@return DistanceJoint # The new DistanceJoint.
 ---@overload fun(colliderA: Collider, colliderB: Collider, first: Vec3, second: Vec3): DistanceJoint
-function physics.newDistanceJoint(colliderA, colliderB, x1, y1, z1, x2, y2, z2) end
+function lovr.physics.newDistanceJoint(colliderA, colliderB, x1, y1, z1, x2, y2, z2) end
 
 --- Creates a new HingeJoint.
 ---
@@ -2648,7 +2648,7 @@ function physics.newDistanceJoint(colliderA, colliderB, x1, y1, z1, x2, y2, z2) 
 ---@param az number # The z component of the hinge axis direction.
 ---@return HingeJoint # The new HingeJoint.
 ---@overload fun(colliderA: Collider, colliderB: Collider, anchor: Vec3, axis: Vec3): HingeJoint
-function physics.newHingeJoint(colliderA, colliderB, x, y, z, ax, ay, az) end
+function lovr.physics.newHingeJoint(colliderA, colliderB, x, y, z, ax, ay, az) end
 
 --- Creates a new MeshShape.
 ---
@@ -2667,7 +2667,7 @@ function physics.newHingeJoint(colliderA, colliderB, x, y, z, ax, ay, az) end
 ---@return MeshShape # The new MeshShape.
 ---@overload fun(object: ModelData | Model | Mesh, scale?: number): MeshShape
 ---@overload fun(template: MeshShape, scale?: number): MeshShape
-function physics.newMeshShape(vertices, indices, scale) end
+function lovr.physics.newMeshShape(vertices, indices, scale) end
 
 --- Creates a new SliderJoint.
 ---
@@ -2684,7 +2684,7 @@ function physics.newMeshShape(vertices, indices, scale) end
 ---@param az number # The z component of the slider axis.
 ---@return SliderJoint # The new SliderJoint.
 ---@overload fun(colliderA: Collider, colliderB: Collider, axis: Vec3): SliderJoint
-function physics.newSliderJoint(colliderA, colliderB, ax, ay, az) end
+function lovr.physics.newSliderJoint(colliderA, colliderB, ax, ay, az) end
 
 --- Creates a new SphereShape.
 ---
@@ -2698,7 +2698,7 @@ function physics.newSliderJoint(colliderA, colliderB, ax, ay, az) end
 ---@see lovr.physics.newTerrainShape
 ---@param radius number? # The radius of the sphere, in meters. (default: 1)
 ---@return SphereShape # The new SphereShape.
-function physics.newSphereShape(radius) end
+function lovr.physics.newSphereShape(radius) end
 
 --- Creates a new TerrainShape.
 ---
@@ -2715,7 +2715,7 @@ function physics.newSphereShape(radius) end
 ---@return TerrainShape # The new TerrainShape.
 ---@overload fun(scale: number, heightmap: Image, stretch?: number): TerrainShape
 ---@overload fun(scale: number, callback: function, samples?: number): TerrainShape
-function physics.newTerrainShape(scale) end
+function lovr.physics.newTerrainShape(scale) end
 
 --- Creates a new WeldJoint.
 ---
@@ -2728,7 +2728,7 @@ function physics.newTerrainShape(scale) end
 ---@param colliderA Collider # The first collider to attach the Joint to, or `nil` to attach the joint to a fixed position in the World.
 ---@param colliderB Collider # The second collider to attach the Joint to.
 ---@return WeldJoint # The new WeldJoint.
-function physics.newWeldJoint(colliderA, colliderB) end
+function lovr.physics.newWeldJoint(colliderA, colliderB) end
 
 --- Creates a new physics World.
 ---
@@ -2736,6 +2736,6 @@ function physics.newWeldJoint(colliderA, colliderB) end
 ---@see World.update
 ---@param settings table? # An optional table with settings for the physics simulation. (default: nil)
 ---@return World # A whole new World.
-function physics.newWorld(settings) end
+function lovr.physics.newWorld(settings) end
 
-_G.lovr.physics = physics
+return lovr.physics

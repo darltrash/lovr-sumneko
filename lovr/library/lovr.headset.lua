@@ -4,7 +4,7 @@
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset)
 ---@class lovr.headset
-local headset = {}
+lovr.headset = {}
 
 --- Different types of input devices supported by the `lovr.headset` module.
 ---@alias Device
@@ -273,7 +273,7 @@ function Layer:setViewport(x, y, w, h) end
 ---@param model Model # The model to animate.
 ---@return boolean # Whether the animation was applied successfully to the Model.  If the Model was not compatible or animation data for the device was not available, this will be `false`.
 ---@overload fun(device?: Device, model: Model): boolean
-function headset.animate(model) end
+function lovr.headset.animate(model) end
 
 --- Returns the current angular velocity of a device.
 ---
@@ -285,7 +285,7 @@ function headset.animate(model) end
 ---@return number # The x component of the angular velocity.
 ---@return number # The y component of the angular velocity.
 ---@return number # The z component of the angular velocity.
-function headset.getAngularVelocity(device) end
+function lovr.headset.getAngularVelocity(device) end
 
 --- Get the current state of an analog axis on a device.  Some axes are multidimensional, for example a 2D touchpad or thumbstick with x/y axes.  For multidimensional axes, this function will return multiple values, one number for each axis.  In these cases, it can be useful to use the `select` function built in to Lua to select a particular axis component.
 ---
@@ -295,7 +295,7 @@ function headset.getAngularVelocity(device) end
 ---@param device Device # The device.
 ---@param axis DeviceAxis # The axis.
 ---@return number | nil # The current state of the components of the axis, or `nil` if the device does not have any information about the axis.
-function headset.getAxis(device, axis) end
+function lovr.headset.getAxis(device, axis) end
 
 --- Returns the depth of the play area, in meters.
 ---
@@ -303,7 +303,7 @@ function headset.getAxis(device, axis) end
 ---@see lovr.headset.getBoundsWidth
 ---@see lovr.headset.getBoundsDimensions
 ---@return number # The depth of the play area, in meters.
-function headset.getBoundsDepth() end
+function lovr.headset.getBoundsDepth() end
 
 --- Returns the size of the play area, in meters.
 ---
@@ -313,7 +313,7 @@ function headset.getBoundsDepth() end
 ---@see lovr.headset.getBoundsGeometry
 ---@return number # The width of the play area, in meters.
 ---@return number # The depth of the play area, in meters.
-function headset.getBoundsDimensions() end
+function lovr.headset.getBoundsDimensions() end
 
 --- Returns a list of points representing the boundaries of the play area, or `nil` if the current headset driver does not expose this information.
 ---
@@ -321,7 +321,7 @@ function headset.getBoundsDimensions() end
 ---@see lovr.headset.getBoundsDimensions
 ---@param t table? # A table to fill with the points.  If `nil`, a new table will be created. (default: nil)
 ---@return table # A flat table of 3D points representing the play area boundaries.
-function headset.getBoundsGeometry(t) end
+function lovr.headset.getBoundsGeometry(t) end
 
 --- Returns the width of the play area, in meters.
 ---
@@ -329,14 +329,14 @@ function headset.getBoundsGeometry(t) end
 ---@see lovr.headset.getBoundsDepth
 ---@see lovr.headset.getBoundsDimensions
 ---@return number # The width of the play area, in meters.
-function headset.getBoundsWidth() end
+function lovr.headset.getBoundsWidth() end
 
 --- Returns the near and far clipping planes used to render to the headset.  Objects closer than the near clipping plane or further than the far clipping plane will be clipped out of view.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.getClipDistance)
 ---@return number # The distance to the near clipping plane, in meters.
 ---@return number # The distance to the far clipping plane, in meters, or 0 for an infinite far clipping plane with a reversed Z range.
-function headset.getClipDistance() end
+function lovr.headset.getClipDistance() end
 
 --- Returns the headset delta time, which is the difference between the current and previous predicted display times.  When the headset is active, this will be the `dt` value passed in to `lovr.update`.
 ---
@@ -345,7 +345,7 @@ function headset.getClipDistance() end
 ---@see lovr.timer.getTime
 ---@see lovr.timer.getDelta
 ---@return number # The delta time.
-function headset.getDeltaTime() end
+function lovr.headset.getDeltaTime() end
 
 --- Returns the direction a device is pointing.  It will always be normalized.
 ---
@@ -360,7 +360,7 @@ function headset.getDeltaTime() end
 ---@return number # The x component of the direction.
 ---@return number # The y component of the direction.
 ---@return number # The z component of the direction.
-function headset.getDirection(device) end
+function lovr.headset.getDirection(device) end
 
 --- Returns the texture dimensions of the headset display (for one eye), in pixels.
 ---
@@ -369,7 +369,7 @@ function headset.getDirection(device) end
 ---@see lovr.headset.getDisplayHeight
 ---@return number # The width of the display.
 ---@return number # The height of the display.
-function headset.getDisplayDimensions() end
+function lovr.headset.getDisplayDimensions() end
 
 --- Returns the height of the headset display (for one eye), in pixels.
 ---
@@ -377,7 +377,7 @@ function headset.getDisplayDimensions() end
 ---@see lovr.headset.getDisplayWidth
 ---@see lovr.headset.getDisplayDimensions
 ---@return number # The height of the display.
-function headset.getDisplayHeight() end
+function lovr.headset.getDisplayHeight() end
 
 --- Returns the width of the headset display (for one eye), in pixels.
 ---
@@ -385,7 +385,7 @@ function headset.getDisplayHeight() end
 ---@see lovr.headset.getDisplayHeight
 ---@see lovr.headset.getDisplayDimensions
 ---@return number # The width of the display.
-function headset.getDisplayWidth() end
+function lovr.headset.getDisplayWidth() end
 
 --- Returns the `HeadsetDriver` that is currently in use, plus the name of the VR runtime.  The order of headset drivers can be changed using `lovr.conf`.
 ---
@@ -393,21 +393,21 @@ function headset.getDisplayWidth() end
 ---@see lovr.headset.getName
 ---@return HeadsetDriver # The current headset backend, e.g. `openxr` or `simulator`.
 ---@return string # The name of the VR runtime, e.g. `SteamVR/OpenXR`.
-function headset.getDriver() end
+function lovr.headset.getDriver() end
 
 --- Returns a table of features that are supported by the current headset runtime.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.getFeatures)
 ---@see lovr.headset.getName
 ---@return table # 
-function headset.getFeatures() end
+function lovr.headset.getFeatures() end
 
 --- Returns the current foveation settings, previously set by `lovr.headset.setFoveation`.'
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.getFoveation)
 ---@return FoveationLevel # The foveation level (or the maximum level when dynamic foveation is active).
 ---@return boolean # Whether dynamic foveation is active, allowing the system to reduce foveation based on GPU load.
-function headset.getFoveation() end
+function lovr.headset.getFoveation() end
 
 --- Returns pointers to the OpenXR instance and session objects.
 --- This can be used with FFI or other native plugins to integrate with other OpenXR code.
@@ -415,13 +415,13 @@ function headset.getFoveation() end
 --- [Open in browser](https://lovr.org/docs/lovr.headset.getHandles)
 ---@return lightuserdata # The OpenXR instance handle (`XrInstance`).
 ---@return lightuserdata # The OpenXR session handle (`XrSession`).
-function headset.getHandles() end
+function lovr.headset.getHandles() end
 
 --- Returns a table with all of the currently tracked hand devices.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.getHands)
 ---@return Device[] # The currently tracked hand devices.
-function headset.getHands() end
+function lovr.headset.getHands() end
 
 --- Returns the list of active `Layer` objects.  These are the layers that will be rendered in the headset's display.  They are rendered in order.
 ---
@@ -429,13 +429,13 @@ function headset.getHands() end
 ---@see lovr.headset.newLayer
 ---@see Layer
 ---@return Layer[] # The list of layers.
-function headset.getLayers() end
+function lovr.headset.getLayers() end
 
 --- Returns the name of the headset as a string.  The exact string that is returned depends on the hardware and VR SDK that is currently in use.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.getName)
 ---@return string # The name of the headset as a string.
-function headset.getName() end
+function lovr.headset.getName() end
 
 --- Returns the current orientation of a device, in angle/axis form.
 ---
@@ -452,7 +452,7 @@ function headset.getName() end
 ---@return number # The x component of the axis of rotation.
 ---@return number # The y component of the axis of rotation.
 ---@return number # The z component of the axis of rotation.
-function headset.getOrientation(device) end
+function lovr.headset.getOrientation(device) end
 
 --- Returns a `Pass` that renders to the headset display.
 ---
@@ -461,14 +461,14 @@ function headset.getOrientation(device) end
 ---@see lovr.graphics.getWindowPass
 ---@see lovr.conf
 ---@return Pass | nil # The pass.
-function headset.getPass() end
+function lovr.headset.getPass() end
 
 --- Returns the current passthrough mode.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.getPassthrough)
 ---@see lovr.headset.getPassthroughModes
 ---@return PassthroughMode # The current passthrough mode.
-function headset.getPassthrough() end
+function lovr.headset.getPassthrough() end
 
 --- Returns the set of supported passthrough modes.
 ---
@@ -476,7 +476,7 @@ function headset.getPassthrough() end
 ---@see lovr.headset.getPassthrough
 ---@see lovr.headset.setPassthrough
 ---@return table # The set of supported passthrough modes.  Keys will be `PassthroughMode` strings, and values will be booleans indicating whether the mode is supported.
-function headset.getPassthroughModes() end
+function lovr.headset.getPassthroughModes() end
 
 --- Returns the current position and orientation of a device.
 ---
@@ -496,7 +496,7 @@ function headset.getPassthroughModes() end
 ---@return number # The x component of the axis of rotation.
 ---@return number # The y component of the axis of rotation.
 ---@return number # The z component of the axis of rotation.
-function headset.getPose(device) end
+function lovr.headset.getPose(device) end
 
 --- Returns the current position of a device, in meters, relative to the play area.
 ---
@@ -511,14 +511,14 @@ function headset.getPose(device) end
 ---@return number # The x position of the device.
 ---@return number # The y position of the device.
 ---@return number # The z position of the device.
-function headset.getPosition(device) end
+function lovr.headset.getPosition(device) end
 
 --- Returns the refresh rate of the headset display, in Hz.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.getRefreshRate)
 ---@see lovr.headset.getRefreshRates
 ---@return number | nil # The refresh rate of the display, or `nil` if I have no idea what it is.
-function headset.getRefreshRate() end
+function lovr.headset.getRefreshRate() end
 
 --- Returns a table with all the refresh rates supported by the headset display, in Hz.
 ---
@@ -526,7 +526,7 @@ function headset.getRefreshRate() end
 ---@see lovr.headset.getRefreshRate
 ---@see lovr.headset.setRefreshRate
 ---@return table | nil # A flat table of the refresh rates supported by the headset display, or nil if not supported.
-function headset.getRefreshRates() end
+function lovr.headset.getRefreshRates() end
 
 --- Returns a list of joint transforms tracked by a device.  Currently, only hand devices are able to track joints.
 ---
@@ -536,7 +536,7 @@ function headset.getRefreshRates() end
 ---@param device Device # The hand device to query (`left` or `right`).
 ---@return number[][] # A list of joint transforms for the device.  Each transform is a table with 3 numbers for the position of the joint, 1 number for the joint radius (in meters), and 4 numbers for the angle/axis orientation of the joint.  There is also a `radius` key with the radius of the joint as well.
 ---@overload fun(device: Device, t: table): number[][]
-function headset.getSkeleton(device) end
+function lovr.headset.getSkeleton(device) end
 
 --- Returns a Texture that will be submitted to the headset display.  This will be the render target used in the headset's render pass.  The texture is not guaranteed to be the same every frame, and must be called every frame to get the current texture.
 ---
@@ -544,7 +544,7 @@ function headset.getSkeleton(device) end
 ---@see lovr.headset.getPass
 ---@see lovr.mirror
 ---@return Texture | nil # The headset texture.
-function headset.getTexture() end
+function lovr.headset.getTexture() end
 
 --- Returns the estimated time in the future at which the light from the pixels of the current frame will hit the eyes of the user.
 --- This can be used as a replacement for `lovr.timer.getTime` for timestamps that are used for rendering to get a smoother result that is synchronized with the display of the headset.
@@ -553,7 +553,7 @@ function headset.getTexture() end
 ---@see lovr.headset.getDeltaTime
 ---@see lovr.timer.getTime
 ---@return number # The predicted display time, in seconds.
-function headset.getTime() end
+function lovr.headset.getTime() end
 
 --- Returns the current linear velocity of a device, in meters per second.
 ---
@@ -566,7 +566,7 @@ function headset.getTime() end
 ---@return number # The x component of the linear velocity.
 ---@return number # The y component of the linear velocity.
 ---@return number # The z component of the linear velocity.
-function headset.getVelocity(device) end
+function lovr.headset.getVelocity(device) end
 
 --- Returns the view angles of one of the headset views.
 --- These can be used with `Mat4:fov` to create a projection matrix.
@@ -580,7 +580,7 @@ function headset.getVelocity(device) end
 ---@return number | nil # The right view angle, in radians.
 ---@return number | nil # The top view angle, in radians.
 ---@return number | nil # The bottom view angle, in radians.
-function headset.getViewAngles(view) end
+function lovr.headset.getViewAngles(view) end
 
 --- Returns the number of views used for rendering.  Each view consists of a pose in space and a set of angle values that determine the field of view.
 --- This is usually 2 for stereo rendering configurations, but it can also be different.  For example, one way of doing foveated rendering uses 2 views for each eye -- one low quality view with a wider field of view, and a high quality view with a narrower field of view.
@@ -589,7 +589,7 @@ function headset.getViewAngles(view) end
 ---@see lovr.headset.getViewPose
 ---@see lovr.headset.getViewAngles
 ---@return number # The number of views.
-function headset.getViewCount() end
+function lovr.headset.getViewCount() end
 
 --- Returns the pose of one of the headset views.  This info can be used to create view matrices or do other eye-dependent calculations.
 --- If tracking data is unavailable for the view or the index is invalid, `nil` is returned.
@@ -605,7 +605,7 @@ function headset.getViewCount() end
 ---@return number | nil # The x component of the axis of rotation.
 ---@return number | nil # The y component of the axis of rotation.
 ---@return number | nil # The z component of the axis of rotation.
-function headset.getViewPose(view) end
+function lovr.headset.getViewPose(view) end
 
 --- Returns whether a headset session is active.  When true, there is an active connection to the VR hardware.  When false, most headset methods will not work properly until `lovr.headset.start` is used to start a session.
 ---
@@ -613,7 +613,7 @@ function headset.getViewPose(view) end
 ---@see lovr.headset.start
 ---@see lovr.headset.stop
 ---@return boolean # Whether the headset session is active.
-function headset.isActive() end
+function lovr.headset.isActive() end
 
 --- Returns whether a button on a device is pressed.
 ---
@@ -626,14 +626,14 @@ function headset.isActive() end
 ---@param device Device # The device.
 ---@param button DeviceButton # The button.
 ---@return boolean | nil # Whether the button on the device is currently pressed, or `nil` if the device does not have the specified button.
-function headset.isDown(device, button) end
+function lovr.headset.isDown(device, button) end
 
 --- Returns whether LÖVR has VR input focus.  Focus is lost when the VR system menu is shown.  The `lovr.focus` callback can be used to detect when this changes.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.isFocused)
 ---@see lovr.focus
 ---@return boolean # Whether the application is focused.
-function headset.isFocused() end
+function lovr.headset.isFocused() end
 
 --- Returns whether the headset is mounted.  Usually this uses a proximity sensor on the headset to detect whether someone is wearing the headset.
 ---
@@ -642,7 +642,7 @@ function headset.isFocused() end
 ---@see lovr.headset.isFocused
 ---@see lovr.headset.isVisible
 ---@return boolean # Whether the headset is mounted.
-function headset.isMounted() end
+function lovr.headset.isMounted() end
 
 --- Returns whether the headset coordinate space is in seated mode.
 --- Seated mode is enabled by setting `t.headset.seated` to true in `lovr.conf`.  In seated mode, `y=0` will be at eye level, instead of on the floor like in standing-scale experiences.
@@ -652,7 +652,7 @@ function headset.isMounted() end
 ---@see lovr.conf
 ---@see lovr.recenter
 ---@return boolean # Whether the experience is seated.
-function headset.isSeated() end
+function lovr.headset.isSeated() end
 
 --- Returns whether a button on a device is currently touched.
 ---
@@ -663,14 +663,14 @@ function headset.isSeated() end
 ---@param device Device # The device.
 ---@param button DeviceButton # The button.
 ---@return boolean | nil # Whether the button on the device is currently touched, or `nil` if the device does not have the button or it isn't touch-sensitive.
-function headset.isTouched(device, button) end
+function lovr.headset.isTouched(device, button) end
 
 --- Returns whether any active headset driver is currently returning pose information for a device.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.isTracked)
 ---@param device Device? # The device to get the pose of. (default: 'head')
 ---@return boolean # Whether the device is currently tracked.
-function headset.isTracked(device) end
+function lovr.headset.isTracked(device) end
 
 --- Returns whether LÖVR's content is being presented to the headset display.  Normally this will be true, but some VR runtimes allow applications to be hidden or "minimized", similar to desktop windows.
 ---
@@ -679,7 +679,7 @@ function headset.isTracked(device) end
 ---@see lovr.headset.isFocused
 ---@see lovr.focus
 ---@return boolean # Whether the application is visible.
-function headset.isVisible() end
+function lovr.headset.isVisible() end
 
 --- Creates a new `Layer`.
 ---
@@ -689,7 +689,7 @@ function headset.isVisible() end
 ---@param width number # The width of the Layer texture, in pixels.
 ---@param height number # The height of the Layer texture, in pixels.
 ---@return Layer # The new Layer.
-function headset.newLayer(width, height) end
+function lovr.headset.newLayer(width, height) end
 
 --- Loads a new Model object for the specified model key.
 --- Model keys are lightuserdata values that act as an ID for a specific model.  Use `lovr.headset.getModelKeys` to retrieve a list of model keys for the currently connected hardware.
@@ -706,7 +706,7 @@ function headset.newLayer(width, height) end
 ---@param key lightuserdata # A model key to load, previously obtained with `lovr.headset.getModelKeys`.
 ---@return Model # The new Model, or `nil` if a model could not be loaded.
 ---@overload fun(device?: Device): Model
-function headset.newModel(key) end
+function lovr.headset.newModel(key) end
 
 --- Sets a background layer.  This will render behind any transparent pixels in the main 3D content. It works similarly to other `Layer` objects, but using a cubemap or equirectangular texture.
 --- The background texture is sent to the VR runtime once, and the runtime is responsible for compositing it behind the rest of the scene.  This can improve performance greatly, since the background doesn't need to be re-rendered every frame.  It also ensures the background remains tracked smoothly even if LÖVR is struggling to render at a high frame rate.
@@ -716,14 +716,14 @@ function headset.newModel(key) end
 ---@see Pass.skybox
 ---@param background Image[] # The image(s) or texture to use for the background.  Backgrounds can either be cubemaps (6 images) or equirectangular (a single panoramic 2D image).Textures can have any color format, but it will be converted to `rgba8` before getting copied to the VR runtime.  Images currently have to be `rgba8`.
 ---@overload fun()
-function headset.setBackground(background) end
+function lovr.headset.setBackground(background) end
 
 --- Sets the near and far clipping planes used to render to the headset.  Objects closer than the near clipping plane or further than the far clipping plane will be clipped out of view.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.setClipDistance)
 ---@param near number # The distance to the near clipping plane, in meters.
 ---@param far number # The distance to the far clipping plane, in meters, or 0 for an infinite far clipping plane with a reversed Z range.
-function headset.setClipDistance(near, far) end
+function lovr.headset.setClipDistance(near, far) end
 
 --- Sets foveated rendering settings.  Currently only fixed foveated rendering is supported.  This renders the edges of the screen at a lower resolution to improve GPU performance.  Higher foveation levels will save more GPU time, but make the edges of the screen more blocky.
 ---
@@ -732,7 +732,7 @@ function headset.setClipDistance(near, far) end
 ---@param dynamic boolean? # Whether the system is allowed to dynamically adjust the foveation level based on GPU load. (default: true)
 ---@return boolean # Whether foveation was enabled successfully.
 ---@overload fun(): boolean
-function headset.setFoveation(level, dynamic) end
+function lovr.headset.setFoveation(level, dynamic) end
 
 --- Sets the list of active `Layer` objects.  These are the layers that will be rendered in the headset's display.  They are rendered in order.
 ---
@@ -741,7 +741,7 @@ function headset.setFoveation(level, dynamic) end
 ---@see Layer
 ---@param ... Layer # Zero or more layers to render in the headset.
 ---@overload fun(t: table)
-function headset.setLayers(...) end
+function lovr.headset.setLayers(...) end
 
 --- Sets a new passthrough mode.  Not all headsets support all passthrough modes.  Use `lovr.headset.getPassthroughModes` to see which modes are supported.
 ---
@@ -751,7 +751,7 @@ function headset.setLayers(...) end
 ---@return boolean # Whether the passthrough mode was supported and successfully enabled.
 ---@overload fun(transparent: boolean): boolean
 ---@overload fun(): boolean
-function headset.setPassthrough(mode) end
+function lovr.headset.setPassthrough(mode) end
 
 --- Sets the display refresh rate, in Hz.
 ---
@@ -759,35 +759,35 @@ function headset.setPassthrough(mode) end
 ---@see lovr.headset.getRefreshRates
 ---@param rate number # The new refresh rate, in Hz.
 ---@return boolean # Whether the display refresh rate was successfully set.
-function headset.setRefreshRate(rate) end
+function lovr.headset.setRefreshRate(rate) end
 
 --- Starts the headset session.  This must be called after the graphics module is initialized. Normally it is called automatically by `boot.lua`, but this can be disabled by setting `t.headset.start` to false in `lovr.conf`.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.start)
 ---@see lovr.headset.stop
 ---@see lovr.headset.isActive
-function headset.start() end
+function lovr.headset.start() end
 
 --- Stops the headset session.  This tears down the connection to the VR runtime and hardware. `lovr.draw` will instead start rendering to the desktop window, as though the headset module was disabled.  However, certain information about the headset can still be queried, such as its name, supported passthrough modes, display size, etc.  A headset session can be started later using `lovr.headset.start`.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.stop)
 ---@see lovr.headset.start
 ---@see lovr.headset.isActive
-function headset.stop() end
+function lovr.headset.stop() end
 
 --- Causes the device to stop any active haptics vibration.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.stopVibration)
 ---@see lovr.headset.vibrate
 ---@param device Device? # The device to stop the vibration on. (default: 'head')
-function headset.stopVibration(device) end
+function lovr.headset.stopVibration(device) end
 
 --- Submits the current headset texture to the VR display.  This should be called after calling `lovr.graphics.submit` with the headset render pass.  Normally this is taken care of by `lovr.run`.
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.headset.submit)
 ---@see lovr.headset.getPass
 ---@see lovr.headset.getTexture
-function headset.submit() end
+function lovr.headset.submit() end
 
 --- Updates the headset module, blocking until it is time to start a new frame and polling new input states.  This should only be called once at the beginning of a frame, and is normally taken care of by the default `lovr.run` implementation.
 ---
@@ -795,7 +795,7 @@ function headset.submit() end
 ---@see lovr.headset.submit
 ---@see lovr.run
 ---@return number # The delta time since the last frame.  This is the same value returned by `lovr.headset.getDeltaTime`, and is used by boot.lua.
-function headset.update() end
+function lovr.headset.update() end
 
 --- Causes the device to vibrate with a custom strength, duration, and frequency, if possible.
 ---
@@ -806,7 +806,7 @@ function headset.update() end
 ---@param duration number? # The duration of the vibration, in seconds. (default: .5)
 ---@param frequency number? # The frequency of the vibration, in hertz.  0 will use a default frequency. (default: 0)
 ---@return boolean # Whether the vibration was successfully triggered by an active headset driver.
-function headset.vibrate(device, strength, duration, frequency) end
+function lovr.headset.vibrate(device, strength, duration, frequency) end
 
 --- Returns whether a button on a device was pressed this frame.
 ---
@@ -819,7 +819,7 @@ function headset.vibrate(device, strength, duration, frequency) end
 ---@param device Device # The device.
 ---@param button DeviceButton # The button to check.
 ---@return boolean # Whether the button on the device was pressed this frame.
-function headset.wasPressed(device, button) end
+function lovr.headset.wasPressed(device, button) end
 
 --- Returns whether a button on a device was released this frame.
 ---
@@ -832,6 +832,6 @@ function headset.wasPressed(device, button) end
 ---@param device Device # The device.
 ---@param button DeviceButton # The button to check.
 ---@return boolean # Whether the button on the device was released this frame.
-function headset.wasReleased(device, button) end
+function lovr.headset.wasReleased(device, button) end
 
-_G.lovr.headset = headset
+return lovr.headset

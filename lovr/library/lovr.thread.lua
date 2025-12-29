@@ -19,7 +19,7 @@
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.thread)
 ---@class lovr.thread
-local thread = {}
+lovr.thread = {}
 
 --- A Channel is an object used to communicate between `Thread` objects.  Different threads can send messages on the same Channel to communicate with each other.  Messages can be sent and received on a Channel using `Channel:push` and `Channel:pop`, and are received in a first-in-first-out fashion. The following types of data can be passed through Channels: nil, boolean, number, string, lightuserdata, table, vector, and any LÖVR object.
 ---
@@ -114,14 +114,14 @@ function Thread:wait() end
 ---@see lovr.thread.newChannel
 ---@param name string # The name of the Channel to get.
 ---@return Channel # The Channel with the specified name.
-function thread.getChannel(name) end
+function lovr.thread.getChannel(name) end
 
 --- Creates a new unnamed `Channel` object.  Usually it's more convenient to use `lovr.thread.getChannel`, since other threads can use that function to query the channel by name.  Unnamed channels don't require a unique name, but they need to be sent to other threads somehow (e.g. on a different Channel or as an argument to `Thread:start`).
 ---
 --- [Open in browser](https://lovr.org/docs/lovr.thread.newChannel)
 ---@see lovr.thread.getChannel
 ---@return Channel # The new Channel.
-function thread.newChannel() end
+function lovr.thread.newChannel() end
 
 --- Creates a new Thread from Lua code.
 ---
@@ -131,6 +131,6 @@ function thread.newChannel() end
 ---@param code string # The code to run in the Thread.
 ---@return Thread # The new Thread.
 ---@overload fun(file: string | Blob): Thread
-function thread.newThread(code) end
+function lovr.thread.newThread(code) end
 
-_G.lovr.thread = thread
+return lovr.thread
