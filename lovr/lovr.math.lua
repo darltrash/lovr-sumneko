@@ -1,13 +1,22 @@
 ---@meta lovr.math
 
 --- The `lovr.math` module provides math helpers commonly used for 3D applications.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math)
 ---@class lovr.math
 local math = {}
 
+--- A Curve is an object that represents a Bézier curve in three dimensions.  Curves are defined by an arbitrary number of control points (note that the curve only passes through the first and last control point).
+--- Once a Curve is created with `lovr.math.newCurve`, you can use `Curve:evaluate` to get a point on the curve or `Curve:render` to get a list of all of the points on the curve.  These points can be passed directly to `Pass:points` or `Pass:line` to render the curve.
+--- Note that for longer or more complicated curves (like in a drawing application) it can be easier to store the path as several Curve objects.
+---
+--- [Open in browser](https://lovr.org/docs/Curve)
 ---@class Curve
 local Curve = {}
 
 --- Inserts a new control point into the Curve at the specified index.
+---
+--- [Open in browser](https://lovr.org/docs/Curve:addPoint)
 ---@see Curve.getPointCount
 ---@see Curve.getPoint
 ---@see Curve.setPoint
@@ -19,6 +28,8 @@ local Curve = {}
 function Curve:addPoint(x, y, z, index) end
 
 --- Returns a point on the Curve given a parameter `t` from 0 to 1.  0 will return the first control point, 1 will return the last point, .5 will return a point in the "middle" of the Curve, etc.
+---
+--- [Open in browser](https://lovr.org/docs/Curve:evaluate)
 ---@see Curve.getTangent
 ---@see Curve.render
 ---@see Curve.slice
@@ -29,6 +40,8 @@ function Curve:addPoint(x, y, z, index) end
 function Curve:evaluate(t) end
 
 --- Returns a control point of the Curve.
+---
+--- [Open in browser](https://lovr.org/docs/Curve:getPoint)
 ---@see Curve.getPointCount
 ---@see Curve.setPoint
 ---@see Curve.addPoint
@@ -40,6 +53,8 @@ function Curve:evaluate(t) end
 function Curve:getPoint(index) end
 
 --- Returns the number of control points in the Curve.
+---
+--- [Open in browser](https://lovr.org/docs/Curve:getPointCount)
 ---@see Curve.getPoint
 ---@see Curve.setPoint
 ---@see Curve.addPoint
@@ -48,6 +63,8 @@ function Curve:getPoint(index) end
 function Curve:getPointCount() end
 
 --- Returns a direction vector for the Curve given a parameter `t` from 0 to 1.  0 will return the direction at the first control point, 1 will return the direction at the last point, .5 will return the direction at the "middle" of the Curve, etc.
+---
+--- [Open in browser](https://lovr.org/docs/Curve:getTangent)
 ---@see Curve.evaluate
 ---@see Curve.render
 ---@see Curve.slice
@@ -58,6 +75,8 @@ function Curve:getPointCount() end
 function Curve:getTangent(t) end
 
 --- Removes a control point from the Curve.
+---
+--- [Open in browser](https://lovr.org/docs/Curve:removePoint)
 ---@see Curve.getPointCount
 ---@see Curve.getPoint
 ---@see Curve.setPoint
@@ -66,6 +85,8 @@ function Curve:getTangent(t) end
 function Curve:removePoint(index) end
 
 --- Returns a list of points on the Curve.  The number of points can be specified to get a more or less detailed representation, and it is also possible to render a subsection of the Curve.
+---
+--- [Open in browser](https://lovr.org/docs/Curve:render)
 ---@see Curve.evaluate
 ---@see Curve.slice
 ---@see Pass.points
@@ -78,6 +99,8 @@ function Curve:removePoint(index) end
 function Curve:render(n, t1, t2) end
 
 --- Changes the position of a control point on the Curve.
+---
+--- [Open in browser](https://lovr.org/docs/Curve:setPoint)
 ---@see Curve.getPointCount
 ---@see Curve.getPoint
 ---@see Curve.addPoint
@@ -89,6 +112,8 @@ function Curve:render(n, t1, t2) end
 function Curve:setPoint(index, x, y, z) end
 
 --- Returns a new Curve created by slicing the Curve at the specified start and end points.
+---
+--- [Open in browser](https://lovr.org/docs/Curve:slice)
 ---@see Curve.evaluate
 ---@see Curve.render
 ---@param t1 number # The starting point to slice at.
@@ -96,6 +121,9 @@ function Curve:setPoint(index, x, y, z) end
 ---@return Curve # A new Curve.
 function Curve:slice(t1, t2) end
 
+--- A `mat4` is a math type that holds 16 values in a 4x4 grid.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4)
 ---@class Mat4: number[]
 ---@operator mul(Mat4): Mat4
 ---@operator mul(Vec3): Vec3
@@ -103,6 +131,8 @@ function Curve:slice(t1, t2) end
 local Mat4 = {}
 
 --- Returns whether a matrix is approximately equal to another matrix.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:equals)
 ---@see Vec2.equals
 ---@see Vec3.equals
 ---@see Vec4.equals
@@ -113,6 +143,8 @@ function Mat4:equals(n) end
 
 --- Sets a projection matrix using raw projection angles and clipping planes.
 --- This can be used for asymmetric or oblique projections.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:fov)
 ---@see Mat4.orthographic
 ---@see Mat4.perspective
 ---@see Pass.setProjection
@@ -126,6 +158,8 @@ function Mat4:equals(n) end
 function Mat4:fov(left, right, up, down, near, far) end
 
 --- Returns the angle/axis rotation of the matrix.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:getOrientation)
 ---@see Mat4.getPosition
 ---@see Mat4.getScale
 ---@see Mat4.getPose
@@ -138,6 +172,8 @@ function Mat4:fov(left, right, up, down, near, far) end
 function Mat4:getOrientation() end
 
 --- Returns the position and rotation of the matrix.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:getPose)
 ---@see Mat4.getPosition
 ---@see Mat4.getOrientation
 ---@see Mat4.getScale
@@ -153,6 +189,8 @@ function Mat4:getOrientation() end
 function Mat4:getPose() end
 
 --- Returns the translation of the matrix.  This is the last column of the matrix.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:getPosition)
 ---@see Mat4.getOrientation
 ---@see Mat4.getScale
 ---@see Mat4.getPose
@@ -164,6 +202,8 @@ function Mat4:getPose() end
 function Mat4:getPosition() end
 
 --- Returns the scale factor of the matrix.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:getScale)
 ---@see Mat4.getPosition
 ---@see Mat4.getOrientation
 ---@see Mat4.getPose
@@ -175,17 +215,23 @@ function Mat4:getPosition() end
 function Mat4:getScale() end
 
 --- Resets the matrix to the identity, effectively setting its translation to zero, its scale to 1, and clearing any rotation.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:identity)
 ---@see Pass.origin
 ---@return Mat4 # The modified matrix.
 function Mat4:identity() end
 
 --- Inverts the matrix, causing it to represent the opposite of its old transform.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:invert)
 ---@return Mat4 # The inverted matrix.
 function Mat4:invert() end
 
 --- Sets a view transform matrix that moves and orients camera to look at a target point.
 --- This is useful for changing camera position and orientation.
 --- The lookAt() function produces same result as target() after matrix inversion.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:lookAt)
 ---@see Mat4.target
 ---@see Quat.direction
 ---@param from Vec3 # The position of the viewer.
@@ -195,6 +241,8 @@ function Mat4:invert() end
 function Mat4:lookAt(from, to, up) end
 
 --- Multiplies this matrix by another value.  Multiplying by a matrix combines their two transforms together.  Multiplying by a vector applies the transformation from the matrix to the vector and returns the vector.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:mul)
 ---@see Mat4.translate
 ---@see Mat4.rotate
 ---@see Mat4.scale
@@ -206,6 +254,8 @@ function Mat4:mul(n) end
 
 --- Sets this matrix to represent an orthographic projection, useful for 2D/isometric rendering.
 --- This can be used with `Pass:setProjection`, or it can be sent to a `Shader` for use in GLSL.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:orthographic)
 ---@see Mat4.perspective
 ---@see Mat4.fov
 ---@see Pass.setProjection
@@ -221,6 +271,8 @@ function Mat4:orthographic(left, right, bottom, top, near, far) end
 
 --- Sets this matrix to represent a perspective projection.
 --- This can be used with `Pass:setProjection`, or it can be sent to a `Shader` for use in GLSL.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:perspective)
 ---@see Mat4.orthographic
 ---@see Mat4.fov
 ---@see Pass.setProjection
@@ -232,12 +284,16 @@ function Mat4:orthographic(left, right, bottom, top, near, far) end
 function Mat4:perspective(fov, aspect, near, far) end
 
 --- Turns the matrix into a reflection matrix that transforms values as though they were reflected across a plane.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:reflect)
 ---@param position Vec3 # The position of the plane.
 ---@param normal Vec3 # The normal vector of the plane.
 ---@return Mat4 # The reflected matrix.
 function Mat4:reflect(position, normal) end
 
 --- Rotates the matrix using a quaternion or an angle/axis rotation.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:rotate)
 ---@see Mat4.translate
 ---@see Mat4.scale
 ---@see Mat4.identity
@@ -247,6 +303,8 @@ function Mat4:reflect(position, normal) end
 function Mat4:rotate(q) end
 
 --- Scales the matrix.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:scale)
 ---@see Mat4.translate
 ---@see Mat4.rotate
 ---@see Mat4.identity
@@ -256,6 +314,8 @@ function Mat4:rotate(q) end
 function Mat4:scale(scale) end
 
 --- Sets the components of the matrix from separate position, rotation, and scale arguments or an existing matrix.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:set)
 ---@see Mat4.unpack
 ---@return Mat4 # The input matrix.
 ---@overload fun(self: Mat4, n: Mat4): Mat4
@@ -270,6 +330,8 @@ function Mat4:set() end
 --- Sets a model transform matrix that moves to `from` and orients model towards `to` point.
 --- This is used when rendered model should always point towards a point of interest. The resulting Mat4 object can be used as model pose.
 --- The target() function produces same result as lookAt() after matrix inversion.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:target)
 ---@see Mat4.lookAt
 ---@see Quat.direction
 ---@param from Vec3 # The position of the viewer.
@@ -279,6 +341,8 @@ function Mat4:set() end
 function Mat4:target(from, to, up) end
 
 --- Translates the matrix.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:translate)
 ---@see Mat4.rotate
 ---@see Mat4.scale
 ---@see Mat4.identity
@@ -288,10 +352,14 @@ function Mat4:target(from, to, up) end
 function Mat4:translate(v) end
 
 --- Transposes the matrix, mirroring its values along the diagonal.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:transpose)
 ---@return Mat4 # The transposed matrix.
 function Mat4:transpose() end
 
 --- Returns the components of matrix, either as 10 separated numbers representing the position, scale, and rotation, or as 16 raw numbers representing the individual components of the matrix in column-major order.
+---
+--- [Open in browser](https://lovr.org/docs/Mat4:unpack)
 ---@see Mat4.set
 ---@see Mat4.getPosition
 ---@see Mat4.getOrientation
@@ -301,21 +369,30 @@ function Mat4:transpose() end
 ---@return number # The requested components of the matrix.
 function Mat4:unpack(raw) end
 
+--- A `quat` is a math type that represents a 3D rotation, stored as four numbers.
+---
+--- [Open in browser](https://lovr.org/docs/Quat)
 ---@class Quat
 ---@operator mul(Quat): Quat
 ---@operator mul(Vec3): Vec3
 local Quat = {}
 
 --- Conjugates the input quaternion in place, returning the input.  If the quaternion is normalized, this is the same as inverting it.  It negates the (x, y, z) components of the quaternion.
+---
+--- [Open in browser](https://lovr.org/docs/Quat:conjugate)
 ---@return Quat # The inverted quaternion.
 function Quat:conjugate() end
 
 --- Creates a new temporary vec3 facing the forward direction, rotates it by this quaternion, and returns the vector.
+---
+--- [Open in browser](https://lovr.org/docs/Quat:direction)
 ---@see Mat4.lookAt
 ---@return Vec3 # The direction vector.
 function Quat:direction() end
 
 --- Returns whether a quaternion is approximately equal to another quaternion.
+---
+--- [Open in browser](https://lovr.org/docs/Quat:equals)
 ---@see Vec2.equals
 ---@see Vec3.equals
 ---@see Vec4.equals
@@ -325,23 +402,31 @@ function Quat:direction() end
 function Quat:equals(r) end
 
 --- Returns the euler angles of the quaternion, in YXZ order.
+---
+--- [Open in browser](https://lovr.org/docs/Quat:getEuler)
 ---@return number # The pitch (x axis rotation).
 ---@return number # The yaw (y axis rotation).
 ---@return number # The roll (z axis rotation).
 function Quat:getEuler() end
 
 --- Returns the length of the quaternion.
+---
+--- [Open in browser](https://lovr.org/docs/Quat:length)
 ---@see Quat.normalize
 ---@return number # The length of the quaternion.
 function Quat:length() end
 
 --- Multiplies this quaternion by another value.  If the value is a quaternion, the rotations in the two quaternions are applied sequentially and the result is stored in the first quaternion.  If the value is a vector, then the input vector is rotated by the quaternion and returned.
+---
+--- [Open in browser](https://lovr.org/docs/Quat:mul)
 ---@param r Quat # A quaternion to combine with the original.
 ---@return Quat # The modified quaternion.
 ---@overload fun(self: Quat, v3: Vec3): Vec3
 function Quat:mul(r) end
 
 --- Adjusts the values in the quaternion so that its length becomes 1.
+---
+--- [Open in browser](https://lovr.org/docs/Quat:normalize)
 ---@see Quat.length
 ---@return Quat # The normalized quaternion.
 function Quat:normalize() end
@@ -355,6 +440,8 @@ function Quat:normalize() end
 --- - Two direction vectors can be specified to set the quaternion equal to the rotation between the
 ---   two vectors.
 --- - A matrix can be passed in to extract the rotation of the matrix into a quaternion.
+---
+--- [Open in browser](https://lovr.org/docs/Quat:set)
 ---@see Quat.unpack
 ---@param angle number? # The angle to use for the rotation, in radians. (default: 0)
 ---@param ax number? # The x component of the axis of rotation. (default: 0)
@@ -370,6 +457,8 @@ function Quat:normalize() end
 function Quat:set(angle, ax, ay, az, raw) end
 
 --- Sets the value of the quaternion using euler angles.  The rotation order is YXZ.
+---
+--- [Open in browser](https://lovr.org/docs/Quat:setEuler)
 ---@param pitch number # The pitch (x axis rotation).
 ---@param yaw number # The yaw (y axis rotation).
 ---@param roll number # The roll (z axis rotation).
@@ -378,6 +467,8 @@ function Quat:setEuler(pitch, yaw, roll) end
 
 --- Performs a spherical linear interpolation between this quaternion and another one, which can be used for smoothly animating between two rotations.
 --- The amount of interpolation is controlled by a parameter `t`.  A `t` value of zero leaves the original quaternion unchanged, whereas a `t` of one sets the original quaternion exactly equal to the target.  A value between `0` and `1` returns a rotation between the two based on the value.
+---
+--- [Open in browser](https://lovr.org/docs/Quat:slerp)
 ---@see Vec3.lerp
 ---@param r Quat # The quaternion to slerp towards.
 ---@param t number # The lerping parameter.
@@ -385,6 +476,8 @@ function Quat:setEuler(pitch, yaw, roll) end
 function Quat:slerp(r, t) end
 
 --- Returns the components of the quaternion as numbers, either in an angle/axis representation or as raw quaternion values.
+---
+--- [Open in browser](https://lovr.org/docs/Quat:unpack)
 ---@see Quat.set
 ---@param raw boolean? # Whether the values should be returned as raw values instead of angle/axis. (default: false)
 ---@return number # The angle in radians, or the x value.
@@ -393,20 +486,29 @@ function Quat:slerp(r, t) end
 ---@return number # The z component of the rotation axis or the w value.
 function Quat:unpack(raw) end
 
+--- A RandomGenerator is a standalone object that can be used to independently generate pseudo-random numbers. If you just need basic randomness, you can use `lovr.math.random` without needing to create a random generator.
+---
+--- [Open in browser](https://lovr.org/docs/RandomGenerator)
 ---@class RandomGenerator
 local RandomGenerator = {}
 
 --- Returns the seed used to initialize the RandomGenerator.
+---
+--- [Open in browser](https://lovr.org/docs/RandomGenerator:getSeed)
 ---@see lovr.math.newRandomGenerator
 ---@return number # The lower 32 bits of the seed.
 ---@return number # The upper 32 bits of the seed.
 function RandomGenerator:getSeed() end
 
 --- Returns the current state of the RandomGenerator.  This can be used with `RandomGenerator:setState` to reliably restore a previous state of the generator.
+---
+--- [Open in browser](https://lovr.org/docs/RandomGenerator:getState)
 ---@return string # The serialized state.
 function RandomGenerator:getState() end
 
 --- Returns the next uniformly distributed pseudo-random number from the RandomGenerator's sequence.
+---
+--- [Open in browser](https://lovr.org/docs/RandomGenerator:random)
 ---@see lovr.math.random
 ---@see RandomGenerator.randomNormal
 ---@return number # A pseudo-random number.
@@ -415,6 +517,8 @@ function RandomGenerator:getState() end
 function RandomGenerator:random() end
 
 --- Returns a pseudo-random number from a normal distribution (a bell curve).  You can control the center of the bell curve (the mean value) and the overall width (sigma, or standard deviation).
+---
+--- [Open in browser](https://lovr.org/docs/RandomGenerator:randomNormal)
 ---@see lovr.math.randomNormal
 ---@see RandomGenerator.random
 ---@param sigma number? # The standard deviation of the distribution.  This can be thought of how "wide" the range of numbers is or how much variability there is. (default: 1)
@@ -423,14 +527,21 @@ function RandomGenerator:random() end
 function RandomGenerator:randomNormal(sigma, mu) end
 
 --- Seed the RandomGenerator with a new seed.  Each seed will cause the RandomGenerator to produce a unique sequence of random numbers.
+---
+--- [Open in browser](https://lovr.org/docs/RandomGenerator:setSeed)
 ---@param seed number # The random seed.
 ---@overload fun(self: RandomGenerator, low: number, high: number)
 function RandomGenerator:setSeed(seed) end
 
 --- Sets the state of the RandomGenerator, as previously obtained using `RandomGenerator:getState`. This can be used to reliably restore a previous state of the generator.
+---
+--- [Open in browser](https://lovr.org/docs/RandomGenerator:setState)
 ---@param state string # The serialized state.
 function RandomGenerator:setState(state) end
 
+--- A vector object that holds two numbers.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2)
 ---@class Vec2
 ---@field x number
 ---@field y number
@@ -441,6 +552,8 @@ function RandomGenerator:setState(state) end
 local Vec2 = {}
 
 --- Adds a vector or a number to the vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:add)
 ---@see Vec2.sub
 ---@see Vec2.mul
 ---@see Vec2.div
@@ -450,6 +563,8 @@ local Vec2 = {}
 function Vec2:add(u) end
 
 --- Returns the angle between vectors.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:angle)
 ---@see Vec2.distance
 ---@see Vec2.length
 ---@param u Vec2 # The other vector.
@@ -458,6 +573,8 @@ function Vec2:add(u) end
 function Vec2:angle(u) end
 
 --- Returns the distance to another vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:distance)
 ---@see Vec2.angle
 ---@see Vec2.length
 ---@param u Vec2 # The vector to measure the distance to.
@@ -466,6 +583,8 @@ function Vec2:angle(u) end
 function Vec2:distance(u) end
 
 --- Divides the vector by a vector or a number.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:div)
 ---@see Vec2.add
 ---@see Vec2.sub
 ---@see Vec2.mul
@@ -475,12 +594,16 @@ function Vec2:distance(u) end
 function Vec2:div(u) end
 
 --- Returns the dot product between this vector and another one.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:dot)
 ---@param u Vec2 # The vector to compute the dot product with.
 ---@return number # The dot product between `v` and `u`.
 ---@overload fun(self: Vec2, x: number, y: number): number
 function Vec2:dot(u) end
 
 --- Returns whether a vector is approximately equal to another vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:equals)
 ---@see Vec3.equals
 ---@see Vec4.equals
 ---@see Quat.equals
@@ -491,12 +614,16 @@ function Vec2:dot(u) end
 function Vec2:equals(u) end
 
 --- Returns the length of the vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:length)
 ---@see Vec2.normalize
 ---@see Vec2.distance
 ---@return number # The length of the vector.
 function Vec2:length() end
 
 --- Performs a linear interpolation between this vector and another one, which can be used to smoothly animate between two vectors, based on a parameter value.  A parameter value of `0` will leave the vector unchanged, a parameter value of `1` will set the vector to be equal to the input vector, and a value of `.5` will set the components to be halfway between the two vectors.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:lerp)
 ---@see Quat.slerp
 ---@param u Vec2 # The vector to lerp towards.
 ---@param t number # The lerping parameter.
@@ -505,6 +632,8 @@ function Vec2:length() end
 function Vec2:lerp(u, t) end
 
 --- Multiplies the vector by a vector or a number.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:mul)
 ---@see Vec2.add
 ---@see Vec2.sub
 ---@see Vec2.div
@@ -514,11 +643,15 @@ function Vec2:lerp(u, t) end
 function Vec2:mul(u) end
 
 --- Adjusts the values in the vector so that its direction stays the same but its length becomes 1.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:normalize)
 ---@see Vec2.length
 ---@return Vec2 # The normalized vector.
 function Vec2:normalize() end
 
 --- Sets the components of the vector, either from numbers or an existing vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:set)
 ---@see Vec2.unpack
 ---@param x number? # The new x value of the vector. (default: 0)
 ---@param y number? # The new y value of the vector. (default: x)
@@ -527,6 +660,8 @@ function Vec2:normalize() end
 function Vec2:set(x, y) end
 
 --- Subtracts a vector or a number from the vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:sub)
 ---@see Vec2.add
 ---@see Vec2.mul
 ---@see Vec2.div
@@ -536,11 +671,16 @@ function Vec2:set(x, y) end
 function Vec2:sub(u) end
 
 --- Returns the 2 components of the vector as numbers.
+---
+--- [Open in browser](https://lovr.org/docs/Vec2:unpack)
 ---@see Vec2.set
 ---@return number # The x value.
 ---@return number # The y value.
 function Vec2:unpack() end
 
+--- A vector object that holds three numbers.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3)
 ---@class Vec3
 ---@field x number
 ---@field y number
@@ -552,6 +692,8 @@ function Vec2:unpack() end
 local Vec3 = {}
 
 --- Adds a vector or a number to the vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:add)
 ---@see Vec3.sub
 ---@see Vec3.mul
 ---@see Vec3.div
@@ -561,6 +703,8 @@ local Vec3 = {}
 function Vec3:add(u) end
 
 --- Returns the angle between vectors.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:angle)
 ---@see Vec3.distance
 ---@see Vec3.length
 ---@param u Vec3 # The other vector.
@@ -569,6 +713,8 @@ function Vec3:add(u) end
 function Vec3:angle(u) end
 
 --- Sets this vector to be equal to the cross product between this vector and another one.  The new `v` will be perpendicular to both the old `v` and `u`.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:cross)
 ---@see Vec3.dot
 ---@param u Vec3 # The vector to compute the cross product with.
 ---@return Vec3 # The modified vector.
@@ -576,6 +722,8 @@ function Vec3:angle(u) end
 function Vec3:cross(u) end
 
 --- Returns the distance to another vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:distance)
 ---@see Vec3.angle
 ---@see Vec3.length
 ---@param u Vec3 # The vector to measure the distance to.
@@ -584,6 +732,8 @@ function Vec3:cross(u) end
 function Vec3:distance(u) end
 
 --- Divides the vector by a vector or a number.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:div)
 ---@see Vec3.add
 ---@see Vec3.sub
 ---@see Vec3.mul
@@ -593,6 +743,8 @@ function Vec3:distance(u) end
 function Vec3:div(u) end
 
 --- Returns the dot product between this vector and another one.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:dot)
 ---@see Vec3.cross
 ---@param u Vec3 # The vector to compute the dot product with.
 ---@return number # The dot product between `v` and `u`.
@@ -600,6 +752,8 @@ function Vec3:div(u) end
 function Vec3:dot(u) end
 
 --- Returns whether a vector is approximately equal to another vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:equals)
 ---@see Vec2.equals
 ---@see Vec4.equals
 ---@see Quat.equals
@@ -610,12 +764,16 @@ function Vec3:dot(u) end
 function Vec3:equals(u) end
 
 --- Returns the length of the vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:length)
 ---@see Vec3.normalize
 ---@see Vec3.distance
 ---@return number # The length of the vector.
 function Vec3:length() end
 
 --- Performs a linear interpolation between this vector and another one, which can be used to smoothly animate between two vectors, based on a parameter value.  A parameter value of `0` will leave the vector unchanged, a parameter value of `1` will set the vector to be equal to the input vector, and a value of `.5` will set the components to be halfway between the two vectors.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:lerp)
 ---@see Quat.slerp
 ---@param u Vec3 # The vector to lerp towards.
 ---@param t number # The lerping parameter.
@@ -624,6 +782,8 @@ function Vec3:length() end
 function Vec3:lerp(u, t) end
 
 --- Multiplies the vector by a vector or a number.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:mul)
 ---@see Vec3.add
 ---@see Vec3.sub
 ---@see Vec3.div
@@ -633,11 +793,15 @@ function Vec3:lerp(u, t) end
 function Vec3:mul(u) end
 
 --- Adjusts the values in the vector so that its direction stays the same but its length becomes 1.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:normalize)
 ---@see Vec3.length
 ---@return Vec3 # The normalized vector.
 function Vec3:normalize() end
 
 --- Applies a rotation to the vector, using a `Quat` or an angle/axis rotation.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:rotate)
 ---@see Quat.mul
 ---@param q Quat # The quaternion to apply.
 ---@return Vec3 # The modified vector.
@@ -645,6 +809,8 @@ function Vec3:normalize() end
 function Vec3:rotate(q) end
 
 --- Sets the components of the vector, either from numbers or an existing vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:set)
 ---@see Vec3.unpack
 ---@param x number? # The new x value of the vector. (default: 0)
 ---@param y number? # The new y value of the vector. (default: x)
@@ -656,6 +822,8 @@ function Vec3:rotate(q) end
 function Vec3:set(x, y, z) end
 
 --- Subtracts a vector or a number from the vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:sub)
 ---@see Vec3.add
 ---@see Vec3.mul
 ---@see Vec3.div
@@ -665,6 +833,8 @@ function Vec3:set(x, y, z) end
 function Vec3:sub(u) end
 
 --- Applies a transform (translation, rotation, scale) to the vector using a `Mat4` or numbers. This is the same as multiplying the vector by a matrix.  This treats the vector as a point.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:transform)
 ---@see Mat4.mul
 ---@see Vec4.transform
 ---@see Vec3.rotate
@@ -675,12 +845,17 @@ function Vec3:sub(u) end
 function Vec3:transform(m) end
 
 --- Returns the 3 components of the vector as numbers.
+---
+--- [Open in browser](https://lovr.org/docs/Vec3:unpack)
 ---@see Vec3.set
 ---@return number # The x value.
 ---@return number # The y value.
 ---@return number # The z value.
 function Vec3:unpack() end
 
+--- A vector object that holds four numbers.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4)
 ---@class Vec4
 ---@field x number
 ---@field y number
@@ -693,6 +868,8 @@ function Vec3:unpack() end
 local Vec4 = {}
 
 --- Adds a vector or a number to the vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:add)
 ---@see Vec4.sub
 ---@see Vec4.mul
 ---@see Vec4.div
@@ -702,6 +879,8 @@ local Vec4 = {}
 function Vec4:add(u) end
 
 --- Returns the angle between vectors.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:angle)
 ---@see Vec4.distance
 ---@see Vec4.length
 ---@param u Vec4 # The other vector.
@@ -710,6 +889,8 @@ function Vec4:add(u) end
 function Vec4:angle(u) end
 
 --- Returns the distance to another vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:distance)
 ---@see Vec4.angle
 ---@see Vec4.length
 ---@param u Vec4 # The vector to measure the distance to.
@@ -718,6 +899,8 @@ function Vec4:angle(u) end
 function Vec4:distance(u) end
 
 --- Divides the vector by a vector or a number.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:div)
 ---@see Vec4.add
 ---@see Vec4.sub
 ---@see Vec4.mul
@@ -727,12 +910,16 @@ function Vec4:distance(u) end
 function Vec4:div(u) end
 
 --- Returns the dot product between this vector and another one.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:dot)
 ---@param u Vec4 # The vector to compute the dot product with.
 ---@return number # The dot product between `v` and `u`.
 ---@overload fun(self: Vec4, x: number, y: number, z: number, w: number): number
 function Vec4:dot(u) end
 
 --- Returns whether a vector is approximately equal to another vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:equals)
 ---@see Vec2.equals
 ---@see Vec3.equals
 ---@see Quat.equals
@@ -743,12 +930,16 @@ function Vec4:dot(u) end
 function Vec4:equals(u) end
 
 --- Returns the length of the vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:length)
 ---@see Vec4.normalize
 ---@see Vec4.distance
 ---@return number # The length of the vector.
 function Vec4:length() end
 
 --- Performs a linear interpolation between this vector and another one, which can be used to smoothly animate between two vectors, based on a parameter value.  A parameter value of `0` will leave the vector unchanged, a parameter value of `1` will set the vector to be equal to the input vector, and a value of `.5` will set the components to be halfway between the two vectors.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:lerp)
 ---@see Quat.slerp
 ---@param u Vec4 # The vector to lerp towards.
 ---@param t number # The lerping parameter.
@@ -757,6 +948,8 @@ function Vec4:length() end
 function Vec4:lerp(u, t) end
 
 --- Multiplies the vector by a vector or a number.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:mul)
 ---@see Vec4.add
 ---@see Vec4.sub
 ---@see Vec4.div
@@ -766,11 +959,15 @@ function Vec4:lerp(u, t) end
 function Vec4:mul(u) end
 
 --- Adjusts the values in the vector so that its direction stays the same but its length becomes 1.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:normalize)
 ---@see Vec4.length
 ---@return Vec4 # The normalized vector.
 function Vec4:normalize() end
 
 --- Sets the components of the vector, either from numbers or an existing vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:set)
 ---@see Vec4.unpack
 ---@param x number? # The new x value of the vector. (default: 0)
 ---@param y number? # The new y value of the vector. (default: x)
@@ -781,6 +978,8 @@ function Vec4:normalize() end
 function Vec4:set(x, y, z, w) end
 
 --- Subtracts a vector or a number from the vector.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:sub)
 ---@see Vec4.add
 ---@see Vec4.mul
 ---@see Vec4.div
@@ -790,6 +989,8 @@ function Vec4:set(x, y, z, w) end
 function Vec4:sub(u) end
 
 --- Applies a transform (translation, rotation, scale) to the vector using a `Mat4` or numbers. This is the same as multiplying the vector by a matrix.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:transform)
 ---@see Mat4.mul
 ---@see Vec3.transform
 ---@param m Mat4 # The matrix to apply.
@@ -799,6 +1000,8 @@ function Vec4:sub(u) end
 function Vec4:transform(m) end
 
 --- Returns the 4 components of the vector as numbers.
+---
+--- [Open in browser](https://lovr.org/docs/Vec4:unpack)
 ---@see Vec4.set
 ---@return number # The x value.
 ---@return number # The y value.
@@ -806,14 +1009,21 @@ function Vec4:transform(m) end
 ---@return number # The w value.
 function Vec4:unpack() end
 
+--- LÖVR has math objects for vectors, matrices, and quaternions, collectively called "vector objects".  Vectors are useful because they can represent a multidimensional quantity (like a 3D position) using just a single value.
+---
+--- [Open in browser](https://lovr.org/docs/Vectors)
 ---@class Vectors
 local Vectors = {}
 
 --- Drains the temporary vector pool, invalidating existing temporary vectors.
 --- This is called automatically at the end of each frame.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.drain)
 function math.drain() end
 
 --- Converts a color from gamma space to linear space.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.gammaToLinear)
 ---@see lovr.math.linearToGamma
 ---@param gr number # The red component of the gamma-space color.
 ---@param gg number # The green component of the gamma-space color.
@@ -826,10 +1036,14 @@ function math.drain() end
 function math.gammaToLinear(gr, gg, gb) end
 
 --- Get the seed used to initialize the random generator.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.getRandomSeed)
 ---@return number # The new seed.
 function math.getRandomSeed() end
 
 --- Converts a color from linear space to gamma space.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.linearToGamma)
 ---@see lovr.math.gammaToLinear
 ---@param lr number # The red component of the linear-space color.
 ---@param lg number # The green component of the linear-space color.
@@ -842,6 +1056,8 @@ function math.getRandomSeed() end
 function math.linearToGamma(lr, lg, lb) end
 
 --- Creates a temporary 4D matrix.  This function takes the same arguments as `Mat4:set`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.mat4)
 ---@see lovr.math.newMat4
 ---@see Mat4
 ---@see Vectors
@@ -854,6 +1070,8 @@ function math.linearToGamma(lr, lg, lb) end
 function math.mat4() end
 
 --- Creates a new `Curve` from a list of control points.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.newCurve)
 ---@param x number # The x coordinate of the first control point.
 ---@param y number # The y coordinate of the first control point.
 ---@param z number # The z coordinate of the first control point.
@@ -865,6 +1083,8 @@ function math.mat4() end
 function math.newCurve(x, y, z, ...) end
 
 --- Creates a new 4D matrix.  This function takes the same arguments as `Mat4:set`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.newMat4)
 ---@see lovr.math.mat4
 ---@see Mat4
 ---@see Vectors
@@ -877,6 +1097,8 @@ function math.newCurve(x, y, z, ...) end
 function math.newMat4() end
 
 --- Creates a new quaternion.  This function takes the same arguments as `Quat:set`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.newQuat)
 ---@see lovr.math.quat
 ---@see Quat
 ---@see Vectors
@@ -894,12 +1116,16 @@ function math.newMat4() end
 function math.newQuat(angle, ax, ay, az, raw) end
 
 --- Creates a new `RandomGenerator`, which can be used to generate random numbers. If you just want some random numbers, you can use `lovr.math.random`. Individual RandomGenerator objects are useful if you need more control over the random sequence used or need a random generator isolated from other instances.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.newRandomGenerator)
 ---@return RandomGenerator # The new RandomGenerator.
 ---@overload fun(seed: number): RandomGenerator
 ---@overload fun(low: number, high: number): RandomGenerator
 function math.newRandomGenerator() end
 
 --- Creates a new 2D vector.  This function takes the same arguments as `Vec2:set`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.newVec2)
 ---@see lovr.math.vec2
 ---@see Vec2
 ---@see Vectors
@@ -910,6 +1136,8 @@ function math.newRandomGenerator() end
 function math.newVec2(x, y) end
 
 --- Creates a new 3D vector.  This function takes the same arguments as `Vec3:set`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.newVec3)
 ---@see lovr.math.vec3
 ---@see Vec3
 ---@see Vectors
@@ -923,6 +1151,8 @@ function math.newVec2(x, y) end
 function math.newVec3(x, y, z) end
 
 --- Creates a new 4D vector.  This function takes the same arguments as `Vec4:set`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.newVec4)
 ---@see lovr.math.vec4
 ---@see Vec4
 ---@see Vectors
@@ -935,6 +1165,8 @@ function math.newVec3(x, y, z) end
 function math.newVec4(x, y, z, w) end
 
 --- Returns a 1D, 2D, 3D, or 4D simplex noise value.  The number will be between 0 and 1.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.noise)
 ---@see lovr.math.random
 ---@param x number # The x coordinate of the input.
 ---@return number # The noise value, between 0 and 1.
@@ -944,6 +1176,8 @@ function math.newVec4(x, y, z, w) end
 function math.noise(x) end
 
 --- Creates a temporary quaternion.  This function takes the same arguments as `Quat:set`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.quat)
 ---@see lovr.math.newQuat
 ---@see Quat
 ---@see Vectors
@@ -961,6 +1195,8 @@ function math.noise(x) end
 function math.quat(angle, ax, ay, az, raw) end
 
 --- Returns a uniformly distributed pseudo-random number.  This function has improved randomness over Lua's `math.random` and also guarantees that the sequence of random numbers will be the same on all platforms (given the same seed).
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.random)
 ---@see lovr.math.randomNormal
 ---@see RandomGenerator
 ---@see lovr.math.noise
@@ -970,6 +1206,8 @@ function math.quat(angle, ax, ay, az, raw) end
 function math.random() end
 
 --- Returns a pseudo-random number from a normal distribution (a bell curve).  You can control the center of the bell curve (the mean value) and the overall width (sigma, or standard deviation).
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.randomNormal)
 ---@see lovr.math.random
 ---@see RandomGenerator
 ---@param sigma number? # The standard deviation of the distribution.  This can be thought of how "wide" the range of numbers is or how much variability there is. (default: 1)
@@ -978,10 +1216,14 @@ function math.random() end
 function math.randomNormal(sigma, mu) end
 
 --- Seed the random generator with a new seed.  Each seed will cause `lovr.math.random` and `lovr.math.randomNormal` to produce a unique sequence of random numbers.  This is done once automatically at startup by `lovr.run`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.setRandomSeed)
 ---@param seed number # The new seed.
 function math.setRandomSeed(seed) end
 
 --- Creates a temporary 2D vector.  This function takes the same arguments as `Vec2:set`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.vec2)
 ---@see lovr.math.newVec2
 ---@see Vec2
 ---@see Vectors
@@ -992,6 +1234,8 @@ function math.setRandomSeed(seed) end
 function math.vec2(x, y) end
 
 --- Creates a temporary 3D vector.  This function takes the same arguments as `Vec3:set`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.vec3)
 ---@see lovr.math.newVec3
 ---@see Vec3
 ---@see Vectors
@@ -1005,6 +1249,8 @@ function math.vec2(x, y) end
 function math.vec3(x, y, z) end
 
 --- Creates a temporary 4D vector.  This function takes the same arguments as `Vec4:set`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.math.vec4)
 ---@see lovr.math.newVec4
 ---@see Vec4
 ---@see Vectors

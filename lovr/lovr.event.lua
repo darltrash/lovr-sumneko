@@ -2,6 +2,8 @@
 
 --- The `lovr.event` module handles events from the operating system.
 --- Due to its low-level nature, it's rare to use `lovr.event` in simple projects.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.event)
 ---@class lovr.event
 local event = {}
 
@@ -116,13 +118,19 @@ local event = {}
 ---| '"numlock"' # The numlock key.
 
 --- Clears the event queue, removing any unprocessed events.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.event.clear)
 function event.clear() end
 
 --- This function returns a Lua iterator for all of the unprocessed items in the event queue.  Each event consists of a name as a string, followed by event-specific arguments.  This function is called in the default implementation of `lovr.run`, so it is normally not necessary to poll for events yourself.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.event.poll)
 ---@return function # The iterator function, usable in a for loop.
 function event.poll() end
 
 --- Pushes an event onto the event queue.  It will be processed the next time `lovr.event.poll` is called.  For an event to be processed properly, there needs to be a function in the `lovr.handlers` table with a key that's the same as the event name.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.event.push)
 ---@see lovr.event.poll
 ---@see lovr.event.quit
 ---@param name string # The name of the event.
@@ -130,6 +138,8 @@ function event.poll() end
 function event.push(name, ...) end
 
 --- Pushes an event to quit.  An optional number can be passed to set the exit code for the application.  An exit code of zero indicates normal termination, whereas a nonzero exit code indicates that an error occurred.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.event.quit)
 ---@see lovr.quit
 ---@see lovr.event.poll
 ---@see lovr.event.restart
@@ -137,6 +147,8 @@ function event.push(name, ...) end
 function event.quit(code) end
 
 --- Pushes an event to restart the framework.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.event.restart)
 ---@see lovr.restart
 ---@see lovr.event.poll
 ---@see lovr.event.quit

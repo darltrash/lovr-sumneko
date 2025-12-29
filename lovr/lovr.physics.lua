@@ -1,6 +1,8 @@
 ---@meta lovr.physics
 
 --- The `lovr.physics` module simulates 3D rigid body physics.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics)
 ---@class lovr.physics
 local physics = {}
 
@@ -26,55 +28,81 @@ local physics = {}
 ---| '"mesh"' # A triangle mesh.  Colliders with this shape can not move.
 ---| '"terrain"' # A heightfield.  Colliders with this shape can not move.
 
+--- A BallJoint is a type of `Joint` that acts like a ball and socket between two colliders.  It allows the colliders to rotate freely around an anchor point, but does not allow the colliders' distance from the anchor point to change.
+---
+--- [Open in browser](https://lovr.org/docs/BallJoint)
 ---@class BallJoint
 local BallJoint = {}
 
+--- A type of `Shape` that can be used for cubes or boxes.
+---
+--- [Open in browser](https://lovr.org/docs/BoxShape)
 ---@class BoxShape
 local BoxShape = {}
 
 --- Returns the width, height, and depth of the BoxShape.
+---
+--- [Open in browser](https://lovr.org/docs/BoxShape:getDimensions)
 ---@return number # The width of the box, in meters.
 ---@return number # The height of the box, in meters.
 ---@return number # The depth of the box, in meters.
 function BoxShape:getDimensions() end
 
 --- Sets the width, height, and depth of the BoxShape.
+---
+--- [Open in browser](https://lovr.org/docs/BoxShape:setDimensions)
 ---@param width number # The width of the box, in meters.
 ---@param height number # The height of the box, in meters.
 ---@param depth number # The depth of the box, in meters.
 function BoxShape:setDimensions(width, height, depth) end
 
+--- A type of `Shape` that can be used for capsule-shaped things.
+---
+--- [Open in browser](https://lovr.org/docs/CapsuleShape)
 ---@class CapsuleShape
 local CapsuleShape = {}
 
 --- Returns the length of the CapsuleShape, not including the caps.
+---
+--- [Open in browser](https://lovr.org/docs/CapsuleShape:getLength)
 ---@see CapsuleShape.getRadius
 ---@see CapsuleShape.setRadius
 ---@return number # The length of the capsule, in meters.
 function CapsuleShape:getLength() end
 
 --- Returns the radius of the CapsuleShape.
+---
+--- [Open in browser](https://lovr.org/docs/CapsuleShape:getRadius)
 ---@see CapsuleShape.getLength
 ---@see CapsuleShape.setLength
 ---@return number # The radius of the capsule, in meters.
 function CapsuleShape:getRadius() end
 
 --- Sets the length of the CapsuleShape.
+---
+--- [Open in browser](https://lovr.org/docs/CapsuleShape:setLength)
 ---@see CapsuleShape.getRadius
 ---@see CapsuleShape.setRadius
 ---@param length number # The new length, in meters, not including the caps.
 function CapsuleShape:setLength(length) end
 
 --- Sets the radius of the CapsuleShape.
+---
+--- [Open in browser](https://lovr.org/docs/CapsuleShape:setRadius)
 ---@see CapsuleShape.getLength
 ---@see CapsuleShape.setLength
 ---@param radius number # The new radius, in meters.
 function CapsuleShape:setRadius(radius) end
 
+--- Colliders represent a single rigid body in the physics simulation.
+---
+--- [Open in browser](https://lovr.org/docs/Collider)
 ---@class Collider
 local Collider = {}
 
 --- Attaches a Shape to the collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:addShape)
 ---@see Collider.removeShape
 ---@see Collider.getShapes
 ---@see Collider.getShape
@@ -84,6 +112,8 @@ function Collider:addShape(shape) end
 
 --- Applies an angular impulse to the Collider.
 --- An impulse is a single instantaneous push.  Impulses are independent of time, and are meant to only be applied once.  Use `Collider:applyTorque` for a time-dependent push that happens over multiple frames.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:applyAngularImpulse)
 ---@see Collider.applyTorque
 ---@see Collider.applyForce
 ---@see Collider.applyLinearImpulse
@@ -94,6 +124,8 @@ function Collider:addShape(shape) end
 function Collider:applyAngularImpulse(x, y, z) end
 
 --- Applies a force to the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:applyForce)
 ---@see Collider.applyLinearImpulse
 ---@see Collider.applyTorque
 ---@see Collider.applyAngularImpulse
@@ -107,6 +139,8 @@ function Collider:applyForce(x, y, z) end
 
 --- Applies a linear impulse to the Collider.
 --- An impulse is a single instantaneous push.  Impulses are independent of time, and are meant to only be applied once.  Use `Collider:applyForce` for a time-dependent push that happens over multiple frames.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:applyLinearImpulse)
 ---@see Collider.applyForce
 ---@see Collider.applyTorque
 ---@see Collider.applyAngularImpulse
@@ -119,6 +153,8 @@ function Collider:applyForce(x, y, z) end
 function Collider:applyLinearImpulse(x, y, z) end
 
 --- Applies torque to the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:applyTorque)
 ---@see Collider.applyAngularImpulse
 ---@see Collider.applyForce
 ---@see Collider.applyLinearImpulse
@@ -129,6 +165,8 @@ function Collider:applyLinearImpulse(x, y, z) end
 function Collider:applyTorque(x, y, z) end
 
 --- Destroys the Collider, removing it from the World and destroying all Shapes and Joints attached to it.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:destroy)
 ---@see Collider.isDestroyed
 ---@see Collider.setEnabled
 ---@see World.destroy
@@ -137,6 +175,8 @@ function Collider:applyTorque(x, y, z) end
 function Collider:destroy() end
 
 --- Returns the world-space axis-aligned bounding box of the Collider, computed from attached shapes.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getAABB)
 ---@see Shape.getAABB
 ---@see World.queryBox
 ---@return number # The minimum x coordinate of the box.
@@ -148,6 +188,8 @@ function Collider:destroy() end
 function Collider:getAABB() end
 
 --- Returns the angular damping of the Collider.  Angular damping is similar to drag or air resistance, reducing the Collider's angular velocity over time.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getAngularDamping)
 ---@see Collider.getLinearDamping
 ---@see Collider.setLinearDamping
 ---@see Collider.getInertia
@@ -156,6 +198,8 @@ function Collider:getAABB() end
 function Collider:getAngularDamping() end
 
 --- Returns the angular velocity of the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getAngularVelocity)
 ---@see Collider.getLinearVelocity
 ---@see Collider.setLinearVelocity
 ---@see Collider.applyTorque
@@ -174,6 +218,8 @@ function Collider:getAngularVelocity() end
 --- - A shape attached to the Collider changes its density using `Shape:setDensity`.
 --- Additionally, changing the center of mass of a Collider will automatically update its inertia when automatic mass is enabled.
 --- Disable this to manage the mass properties manually.  When automatic mass is disabled, `Collider:resetMassData` can still be used to reset the mass from attached shapes if needed.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getAutomaticMass)
 ---@see Collider.resetMassData
 ---@see Collider.getMass
 ---@see Collider.setMass
@@ -185,6 +231,8 @@ function Collider:getAngularVelocity() end
 function Collider:getAutomaticMass() end
 
 --- Returns the Collider's center of mass, in the Collider's local coordinate space.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getCenterOfMass)
 ---@see Shape.getCenterOfMass
 ---@see Collider.getMass
 ---@see Collider.setMass
@@ -201,11 +249,15 @@ function Collider:getAutomaticMass() end
 function Collider:getCenterOfMass() end
 
 --- Get the degrees of freedom of the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getDegreesOfFreedom)
 ---@return string # A string containing the world-space axes the Collider is allowed to move on.  The string will have 'x', 'y', and 'z' letters representing which axes are enabled.  If no axes are enabled then it will be an empty string.
 ---@return string # A string containing the world-space axes the Collider is allowed to rotate around.  The string will have 'x', 'y', and 'z' letters representing which axes are enabled.  If no axes are enabled then it will be an empty string.
 function Collider:getDegreesOfFreedom() end
 
 --- Returns the friction of the Collider.  Friction determines how easy it is for two colliders to slide against each other.  Low friction makes it easier for a collider to slide, simulating a smooth surface.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getFriction)
 ---@see Contact.getFriction
 ---@see Contact.setFriction
 ---@see Collider.getRestitution
@@ -214,6 +266,8 @@ function Collider:getDegreesOfFreedom() end
 function Collider:getFriction() end
 
 --- Returns the gravity scale of the Collider.  This is multiplied with the global gravity from the World, so 1.0 is regular gravity, 0.0 will ignore gravity, etc.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getGravityScale)
 ---@see World.getGravity
 ---@see World.setGravity
 ---@see Collider.getLinearDamping
@@ -225,6 +279,8 @@ function Collider:getGravityScale() end
 --- Inertia is kind of like "angular mass".  Regular mass determines how resistant the Collider is to linear forces (movement), whereas inertia determines how resistant the Collider is to torque (rotation).  Colliders with less inertia are more spinny.
 --- In 3D, inertia is represented by a 3x3 matrix, called a tensor.  To make calculations easier, the physics engine stores the inertia using eigenvalue decomposition, splitting the matrix into a diagonal matrix and a rotation.  It's complicated!
 --- In a realistic simulation, mass and inertia follow a linear relationship.  If the mass of an object increases, the diagonal part of its inertia should increase proportionally.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getInertia)
 ---@see Collider.getMass
 ---@see Collider.setMass
 ---@see Collider.getCenterOfMass
@@ -243,6 +299,8 @@ function Collider:getGravityScale() end
 function Collider:getInertia() end
 
 --- Returns a list of Joints attached to the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getJoints)
 ---@see World.getJoints
 ---@see Joint.getColliders
 ---@see Joint.destroy
@@ -250,6 +308,8 @@ function Collider:getInertia() end
 function Collider:getJoints() end
 
 --- Returns the linear damping of the Collider.  Linear damping is similar to drag or air resistance, slowing the Collider down over time.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getLinearDamping)
 ---@see Collider.getAngularDamping
 ---@see Collider.setAngularDamping
 ---@see Collider.getGravityScale
@@ -258,6 +318,8 @@ function Collider:getJoints() end
 function Collider:getLinearDamping() end
 
 --- Returns the world-space linear velocity of the center of mass of the Collider, in meters per second.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getLinearVelocity)
 ---@see Collider.applyForce
 ---@see Collider.getLinearVelocityFromLocalPoint
 ---@see Collider.getLinearVelocityFromWorldPoint
@@ -271,6 +333,8 @@ function Collider:getLinearDamping() end
 function Collider:getLinearVelocity() end
 
 --- Returns the linear velocity of a point on the Collider.  This includes the velocity of the center of mass plus the angular velocity at that point.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getLinearVelocityFromLocalPoint)
 ---@see Collider.getLinearVelocity
 ---@see Collider.getLinearVelocityFromWorldPoint
 ---@param x number # The x position in local space.
@@ -283,6 +347,8 @@ function Collider:getLinearVelocity() end
 function Collider:getLinearVelocityFromLocalPoint(x, y, z) end
 
 --- Returns the linear velocity of a point on the Collider.  This includes the velocity of the center of mass plus the angular velocity at that point.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getLinearVelocityFromWorldPoint)
 ---@see Collider.getLinearVelocity
 ---@see Collider.getLinearVelocityFromLocalPoint
 ---@param x number # The x position in world space.
@@ -295,6 +361,8 @@ function Collider:getLinearVelocityFromLocalPoint(x, y, z) end
 function Collider:getLinearVelocityFromWorldPoint(x, y, z) end
 
 --- Transforms a point from world coordinates into local coordinates relative to the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getLocalPoint)
 ---@see Collider.getWorldPoint
 ---@see Collider.getLocalVector
 ---@see Collider.getWorldVector
@@ -308,6 +376,8 @@ function Collider:getLinearVelocityFromWorldPoint(x, y, z) end
 function Collider:getLocalPoint(wx, wy, wz) end
 
 --- Transforms a direction vector from world space to local space.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getLocalVector)
 ---@see Collider.getWorldVector
 ---@see Collider.getLocalPoint
 ---@see Collider.getWorldPoint
@@ -324,6 +394,8 @@ function Collider:getLocalVector(wx, wy, wz) end
 --- The relative mass of colliders determines how they react when they collide.  A heavier collider has more momentum than a lighter collider moving the same speed, and will impart more force on the lighter collider.
 --- More generally, heavier colliders react less to forces they receive, including forces applied with functions like `Collider:applyForce`.
 --- Colliders with higher mass do not fall faster.  Use `Collider:setLinearDamping` to give a collider drag to make it fall slower or `Collider:setGravityScale` to change the way it reacts to gravity.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getMass)
 ---@see Collider.getInertia
 ---@see Collider.setInertia
 ---@see Collider.getCenterOfMass
@@ -339,6 +411,8 @@ function Collider:getLocalVector(wx, wy, wz) end
 function Collider:getMass() end
 
 --- Returns the orientation of the Collider in angle/axis representation.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getOrientation)
 ---@see Collider.applyTorque
 ---@see Collider.getAngularVelocity
 ---@see Collider.setAngularVelocity
@@ -353,6 +427,8 @@ function Collider:getMass() end
 function Collider:getOrientation() end
 
 --- Returns the position and orientation of the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getPose)
 ---@see Collider.getPosition
 ---@see Collider.getOrientation
 ---@return number # The x position of the Collider, in meters.
@@ -365,6 +441,8 @@ function Collider:getOrientation() end
 function Collider:getPose() end
 
 --- Returns the position of the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getPosition)
 ---@see Collider.applyForce
 ---@see Collider.getLinearVelocity
 ---@see Collider.setLinearVelocity
@@ -378,6 +456,8 @@ function Collider:getPose() end
 function Collider:getPosition() end
 
 --- Returns the restitution of the Collider.  Restitution makes a Collider bounce when it collides with other objects.  A restitution value of zero would result in an inelastic collision response, whereas 1.0 would result in an elastic collision that preserves all of the velocity. The restitution can be bigger than 1.0 to make the collision even more bouncy.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getRestitution)
 ---@see Contact.getRestitution
 ---@see Contact.setRestitution
 ---@see Collider.getFriction
@@ -387,6 +467,8 @@ function Collider:getRestitution() end
 
 --- Returns a Shape attached to the Collider.
 --- For the common case where a Collider only has a single shape, this is more convenient and efficient than extracting it from the table returned by `Collider:getShapes`.  It is always equivalent to `Collider:getShapes()[1]`.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getShape)
 ---@see Collider.getShapes
 ---@see Collider.addShape
 ---@see Collider.removeShape
@@ -395,6 +477,8 @@ function Collider:getRestitution() end
 function Collider:getShape() end
 
 --- Returns a list of Shapes attached to the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getShapes)
 ---@see Collider.getShape
 ---@see Collider.addShape
 ---@see Collider.removeShape
@@ -405,6 +489,8 @@ function Collider:getShapes() end
 --- Returns the Collider's tag.
 --- Tags are strings that represent the category of a collider.  Use `World:enableCollisionBetween` and `World:disableCollisionBetween` to control which pairs of tags should collide with each other.  Physics queries like `World:raycast` also use tags to filter their results.
 --- The list of available tags is set in `lovr.physics.newWorld`.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getTag)
 ---@see World.getTags
 ---@see World.disableCollisionBetween
 ---@see World.enableCollisionBetween
@@ -414,6 +500,8 @@ function Collider:getShapes() end
 function Collider:getTag() end
 
 --- Returns the Lua value associated with the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getUserData)
 ---@see Shape.getUserData
 ---@see Shape.setUserData
 ---@see Joint.getUserData
@@ -422,10 +510,14 @@ function Collider:getTag() end
 function Collider:getUserData() end
 
 --- Returns the World the Collider is in.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getWorld)
 ---@return World # The World the Collider is in.
 function Collider:getWorld() end
 
 --- Transforms a local point relative to the collider to a point in world coordinates.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getWorldPoint)
 ---@see Collider.getLocalPoint
 ---@see Collider.getLocalVector
 ---@see Collider.getWorldVector
@@ -439,6 +531,8 @@ function Collider:getWorld() end
 function Collider:getWorldPoint(x, y, z) end
 
 --- Transforms a direction vector from local space to world space.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:getWorldVector)
 ---@see Collider.getLocalVector
 ---@see Collider.getLocalPoint
 ---@see Collider.getWorldPoint
@@ -452,6 +546,8 @@ function Collider:getWorldPoint(x, y, z) end
 function Collider:getWorldVector(x, y, z) end
 
 --- Returns whether the Collider is awake.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:isAwake)
 ---@see Collider.isSleepingAllowed
 ---@see Collider.setSleepingAllowed
 ---@return boolean # Whether the Collider is finally awake.
@@ -459,10 +555,14 @@ function Collider:isAwake() end
 
 --- Returns whether the Collider uses continuous collision detection.
 --- Normally on each timestep a Collider will "teleport" to its new position based on its velocity. Usually this works fine, but if a Collider is going really fast relative to its size, then it might miss collisions with objects or pass through walls.  Enabling continuous collision detection means the Collider will check for obstacles along its path before moving to the new location.  This prevents the Collider from going through walls, but reduces performance.  It's usually used for projectiles, which tend to be small and really fast.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:isContinuous)
 ---@return boolean # Whether the Collider uses continuous collision detection.
 function Collider:isContinuous() end
 
 --- Returns whether the collider has been destroyed.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:isDestroyed)
 ---@see Collider.destroy
 ---@see World.destroy
 ---@see Shape.destroy
@@ -471,20 +571,28 @@ function Collider:isContinuous() end
 function Collider:isDestroyed() end
 
 --- Returns whether the Collider is enabled.  When a Collider is disabled, it is removed from the World and does not impact the physics simulation in any way.  The Collider keeps all of its state and can be re-enabled to add it back to the World.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:isEnabled)
 ---@see Collider.destroy
 ---@return boolean # Whether the Collider is enabled.
 function Collider:isEnabled() end
 
 --- Returns whether the Collider is currently ignoring gravity.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:isGravityIgnored)
 ---@return boolean # Whether gravity is ignored for this Collider.
 function Collider:isGravityIgnored() end
 
 --- Returns whether the Collider is kinematic.
 --- Kinematic colliders behave like they have infinite mass.  They ignore forces applied to them from gravity, joints, and collisions, but they can still move if given a velocity.  Kinematic colliders don't collide with other kinematic colliders.  They're useful for static environment objects in a level, or for objects that have their position managed outside of the physics system like tracked hands.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:isKinematic)
 ---@return boolean # Whether the Collider is kinematic.
 function Collider:isKinematic() end
 
 --- Returns whether the Collider is a sensor.  Sensors do not collide with other objects, but they can still sense collisions with the collision callbacks set by `World:setCallbacks`.  Use them to trigger gameplay behavior when an object is inside a region of space.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:isSensor)
 ---@see Collider.setKinematic
 ---@see Collider.setEnabled
 ---@see World.overlapShape
@@ -494,12 +602,16 @@ function Collider:isSensor() end
 
 --- Returns whether the Collider is allowed to automatically go to sleep.
 --- When enabled, the Collider will go to sleep if it hasn't moved in a while.  The physics engine does not simulate movement for colliders that are asleep, which saves a lot of CPU for a typical physics world where most objects are at rest at any given time.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:isSleepingAllowed)
 ---@see Collider.isAwake
 ---@see Collider.setAwake
 ---@return boolean # Whether the Collider can go to sleep.
 function Collider:isSleepingAllowed() end
 
 --- Moves the collider towards a destination pose.  The velocity of the collider is set so that the collider reaches the destination in `dt` seconds.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:moveKinematic)
 ---@see Collider.setLinearVelocity
 ---@see Collider.setAngularVelocity
 ---@see Collider.applyForce
@@ -516,6 +628,8 @@ function Collider:isSleepingAllowed() end
 function Collider:moveKinematic(x, y, z, angle, ax, ay, az, dt) end
 
 --- Removes a Shape from the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:removeShape)
 ---@see Collider.addShape
 ---@see Collider.getShapes
 ---@see Shape
@@ -524,6 +638,8 @@ function Collider:removeShape(shape) end
 
 --- Resets the mass, inertia, and center of mass of the Collider based on its attached shapes.
 --- If automatic mass is enabled, these properties will be kept up to date automatically.  Use this function when automatic mass is disabled or if mass needs to be reset after being overridden.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:resetMassData)
 ---@see Collider.getAutomaticMass
 ---@see Collider.setAutomaticMass
 ---@see Collider.getMass
@@ -535,6 +651,8 @@ function Collider:removeShape(shape) end
 function Collider:resetMassData() end
 
 --- Sets the angular damping of the Collider.  Angular damping is similar to drag or air resistance, reducing the Collider's angular velocity over time.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setAngularDamping)
 ---@see Collider.getLinearDamping
 ---@see Collider.setLinearDamping
 ---@see Collider.getInertia
@@ -543,6 +661,8 @@ function Collider:resetMassData() end
 function Collider:setAngularDamping(damping) end
 
 --- Sets the angular velocity of the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setAngularVelocity)
 ---@see Collider.applyTorque
 ---@see Collider.applyAngularImpulse
 ---@see Collider.getLinearVelocity
@@ -563,6 +683,8 @@ function Collider:setAngularVelocity(vx, vy, vz) end
 --- - A shape attached to the Collider changes its density using `Shape:setDensity`.
 --- Additionally, changing the center of mass of a Collider will automatically update its inertia when automatic mass is enabled.
 --- Disable this to manage the mass properties manually.  When automatic mass is disabled, `Collider:resetMassData` can still be used to reset the mass from attached shapes if needed.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setAutomaticMass)
 ---@see Collider.resetMassData
 ---@see Collider.getMass
 ---@see Collider.setMass
@@ -574,6 +696,8 @@ function Collider:setAngularVelocity(vx, vy, vz) end
 function Collider:setAutomaticMass(enable) end
 
 --- Puts the Collider to sleep or wakes it up manually.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setAwake)
 ---@see Collider.isSleepingAllowed
 ---@see Collider.setSleepingAllowed
 ---@param awake boolean # Whether the Collider should be awake.
@@ -581,6 +705,8 @@ function Collider:setAwake(awake) end
 
 --- Sets the Collider's center of mass, in the Collider's local coordinate space.
 --- This does not change the Collider's position.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setCenterOfMass)
 ---@see Shape.getCenterOfMass
 ---@see Collider.getMass
 ---@see Collider.setMass
@@ -599,20 +725,28 @@ function Collider:setCenterOfMass(x, y, z) end
 
 --- Sets whether the Collider uses continuous collision detection.
 --- Normally on each timestep a Collider will "teleport" to its new position based on its velocity. Usually this works fine, but if a Collider is going really fast relative to its size, then it might miss collisions with objects or pass through walls.  Enabling continuous collision detection means the Collider will check for obstacles along its path before moving to the new location.  This prevents the Collider from going through walls, but reduces performance.  It's usually used for projectiles, which tend to be small and really fast.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setContinuous)
 ---@param continuous boolean # Whether the Collider uses continuous collision detection.
 function Collider:setContinuous(continuous) end
 
 --- Set the degrees of freedom of the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setDegreesOfFreedom)
 ---@param translation string? # A string containing the world-space axes the Collider is allowed to move on.  The string should have 'x', 'y', and 'z' letters representing the axes to enable.  Use nil or an empty string to disable all translation. (default: '')
 ---@param rotation string? # A string containing the world-space axes the Collider is allowed to rotate on.  The string should have 'x', 'y', and 'z' letters representing the axes to enable.  Use nil or an empty string to disable all rotation. (default: '')
 function Collider:setDegreesOfFreedom(translation, rotation) end
 
 --- Enables or disables the Collider.  When a Collider is disabled, it is removed from the World and does not impact the physics simulation in any way.  The Collider keeps all of its state and can be re-enabled to add it back to the World.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setEnabled)
 ---@see Collider.destroy
 ---@param enable boolean # Whether the Collider should be enabled.
 function Collider:setEnabled(enable) end
 
 --- Sets the friction of the Collider.  Friction determines how easy it is for two colliders to slide against each other.  Low friction makes it easier for a collider to slide, simulating a smooth surface.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setFriction)
 ---@see Contact.getFriction
 ---@see Contact.setFriction
 ---@see Collider.getRestitution
@@ -621,10 +755,14 @@ function Collider:setEnabled(enable) end
 function Collider:setFriction(friction) end
 
 --- Sets whether the Collider should ignore gravity.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setGravityIgnored)
 ---@param ignored boolean # Whether gravity should be ignored.
 function Collider:setGravityIgnored(ignored) end
 
 --- Sets the gravity scale of the Collider.  This is multiplied with the global gravity from the World, so 1.0 is regular gravity, 0.0 will ignore gravity, etc.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setGravityScale)
 ---@see World.getGravity
 ---@see World.setGravity
 ---@see Collider.getLinearDamping
@@ -636,6 +774,8 @@ function Collider:setGravityScale(scale) end
 --- Inertia is kind of like "angular mass".  Regular mass determines how resistant the Collider is to linear forces (movement), whereas inertia determines how resistant the Collider is to torque (rotation).  Colliders with less inertia are more spinny.
 --- In 3D, inertia is represented by a 3x3 matrix, called a tensor.  To make calculations easier, the physics engine stores the inertia using eigenvalue decomposition, splitting the matrix into a diagonal matrix and a rotation.  It's complicated!
 --- In a realistic simulation, mass and inertia follow a linear relationship.  If the mass of an object increases, the diagonal part of its inertia should increase proportionally.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setInertia)
 ---@see Collider.getMass
 ---@see Collider.setMass
 ---@see Collider.getCenterOfMass
@@ -656,10 +796,14 @@ function Collider:setInertia(dx, dy, dz, angle, ax, ay, az) end
 
 --- Sets whether the Collider is kinematic.
 --- Kinematic colliders behave like they have infinite mass.  They ignore forces applied to them from gravity, joints, and collisions, but they can still move if given a velocity.  Kinematic colliders don't collide with other kinematic colliders.  They're useful for static environment objects in a level, or for objects that have their position managed outside of the physics system like tracked hands.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setKinematic)
 ---@param kinematic boolean # Whether the Collider should be kinematic.
 function Collider:setKinematic(kinematic) end
 
 --- Sets the linear damping of the Collider.  Linear damping is similar to drag or air resistance, slowing the Collider down over time.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setLinearDamping)
 ---@see Collider.getAngularDamping
 ---@see Collider.setAngularDamping
 ---@see Collider.getGravityScale
@@ -668,6 +812,8 @@ function Collider:setKinematic(kinematic) end
 function Collider:setLinearDamping(damping) end
 
 --- Sets the world-space linear velocity of the center of mass of the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setLinearVelocity)
 ---@see Collider.applyForce
 ---@see Collider.applyLinearImpulse
 ---@see Collider.getLinearVelocityFromLocalPoint
@@ -686,6 +832,8 @@ function Collider:setLinearVelocity(vx, vy, vz) end
 --- The relative mass of colliders determines how they react when they collide.  A heavier collider has more momentum than a lighter collider moving the same speed, and will impart more force on the lighter collider.
 --- More generally, heavier colliders react less to forces they receive, including forces applied with functions like `Collider:applyForce`.
 --- Colliders with higher mass do not fall faster.  Use `Collider:setLinearDamping` to give a collider drag to make it fall slower or `Collider:setGravityScale` to change the way it reacts to gravity.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setMass)
 ---@see Collider.getInertia
 ---@see Collider.setInertia
 ---@see Collider.getCenterOfMass
@@ -701,6 +849,8 @@ function Collider:setLinearVelocity(vx, vy, vz) end
 function Collider:setMass(mass) end
 
 --- Sets the orientation of the Collider in angle/axis representation.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setOrientation)
 ---@see Collider.applyTorque
 ---@see Collider.getAngularVelocity
 ---@see Collider.setAngularVelocity
@@ -716,6 +866,8 @@ function Collider:setMass(mass) end
 function Collider:setOrientation(angle, ax, ay, az) end
 
 --- Sets the position and orientation of the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setPose)
 ---@see Collider.setPosition
 ---@see Collider.setOrientation
 ---@param x number # The x position of the Collider, in meters.
@@ -729,6 +881,8 @@ function Collider:setOrientation(angle, ax, ay, az) end
 function Collider:setPose(x, y, z, angle, ax, ay, az) end
 
 --- Sets the position of the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setPosition)
 ---@see Collider.applyForce
 ---@see Collider.getLinearVelocity
 ---@see Collider.setLinearVelocity
@@ -743,6 +897,8 @@ function Collider:setPose(x, y, z, angle, ax, ay, az) end
 function Collider:setPosition(x, y, z) end
 
 --- Sets the restitution of the Collider.  Restitution makes a Collider bounce when it collides with other objects.  A restitution value of zero would result in an inelastic collision response, whereas 1.0 would result in an elastic collision that preserves all of the velocity.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setRestitution)
 ---@see Contact.getRestitution
 ---@see Contact.setRestitution
 ---@see Collider.getFriction
@@ -751,6 +907,8 @@ function Collider:setPosition(x, y, z) end
 function Collider:setRestitution(restitution) end
 
 --- Sets whether the Collider should be a sensor.  Sensors do not collide with other objects, but they can still sense collisions with the collision callbacks set by `World:setCallbacks`.  Use them to trigger gameplay behavior when an object is inside a region of space.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setSensor)
 ---@see Collider.setKinematic
 ---@see Collider.setEnabled
 ---@see World.overlapShape
@@ -760,6 +918,8 @@ function Collider:setSensor(sensor) end
 
 --- Sets whether the Collider is allowed to automatically go to sleep.
 --- When enabled, the Collider will go to sleep if it hasn't moved in a while.  The physics engine does not simulate movement for colliders that are asleep, which saves a lot of CPU for a typical physics world where most objects are at rest at any given time.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setSleepingAllowed)
 ---@see Collider.isAwake
 ---@see Collider.setAwake
 ---@param sleepy boolean # Whether the Collider can go to sleep.
@@ -768,6 +928,8 @@ function Collider:setSleepingAllowed(sleepy) end
 --- Sets the Collider's tag.
 --- Tags are strings that represent the category of a collider.  Use `World:enableCollisionBetween` and `World:disableCollisionBetween` to control which pairs of tags should collide with each other.  Physics queries like `World:raycast` also use tags to filter their results.
 --- The list of available tags is set in `lovr.physics.newWorld`.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setTag)
 ---@see World.getTags
 ---@see World.disableCollisionBetween
 ---@see World.enableCollisionBetween
@@ -778,6 +940,8 @@ function Collider:setSleepingAllowed(sleepy) end
 function Collider:setTag(tag) end
 
 --- Associates a Lua value with the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Collider:setUserData)
 ---@see Shape.getUserData
 ---@see Shape.setUserData
 ---@see Joint.getUserData
@@ -785,33 +949,49 @@ function Collider:setTag(tag) end
 ---@param data any # The custom value to associate with the Collider.
 function Collider:setUserData(data) end
 
+--- TODO
+---
+--- [Open in browser](https://lovr.org/docs/ConeJoint)
 ---@class ConeJoint
 local ConeJoint = {}
 
 --- Returns the axis of the ConeJoint, in world space.  The axis is relative to the first Collider connected to the Joint, so it will rotate as the collider does.  The relative angle between the axis and the second collider will be constrained based on the ConeJoint's angle limit.
+---
+--- [Open in browser](https://lovr.org/docs/ConeJoint:getAxis)
 ---@return number # The x component of the axis.
 ---@return number # The y component of the axis.
 ---@return number # The z component of the axis.
 function ConeJoint:getAxis() end
 
 --- Returns the angle limit of the ConeJoint.  The relative angle between the ConeJoint's axis and the second Collider will be constrained to this limit.
+---
+--- [Open in browser](https://lovr.org/docs/ConeJoint:getLimit)
 ---@return number # The angle limit, in radians.
 function ConeJoint:getLimit() end
 
 --- Sets the angle limit of the ConeJoint.  The relative angle between the ConeJoint's axis and the second Collider will be constrained to this limit.
+---
+--- [Open in browser](https://lovr.org/docs/ConeJoint:setLimit)
 ---@param limit number # The new limit in radians, between 0 and pi.
 function ConeJoint:setLimit(limit) end
 
+--- TODO
+---
+--- [Open in browser](https://lovr.org/docs/Contact)
 ---@class Contact
 local Contact = {}
 
 --- Returns the two Colliders that are in contact.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:getColliders)
 ---@see Contact.getShapes
 ---@return Collider # The first collider.
 ---@return Collider # The second collider.
 function Contact:getColliders() end
 
 --- Returns the friction of the Contact.  Lower friction makes it easier for the colliders to slide against each other.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:getFriction)
 ---@see Collider.getFriction
 ---@see Collider.setFriction
 ---@see Contact.getRestitution
@@ -820,6 +1000,8 @@ function Contact:getColliders() end
 function Contact:getFriction() end
 
 --- Returns the normal vector of the Contact.  This is a direction vector that represents which direction the second collider should move to resolve the collision.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:getNormal)
 ---@see Contact.getOverlap
 ---@see Contact.getPoints
 ---@return number # The x component of the normal vector.
@@ -828,15 +1010,21 @@ function Contact:getFriction() end
 function Contact:getNormal() end
 
 --- Returns the amount of overlap between the colliders.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:getOverlap)
 ---@see Contact.getNormal
 ---@return number # The amount of overlap, in meters.
 function Contact:getOverlap() end
 
 --- Returns the contact points of the Contact.  These are the points where the colliders are intersecting.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:getPoints)
 ---@return number # Triplets of x/y/z numbers, one for each contact point.
 function Contact:getPoints() end
 
 --- Returns the restitution of the Contact.  Restitution makes the Colliders bounce off of each other.  A restitution value of zero results in an inelastic collision response, whereas 1.0 results in an elastic collision that preserves all of the velocity.  Restitution can be bigger than 1.0 to make the collision even more bouncy.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:getRestitution)
 ---@see Collider.getRestitution
 ---@see Collider.setRestitution
 ---@see Contact.getFriction
@@ -845,18 +1033,24 @@ function Contact:getPoints() end
 function Contact:getRestitution() end
 
 --- Returns the two Shapes that are in contact.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:getShapes)
 ---@see Contact.getColliders
 ---@return Shape # The first shape.
 ---@return Shape # The second shape.
 function Contact:getShapes() end
 
 --- Returns the world space surface velocity of the Contact.  This can be used to achieve a conveyor belt effect.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:getSurfaceVelocity)
 ---@return number # The x component of the surface velocity.
 ---@return number # The y component of the surface velocity.
 ---@return number # The z component of the surface velocity.
 function Contact:getSurfaceVelocity() end
 
 --- Returns whether the Contact is enabled.  Disabled contacts do not generate any collision response.  Use `Contact:setEnabled` to disable a contact to selectively ignore certain collisions.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:isEnabled)
 ---@see Collider.isEnabled
 ---@see Collider.setEnabled
 ---@see World.setCallbacks
@@ -864,10 +1058,14 @@ function Contact:getSurfaceVelocity() end
 function Contact:isEnabled() end
 
 --- Enables or disables the Contact.  Disabled contacts do not generate any collision response.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:setEnabled)
 ---@param enable boolean # Whether the Contact should be enabled.
 function Contact:setEnabled(enable) end
 
 --- Sets the friction of the Contact.  Lower friction makes it easier for the colliders to slide against each other.  This overrides the default friction computed by the friction of the two Colliders.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:setFriction)
 ---@see Collider.getFriction
 ---@see Collider.setFriction
 ---@see Contact.getRestitution
@@ -876,6 +1074,8 @@ function Contact:setEnabled(enable) end
 function Contact:setFriction(friction) end
 
 --- Sets the restitution of the Contact.  Restitution makes the Colliders bounce off of each other. A restitution value of zero results in an inelastic collision response, whereas 1.0 results in an elastic collision that preserves all of the velocity.  Restitution can be bigger than 1.0 to make the collision even more bouncy.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:setRestitution)
 ---@see Collider.getRestitution
 ---@see Collider.setRestitution
 ---@see Contact.getFriction
@@ -884,16 +1084,30 @@ function Contact:setFriction(friction) end
 function Contact:setRestitution(restitution) end
 
 --- Sets the world space surface velocity of the Contact.  This can be used to achieve a conveyor belt effect.
+---
+--- [Open in browser](https://lovr.org/docs/Contact:setSurfaceVelocity)
 ---@param x number # The x component of the surface velocity.
 ---@param y number # The y component of the surface velocity.
 ---@param z number # The z component of the surface velocity.
 ---@overload fun(self: Contact, velocity: Vec3)
 function Contact:setSurfaceVelocity(x, y, z) end
 
+--- A type of `Shape` that is a convex hull of a collection of points, allowing for custom collision shapes.  It is similar to a `MeshShape`, but it is not required to be kinematic, and it will use the convex hull of the mesh instead of using the exact triangles of the object.
+--- Convex shapes can be created from a `Model`, `ModelData`, `Mesh`, or a table of point positions, similar to `MeshShape`.
+--- Convex shapes can be cloned by passing in an existing ConvexShape to clone:
+---     model = lovr.data.newModelData('rock.glb')
+---     parent = lovr.physics.newConvexShape(model)
+---     clone = lovr.physics.newConvexShape(parent, scale)
+--- The clone will reuse all of the data from the parent, which speeds things up a lot.
+--- Convex shapes can have a custom scale applied to their points, and clones can have their own scale.
+---
+--- [Open in browser](https://lovr.org/docs/ConvexShape)
 ---@class ConvexShape
 local ConvexShape = {}
 
 --- Returns the indices of points that make up one of the faces of the convex hull.
+---
+--- [Open in browser](https://lovr.org/docs/ConvexShape:getFace)
 ---@see ConvexShape.getPoint
 ---@see ConvexShape.getFaceCount
 ---@param index number # The index of the face.
@@ -901,11 +1115,15 @@ local ConvexShape = {}
 function ConvexShape:getFace(index) end
 
 --- Returns the number of faces in the convex hull.
+---
+--- [Open in browser](https://lovr.org/docs/ConvexShape:getFaceCount)
 ---@see ConvexShape.getFace
 ---@return number # The number of faces.
 function ConvexShape:getFaceCount() end
 
 --- Returns one of the points in the convex hull, in local space.
+---
+--- [Open in browser](https://lovr.org/docs/ConvexShape:getPoint)
 ---@see ConvexShape.getPointCount
 ---@param index number # The index of the point.
 ---@return number # The x coordinate.
@@ -914,71 +1132,102 @@ function ConvexShape:getFaceCount() end
 function ConvexShape:getPoint(index) end
 
 --- Returns the number of points in the convex hull.
+---
+--- [Open in browser](https://lovr.org/docs/ConvexShape:getPointCount)
 ---@see ConvexShape.getPoint
 ---@return number # The number of points.
 function ConvexShape:getPointCount() end
 
 --- Returns the scale the ConvexShape was created with.
+---
+--- [Open in browser](https://lovr.org/docs/ConvexShape:getScale)
 ---@see lovr.physics.newConvexShape
 ---@see World.newConvexCollider
 ---@return number # The scale.
 function ConvexShape:getScale() end
 
+--- A type of `Shape` that can be used for cylinder-shaped things.
+---
+--- [Open in browser](https://lovr.org/docs/CylinderShape)
 ---@class CylinderShape
 local CylinderShape = {}
 
 --- Returns the length of the CylinderShape.
+---
+--- [Open in browser](https://lovr.org/docs/CylinderShape:getLength)
 ---@see CylinderShape.getRadius
 ---@see CylinderShape.setRadius
 ---@return number # The length of the cylinder, in meters.
 function CylinderShape:getLength() end
 
 --- Returns the radius of the CylinderShape.
+---
+--- [Open in browser](https://lovr.org/docs/CylinderShape:getRadius)
 ---@see CylinderShape.getLength
 ---@see CylinderShape.setLength
 ---@return number # The radius of the cylinder, in meters.
 function CylinderShape:getRadius() end
 
 --- Sets the length of the CylinderShape.
+---
+--- [Open in browser](https://lovr.org/docs/CylinderShape:setLength)
 ---@see CylinderShape.getRadius
 ---@see CylinderShape.setRadius
 ---@param length number # The new length, in meters.
 function CylinderShape:setLength(length) end
 
 --- Sets the radius of the CylinderShape.
+---
+--- [Open in browser](https://lovr.org/docs/CylinderShape:setRadius)
 ---@see CylinderShape.getLength
 ---@see CylinderShape.setLength
 ---@param radius number # The new radius, in meters.
 function CylinderShape:setRadius(radius) end
 
+--- A DistanceJoint is a type of `Joint` that tries to keep two colliders within a certain distance. The distance is determined by the initial distance between the anchor points.  The joint allows for rotation on the anchor points.
+---
+--- [Open in browser](https://lovr.org/docs/DistanceJoint)
 ---@class DistanceJoint
 local DistanceJoint = {}
 
 --- Returns the minimum and maximum distance allowed between the Colliders.
+---
+--- [Open in browser](https://lovr.org/docs/DistanceJoint:getLimits)
 ---@return number # The minimum distance, in meters.  The Colliders won't be able to get closer than this.
 ---@return number # The maximum distance, in meters.  The Colliders won't be able to get further than this.
 function DistanceJoint:getLimits() end
 
 --- Returns the DistanceJoint's spring parameters.  Use this to control how fast the joint pulls the colliders back together at the distance limits.
+---
+--- [Open in browser](https://lovr.org/docs/DistanceJoint:getSpring)
 ---@return number # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled.
 ---@return number # The damping ratio of the spring.
 function DistanceJoint:getSpring() end
 
 --- Sets the minimum and maximum distance allowed between the Colliders.
+---
+--- [Open in browser](https://lovr.org/docs/DistanceJoint:setLimits)
 ---@param min number? # The minimum distance, in meters.  The Colliders won't be able to get closer than this. (default: 0)
 ---@param max number? # The maximum distance, in meters.  The Colliders won't be able to get further than this. (default: min)
 ---@overload fun(self: DistanceJoint)
 function DistanceJoint:setLimits(min, max) end
 
 --- Sets the DistanceJoint's spring parameters.  Use this to control how fast the joint pulls the colliders back together at the distance limits.
+---
+--- [Open in browser](https://lovr.org/docs/DistanceJoint:setSpring)
 ---@param frequency number? # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled. (default: 0.0)
 ---@param damping number? # The damping ratio of the spring. (default: 1.0)
 function DistanceJoint:setSpring(frequency, damping) end
 
+--- A HingeJoint is a type of `Joint` that only allows colliders to rotate on a single axis.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint)
 ---@class HingeJoint
 local HingeJoint = {}
 
 --- Returns the current angle of the HingeJoint, relative to the rest position.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:getAngle)
 ---@see HingeJoint.getAxis
 ---@see HingeJoint.getLimits
 ---@see HingeJoint.setLimits
@@ -986,6 +1235,8 @@ local HingeJoint = {}
 function HingeJoint:getAngle() end
 
 --- Returns the axis of the hinge, in world space.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:getAxis)
 ---@see HingeJoint.getAngle
 ---@see Joint.getAnchors
 ---@return number # The x component of the axis.
@@ -994,10 +1245,14 @@ function HingeJoint:getAngle() end
 function HingeJoint:getAxis() end
 
 --- Returns the friction of the HingeJoint.  This is a maximum torque force that will be applied, in newton meters.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:getFriction)
 ---@return number # The friction, in newton meters.
 function HingeJoint:getFriction() end
 
 --- Returns the angle limits of the HingeJoint.  The "zero" angle is determined by the relative position of the colliders at the time the joint was created.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:getLimits)
 ---@see HingeJoint.getAngle
 ---@return number # The minimum angle, in radians.  Always between -π and 0.
 ---@return number # The maximum angle, in radians.  Always between 0 and π.
@@ -1005,18 +1260,24 @@ function HingeJoint:getLimits() end
 
 --- Returns the maximum amount of torque the motor can use to reach its target, in newton meters.
 --- There are separate limits for each direction the hinge can move.  They're usually kept the same, but one of them can be set to zero to make a motor that can only push in one direction.  Note that both limits are positive.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:getMaxMotorTorque)
 ---@see HingeJoint.getMotorTorque
 ---@return number # The maximum amount of torque the motor can use to push the hinge in the "positive" direction, in newton meters.
 ---@return number # The maximum amount of torque the motor can use to push the hinge in the "negative" direction, in newton meters.
 function HingeJoint:getMaxMotorTorque() end
 
 --- Returns the motor mode of the HingeJoint.  When enabled, the motor will drive the hinge to a target angle (for the `position` mode) or a target speed (for the `velocity` mode), set by `HingeJoint:setMotorTarget`.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:getMotorMode)
 ---@see HingeJoint.getMotorTarget
 ---@see HingeJoint.setMotorTarget
 ---@return MotorMode # The mode of the motor, or `nil` if the motor is disabled.
 function HingeJoint:getMotorMode() end
 
 --- Returns the spring parameters of the motor target.  These are similar to the spring parameters set by `HingeJoint:setSpring`, but they apply to the motor when it reaches its target instead of the angle limits of the hinge joint.  Note that these only take effect when the motor mode is `position`.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:getMotorSpring)
 ---@see HingeJoint.getSpring
 ---@see HingeJoint.setSpring
 ---@see HingeJoint.getMotorTarget
@@ -1026,18 +1287,24 @@ function HingeJoint:getMotorMode() end
 function HingeJoint:getMotorSpring() end
 
 --- Returns the target value for the HingeJoint's motor.  This is either a target angle or a target velocity, based on the mode set by `HingeJoint:setMotorMode`.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:getMotorTarget)
 ---@see HingeJoint.getMotorMode
 ---@see HingeJoint.setMotorMode
 ---@return number # The target value, in radians or radians per second, depending on the mode.
 function HingeJoint:getMotorTarget() end
 
 --- Returns the current torque the motor is using to reach its target, in newton meters.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:getMotorTorque)
 ---@see HingeJoint.getMaxMotorTorque
 ---@see HingeJoint.setMaxMotorTorque
 ---@return number # The current torque, in newton meters.
 function HingeJoint:getMotorTorque() end
 
 --- Returns the spring parameters of the HingeJoint.  Use this to make the angle limits of the hinge "soft".  When the motor is active, a separate set of spring parameters can be set on the motor, see `HingeJoint:setMotorSpring`.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:getSpring)
 ---@see HingeJoint.getMotorSpring
 ---@see HingeJoint.setMotorSpring
 ---@return number # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled.
@@ -1045,10 +1312,14 @@ function HingeJoint:getMotorTorque() end
 function HingeJoint:getSpring() end
 
 --- Sets the friction of the HingeJoint.  This is a maximum torque force that will be applied, in newton meters.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:setFriction)
 ---@param friction number # The friction, in newton meters.
 function HingeJoint:setFriction(friction) end
 
 --- Sets the angle limits of the HingeJoint.  The "zero" angle is determined by the relative position of the colliders at the time the joint was created.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:setLimits)
 ---@see HingeJoint.getAngle
 ---@param min number # The minimum angle, in radians.  Should be between -π and 0.
 ---@param max number # The maximum angle, in radians.  Should be between 0 and π.
@@ -1057,12 +1328,16 @@ function HingeJoint:setLimits(min, max) end
 
 --- Sets the maximum amount of torque the motor can use to reach its target, in newton meters.
 --- There are separate limits for each direction the hinge can move.  They're usually kept the same, but one of them can be set to zero to make a motor that can only push in one direction.  Note that both limits are positive.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:setMaxMotorTorque)
 ---@see HingeJoint.getMotorTorque
 ---@param positive number? # The maximum amount of torque the motor can use to push the hinge in the "positive" direction, in newton meters. (default: math.huge)
 ---@param negative number? # The maximum amount of torque the motor can use to push the hinge in the "negative" direction, in newton meters. (default: positive)
 function HingeJoint:setMaxMotorTorque(positive, negative) end
 
 --- Sets the motor mode of the HingeJoint.  When enabled, the motor will drive the hinge to a target angle (for the `position` mode) or a target speed (for the `velocity` mode), set by `HingeJoint:setMotorTarget`.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:setMotorMode)
 ---@see HingeJoint.getMotorTarget
 ---@see HingeJoint.setMotorTarget
 ---@param mode MotorMode # The mode of the motor.
@@ -1070,6 +1345,8 @@ function HingeJoint:setMaxMotorTorque(positive, negative) end
 function HingeJoint:setMotorMode(mode) end
 
 --- Sets the spring parameters of the motor target.  These are similar to the spring parameters set by `HingeJoint:setSpring`, but they apply to the motor when it reaches its target instead of the angle limits of the hinge joint.  Note that these only take effect when the motor mode is `position`.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:setMotorSpring)
 ---@see HingeJoint.getSpring
 ---@see HingeJoint.setSpring
 ---@see HingeJoint.getMotorTarget
@@ -1079,22 +1356,31 @@ function HingeJoint:setMotorMode(mode) end
 function HingeJoint:setMotorSpring(frequency, damping) end
 
 --- Sets the target value for the HingeJoint's motor.  This is either a target angle or a target velocity, based on the mode set by `HingeJoint:setMotorMode`.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:setMotorTarget)
 ---@see HingeJoint.getMotorMode
 ---@see HingeJoint.setMotorMode
 ---@param target number # The target value, in radians or radians per second, depending on the mode.
 function HingeJoint:setMotorTarget(target) end
 
 --- Sets the spring parameters of the HingeJoint.  Use this to make the angle limits of the hinge "soft".  When the motor is active, a separate set of spring parameters can be set on the motor, see `HingeJoint:setMotorSpring`.
+---
+--- [Open in browser](https://lovr.org/docs/HingeJoint:setSpring)
 ---@see HingeJoint.getMotorSpring
 ---@see HingeJoint.setMotorSpring
 ---@param frequency number? # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled. (default: 0.0)
 ---@param damping number? # The damping ratio of the spring. (default: 1.0)
 function HingeJoint:setSpring(frequency, damping) end
 
+--- A Joint is a physics object that constrains the movement of two Colliders.
+---
+--- [Open in browser](https://lovr.org/docs/Joint)
 ---@class Joint
 local Joint = {}
 
 --- Destroys the Joint, removing it from the World and breaking the connection between its Colliders.  There is no way to get the Joint back after destroying it, and attempting to use it will throw an error.  To temporarily disable a Joint, use `Joint:setEnabled`.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:destroy)
 ---@see Joint.isDestroyed
 ---@see Joint.setEnabled
 ---@see Collider.destroy
@@ -1103,6 +1389,8 @@ local Joint = {}
 function Joint:destroy() end
 
 --- Returns the world space anchor points of the Joint.  Joints are attached to each collider at a single point, which is defined when the Joint is created.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:getAnchors)
 ---@see Joint.getColliders
 ---@return number # The x coordinate of the anchor point on the first Collider, in world space.
 ---@return number # The y coordinate of the anchor point on the first Collider, in world space.
@@ -1113,6 +1401,8 @@ function Joint:destroy() end
 function Joint:getAnchors() end
 
 --- Returns the Colliders the Joint is attached to.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:getColliders)
 ---@see Collider.getJoints
 ---@return Collider # The first Collider.
 ---@return Collider # The second Collider.
@@ -1120,27 +1410,37 @@ function Joint:getColliders() end
 
 --- Returns the magnitude of the force used to satisfy the Joint's constraint during the last physics update, in newtons.
 --- This is useful for breakable joints.  Use `Joint:destroy` to break the joint if its force goes above a threshold.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:getForce)
 ---@see Joint.getTorque
 ---@see SliderJoint.getMotorForce
 ---@return number # The magnitude of the force used to satisfy the Joint's constraint.
 function Joint:getForce() end
 
 --- Returns the priority of the Joint.  Joints with a higher priority are more likely to be solved correctly.  Priority values are non-negative integers.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:getPriority)
 ---@return number # The integer priority value.
 function Joint:getPriority() end
 
 --- Returns the magnitude of the torque used to satisfy the Joint's constraint during the last physics update, in newton meters.
 --- This is useful for breakable joints.  Use `Joint:destroy` to break the joint if its torque goes above a threshold.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:getTorque)
 ---@see Joint.getForce
 ---@see HingeJoint.getMotorTorque
 ---@return number # The magnitude of the torque used to satisfy the Joint's constraint.
 function Joint:getTorque() end
 
 --- Returns the type of the Joint.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:getType)
 ---@return JointType # The type of the Joint.
 function Joint:getType() end
 
 --- Returns the Lua value associated with the Joint.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:getUserData)
 ---@see Collider.getUserData
 ---@see Collider.setUserData
 ---@see Shape.getUserData
@@ -1149,6 +1449,8 @@ function Joint:getType() end
 function Joint:getUserData() end
 
 --- Returns whether a Joint has been destroyed.  This the only method that can be called on a destroyed Joint, using the Joint in any other way will error.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:isDestroyed)
 ---@see Joint.destroy
 ---@see Joint.isEnabled
 ---@see Joint.setEnabled
@@ -1159,20 +1461,28 @@ function Joint:getUserData() end
 function Joint:isDestroyed() end
 
 --- Returns whether the Joint is enabled.  Disabled joints do not affect the simulation in any way. Use `Joint:setEnabled` to reactivate the Joint later.  If the Joint is no longer needed, `Joint:destroy` is a better option that completely removes the Joint from the simulation.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:isEnabled)
 ---@see Joint.destroy
 ---@return boolean # Whether the Joint is enabled.
 function Joint:isEnabled() end
 
 --- Enable or disable the Joint.  Disabled joints do not affect the simulation in any way.  If the Joint is no longer needed, `Joint:destroy` is a better option that completely removes the Joint from the simulation.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:setEnabled)
 ---@see Joint.destroy
 ---@param enabled boolean # Whether the Joint should be enabled.
 function Joint:setEnabled(enabled) end
 
 --- Sets the priority of the Joint.  Joints with a higher priority are more likely to be solved correctly.  Priority values are non-negative integers.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:setPriority)
 ---@param priority number # The integer priority value.
 function Joint:setPriority(priority) end
 
 --- Associates a Lua value with the Joint.
+---
+--- [Open in browser](https://lovr.org/docs/Joint:setUserData)
 ---@see Collider.getUserData
 ---@see Collider.setUserData
 ---@see Shape.getUserData
@@ -1180,20 +1490,30 @@ function Joint:setPriority(priority) end
 ---@param data any # The custom value to associate with the Joint.
 function Joint:setUserData(data) end
 
+--- A type of `Shape` that can be used for triangle meshes.
+---
+--- [Open in browser](https://lovr.org/docs/MeshShape)
 ---@class MeshShape
 local MeshShape = {}
 
 --- Returns the scale the MeshShape was created with.
+---
+--- [Open in browser](https://lovr.org/docs/MeshShape:getScale)
 ---@see lovr.physics.newMeshShape
 ---@see World.newMeshCollider
 ---@return number # The scale.
 function MeshShape:getScale() end
 
+--- A Shape is a physics object that can be attached to colliders to define their shape.
+---
+--- [Open in browser](https://lovr.org/docs/Shape)
 ---@class Shape
 local Shape = {}
 
 --- Returns whether a point is inside the Shape.
 --- This takes into account the pose of the Shape's collider (if any), as well as its local offset set with `Shape:setOffset`.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:containsPoint)
 ---@see Shape.raycast
 ---@see World.raycast
 ---@see World.shapecast
@@ -1208,6 +1528,8 @@ local Shape = {}
 function Shape:containsPoint(x, y, z) end
 
 --- Destroys the Shape, removing it from the Collider it's attached to.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:destroy)
 ---@see Shape.isDestroyed
 ---@see Collider.destroy
 ---@see Joint.destroy
@@ -1215,6 +1537,8 @@ function Shape:containsPoint(x, y, z) end
 function Shape:destroy() end
 
 --- Returns the axis aligned bounding box of the Shape.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getAABB)
 ---@see Collider.getAABB
 ---@return number # The minimum x coordinate of the box.
 ---@return number # The maximum x coordinate of the box.
@@ -1225,6 +1549,8 @@ function Shape:destroy() end
 function Shape:getAABB() end
 
 --- Returns the center of mass of the Shape.  Currently the only shape that can have a non-zero center of mass is `ConvexShape`.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getCenterOfMass)
 ---@see Collider.getCenterOfMass
 ---@see Shape.getOffset
 ---@see Shape.setOffset
@@ -1235,6 +1561,8 @@ function Shape:getCenterOfMass() end
 
 --- Returns the Collider the Shape is attached to.
 --- This function will return `nil` if the Shape is not attached to a Collider.  When a Shape isn't attached to a Collider, the Shape can still be used for queries with `World:overlapShape` and `World:shapecast`.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getCollider)
 ---@see Collider
 ---@see Collider.getShape
 ---@see Collider.getShapes
@@ -1244,6 +1572,8 @@ function Shape:getCenterOfMass() end
 function Shape:getCollider() end
 
 --- Returns the density of the Shape, in kilograms per cubic meter.  The density, combined with the volume of the Shape, determines the Shape's overall mass.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getDensity)
 ---@see Shape.getVolume
 ---@see Shape.getMass
 ---@return number # The density of the Shape, in kilograms per cubic meter.
@@ -1253,6 +1583,8 @@ function Shape:getDensity() end
 --- Inertia is kind of like "angular mass".  Regular mass determines how resistant a Collider is to linear forces (movement), whereas inertia determines how resistant the Collider is to torque (rotation).  Colliders with less inertia are more spinny.
 --- In 3D, inertia is represented by a 3x3 matrix, called a tensor.  To make calculations easier, the physics engine stores the inertia using eigenvalue decomposition, splitting the matrix into a diagonal matrix and a rotation.  It's complicated!
 --- In a realistic simulation, mass and inertia follow a linear relationship.  If the mass of an object increases, the diagonal part of its inertia should increase proportionally.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getInertia)
 ---@see Shape.getMass
 ---@see Shape.getCenterOfMass
 ---@see Collider.getInertia
@@ -1266,6 +1598,8 @@ function Shape:getDensity() end
 function Shape:getInertia() end
 
 --- Returns the mass of the Shape, in kilograms.  The mass is the volume multiplied by the density.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getMass)
 ---@see Collider.getMass
 ---@see Collider.setMass
 ---@see Collider.resetMassData
@@ -1278,6 +1612,8 @@ function Shape:getInertia() end
 function Shape:getMass() end
 
 --- Returns the local offset of the Shape.  When the Shape is attached to a Collider, it will have this offset relative to the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getOffset)
 ---@see Shape.getPosition
 ---@see Shape.getOrientation
 ---@see Shape.getPose
@@ -1291,6 +1627,8 @@ function Shape:getMass() end
 function Shape:getOffset() end
 
 --- Get the orientation of the Shape in world space, taking into account the position and orientation of the Collider it's attached to, if any.  Shapes that aren't attached to a Collider will return their local offset.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getOrientation)
 ---@see Shape.getPosition
 ---@see Shape.getPose
 ---@see Shape.getOffset
@@ -1302,6 +1640,8 @@ function Shape:getOffset() end
 function Shape:getOrientation() end
 
 --- Returns the position and orientation of the Shape in world space, taking into the account the position and orientation of the Collider it's attached to, if any.  Shapes that aren't attached to a Collider will return their local offset.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getPose)
 ---@see Shape.getPosition
 ---@see Shape.getOrientation
 ---@see Shape.getOffset
@@ -1316,6 +1656,8 @@ function Shape:getOrientation() end
 function Shape:getPose() end
 
 --- Returns the position of the Shape in world space, taking into the account the position and orientation of the Collider it's attached to, if any.  Shapes that aren't attached to a Collider will return their local offset.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getPosition)
 ---@see Shape.getOrientation
 ---@see Shape.getPose
 ---@see Shape.getOffset
@@ -1326,10 +1668,14 @@ function Shape:getPose() end
 function Shape:getPosition() end
 
 --- Returns the type of the Shape.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getType)
 ---@return ShapeType # The type of the Shape.
 function Shape:getType() end
 
 --- Returns the Lua value associated with the Shape.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getUserData)
 ---@see Collider.getUserData
 ---@see Collider.setUserData
 ---@see Joint.getUserData
@@ -1338,6 +1684,8 @@ function Shape:getType() end
 function Shape:getUserData() end
 
 --- Returns the volume of the Shape, in cubic meters.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:getVolume)
 ---@see Shape.getDensity
 ---@see Shape.setDensity
 ---@see Shape.getMass
@@ -1346,6 +1694,8 @@ function Shape:getUserData() end
 function Shape:getVolume() end
 
 --- Returns whether the Shape has been destroyed.  Destroyed shapes can not be used for anything.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:isDestroyed)
 ---@see Shape.destroy
 ---@see Collider.isDestroyed
 ---@see Joint.isDestroyed
@@ -1355,6 +1705,8 @@ function Shape:isDestroyed() end
 
 --- Casts a ray against the Shape and returns the first intersection.
 --- This takes into account the pose of the Shape's collider (if any), as well as its local offset set with `Shape:setOffset`.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:raycast)
 ---@see World.raycast
 ---@see Shape.containsPoint
 ---@see World.shapecast
@@ -1376,12 +1728,16 @@ function Shape:isDestroyed() end
 function Shape:raycast(x1, y1, z1, x2, y2, z2) end
 
 --- Sets the density of the Shape, in kilograms per cubic meter.  The density, combined with the volume of the Shape, determines the Shape's overall mass.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:setDensity)
 ---@see Shape.getVolume
 ---@see Shape.getMass
 ---@param density number # The density of the Shape, in kilograms per cubic meter.
 function Shape:setDensity(density) end
 
 --- Sets the local offset of the Shape.  When the Shape is attached to a Collider, it will have this offset relative to the Collider.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:setOffset)
 ---@see Shape.getPosition
 ---@see Shape.getOrientation
 ---@see Shape.getPose
@@ -1396,6 +1752,8 @@ function Shape:setDensity(density) end
 function Shape:setOffset(x, y, z, angle, ax, ay, az) end
 
 --- Associates a Lua value with the Shape.
+---
+--- [Open in browser](https://lovr.org/docs/Shape:setUserData)
 ---@see Collider.getUserData
 ---@see Collider.setUserData
 ---@see Joint.getUserData
@@ -1403,10 +1761,15 @@ function Shape:setOffset(x, y, z, angle, ax, ay, az) end
 ---@param data any # The custom value to associate with the Shape.
 function Shape:setUserData(data) end
 
+--- A SliderJoint is a type of `Joint` that only allows colliders to move on a single axis.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint)
 ---@class SliderJoint
 local SliderJoint = {}
 
 --- Returns the axis of the slider, in world space.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:getAxis)
 ---@see SliderJoint.getPosition
 ---@return number # The x component of the axis.
 ---@return number # The y component of the axis.
@@ -1414,10 +1777,14 @@ local SliderJoint = {}
 function SliderJoint:getAxis() end
 
 --- Returns the friction of the SliderJoint.  This is a maximum friction force that will be applied, in newtons, opposing movement along the slider axis.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:getFriction)
 ---@return number # The maximum friction force, in newtons.
 function SliderJoint:getFriction() end
 
 --- Returns the position limits of the SliderJoint.  The "zero" position is determined by the relative position of the colliders at the time the joint was created, and positive positions are further apart along the slider axis.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:getLimits)
 ---@see SliderJoint.getPosition
 ---@return number # The minimum position, in meters.  Must be less than or equal to zero.
 ---@return number # The maximum position, in meters.  Must be greater than or equal to zero.
@@ -1425,24 +1792,32 @@ function SliderJoint:getLimits() end
 
 --- Returns the maximum amount of force the motor can use to reach its target, in newtons.
 --- There are separate limits for each direction the slider can move.  They're usually kept the same, but one of them can be set to zero to make a motor that can only push in one direction. Note that both limits are positive.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:getMaxMotorForce)
 ---@see SliderJoint.getMotorForce
 ---@return number # The maximum amount of force the motor can use to push the slider in the "positive" direction, in newtons.
 ---@return number # The maximum amount of force the motor can use to push the slider in the "negative" direction, in newtons.
 function SliderJoint:getMaxMotorForce() end
 
 --- Returns the current force the motor is using to reach its target, in newtons.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:getMotorForce)
 ---@see SliderJoint.getMaxMotorForce
 ---@see SliderJoint.setMaxMotorForce
 ---@return number # The current force, in newtons.
 function SliderJoint:getMotorForce() end
 
 --- Returns the motor mode of the SliderJoint.  When enabled, the motor will drive the slider to a target position (for the `position` mode) or a target speed (for the `velocity` mode), set by `SliderJoint:setMotorTarget`.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:getMotorMode)
 ---@see SliderJoint.getMotorTarget
 ---@see SliderJoint.setMotorTarget
 ---@return MotorMode # The mode of the motor, or `nil` if the motor is disabled.
 function SliderJoint:getMotorMode() end
 
 --- Returns the spring parameters of the motor target.  These are similar to the spring parameters set by `SliderJoint:setSpring`, but they apply to the motor when it reaches its target instead of the position limits of the slider joint.  Note that these only take effect when the motor mode is `position`.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:getMotorSpring)
 ---@see SliderJoint.getSpring
 ---@see SliderJoint.setSpring
 ---@see SliderJoint.getMotorTarget
@@ -1452,18 +1827,24 @@ function SliderJoint:getMotorMode() end
 function SliderJoint:getMotorSpring() end
 
 --- Returns the target value for the SliderJoint's motor.  This is either a target position or a target velocity, based on the mode set by `SliderJoint:setMotorMode`.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:getMotorTarget)
 ---@see SliderJoint.getMotorMode
 ---@see SliderJoint.setMotorMode
 ---@return number # The target value, in meters or meters per second, depending on the mode.
 function SliderJoint:getMotorTarget() end
 
 --- Returns the position of the slider joint.  The "zero" position is the relative distance the colliders were at when the joint is created, and positive positions are further apart along the slider's axis.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:getPosition)
 ---@see SliderJoint.getAxis
 ---@see SliderJoint.setLimits
 ---@return number # The position of the slider joint, in meters.
 function SliderJoint:getPosition() end
 
 --- Returns the spring parameters of the SliderJoint.  Use this to make the position limits of the slider "soft".  When the motor is active, a separate set of spring parameters can be set on the motor, see `SliderJoint:setMotorSpring`.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:getSpring)
 ---@see SliderJoint.getMotorSpring
 ---@see SliderJoint.setMotorSpring
 ---@return number # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled.
@@ -1471,10 +1852,14 @@ function SliderJoint:getPosition() end
 function SliderJoint:getSpring() end
 
 --- Sets the friction of the SliderJoint.  This is a maximum friction force that will be applied, in newtons, opposing movement along the slider axis.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:setFriction)
 ---@param friction number # The maximum friction force, in newtons.
 function SliderJoint:setFriction(friction) end
 
 --- Sets the position limits of the SliderJoint.  The "zero" position is determined by the relative position of the colliders at the time the joint was created, and positive distances are further apart on the slider axis.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:setLimits)
 ---@see SliderJoint.getPosition
 ---@param min number # The minimum position, in meters.  Must be less than or equal to zero.
 ---@param max number # The maximum position, in meters.  Must be greater than or equal to zero.
@@ -1483,12 +1868,16 @@ function SliderJoint:setLimits(min, max) end
 
 --- Sets the maximum amount of force the motor can use to reach its target, in newtons.
 --- There are separate limits for each direction the slider can move.  They're usually kept the same, but one of them can be set to zero to make a motor that can only push in one direction. Note that both limits are positive.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:setMaxMotorForce)
 ---@see SliderJoint.getMotorForce
 ---@param positive number? # The maximum amount of force the motor can use to push the slider in the "positive" direction, in newtons. (default: math.huge)
 ---@param negative number? # The maximum amount of force the motor can use to push the slider in the "negative" direction, in newtons. (default: positive)
 function SliderJoint:setMaxMotorForce(positive, negative) end
 
 --- Sets the motor mode of the SliderJoint.  When enabled, the motor will drive the slider to a target position (for the `position` mode) or a target speed (for the `velocity` mode), set by `SliderJoint:setMotorTarget`.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:setMotorMode)
 ---@see SliderJoint.getMotorTarget
 ---@see SliderJoint.setMotorTarget
 ---@param mode MotorMode # The mode of the motor.
@@ -1496,6 +1885,8 @@ function SliderJoint:setMaxMotorForce(positive, negative) end
 function SliderJoint:setMotorMode(mode) end
 
 --- Sets the spring parameters of the motor target.  These are similar to the spring parameters set by `SldierJoint:setSpring`, but they apply to the motor when it reaches its target instead of the position limits of the slider joint.  Note that these only take effect when the motor mode is `position`.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:setMotorSpring)
 ---@see SliderJoint.getSpring
 ---@see SliderJoint.setSpring
 ---@see SliderJoint.getMotorTarget
@@ -1505,45 +1896,71 @@ function SliderJoint:setMotorMode(mode) end
 function SliderJoint:setMotorSpring(frequency, damping) end
 
 --- Sets the target value for the SliderJoint's motor.  This is either a target position or a target velocity, based on the mode set by `SliderJoint:setMotorMode`.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:setMotorTarget)
 ---@see SliderJoint.getMotorMode
 ---@see SliderJoint.setMotorMode
 ---@param target number # The target value, in meters or meters per second, depending on the mode.
 function SliderJoint:setMotorTarget(target) end
 
 --- Sets the spring parameters of the SliderJoint.  Use this to make the position limits of the slider "soft".  When the motor is active, a separate set of spring parameters can be set on the motor, see `SliderJoint:setMotorSpring`.
+---
+--- [Open in browser](https://lovr.org/docs/SliderJoint:setSpring)
 ---@see SliderJoint.getMotorSpring
 ---@see SliderJoint.setMotorSpring
 ---@param frequency number? # The frequency of the spring, in hertz.  Higher frequencies make the spring more stiff.  When zero, the spring is disabled. (default: 0.0)
 ---@param damping number? # The damping ratio of the spring. (default: 1.0)
 function SliderJoint:setSpring(frequency, damping) end
 
+--- A type of `Shape` that can be used for spheres.
+---
+--- [Open in browser](https://lovr.org/docs/SphereShape)
 ---@class SphereShape
 local SphereShape = {}
 
 --- Returns the radius of the SphereShape.
+---
+--- [Open in browser](https://lovr.org/docs/SphereShape:getRadius)
 ---@return number # The radius of the sphere, in meters.
 function SphereShape:getRadius() end
 
 --- Sets the radius of the SphereShape.
+---
+--- [Open in browser](https://lovr.org/docs/SphereShape:setRadius)
 ---@param radius number # The radius of the sphere, in meters.
 function SphereShape:setRadius(radius) end
 
+--- A type of `Shape` that can be used for terrains and irregular surfaces.
+---
+--- [Open in browser](https://lovr.org/docs/TerrainShape)
 ---@class TerrainShape
 local TerrainShape = {}
 
+--- A WeldJoint is a `Joint` that restricts all relative motion between two colliders, as though they were welded together into a single object.  All six degrees of freedom are constrained.
+--- WeldJoints are useful for making breakable objects.  Several colliders can be welded together with joints, and if `Joint:getForce` reports a large enough value, the joints can be disabled or destroyed, allowing the pieces to move freely.
+---
+--- [Open in browser](https://lovr.org/docs/WeldJoint)
 ---@class WeldJoint
 local WeldJoint = {}
 
+--- A World is an object that holds all of the colliders and joints in a physics simulation.
+--- Be sure to call `World:update` on the World every frame to advance the simulation.
+---
+--- [Open in browser](https://lovr.org/docs/World)
 ---@class World
 local World = {}
 
 --- Destroys the World.  This will destroy all colliders, shapes, and joints in the world.  After calling this function, the world can no longer be used.  Attempting to call a method on the World after destroying it will error, with the exception of `World:isDestroyed`.
+---
+--- [Open in browser](https://lovr.org/docs/World:destroy)
 ---@see Collider.destroy
 ---@see Shape.destroy
 ---@see Joint.destroy
 function World:destroy() end
 
 --- Disables collision between two tags.  Use `Collider:setTag` to set a Collider's tag.
+---
+--- [Open in browser](https://lovr.org/docs/World:disableCollisionBetween)
 ---@see World.enableCollisionBetween
 ---@see World.isCollisionEnabledBetween
 ---@see lovr.physics.newWorld
@@ -1554,6 +1971,8 @@ function World:destroy() end
 function World:disableCollisionBetween(tag1, tag2) end
 
 --- Enables collision between two tags.  Use `Collider:setTag` to set a Collider's tag.
+---
+--- [Open in browser](https://lovr.org/docs/World:enableCollisionBetween)
 ---@see World.disableCollisionBetween
 ---@see World.isCollisionEnabledBetween
 ---@see lovr.physics.newWorld
@@ -1564,6 +1983,8 @@ function World:disableCollisionBetween(tag1, tag2) end
 function World:enableCollisionBetween(tag1, tag2) end
 
 --- Returns the angular damping parameters of the World.  Angular damping makes things less "spinny", making them slow down their angular velocity over time.
+---
+--- [Open in browser](https://lovr.org/docs/World:getAngularDamping)
 ---@see Collider.getAngularDamping
 ---@see Collider.setAngularDamping
 ---@return number # The angular damping.
@@ -1572,16 +1993,22 @@ function World:getAngularDamping() end
 
 --- - Returns the callbacks assigned to the World.
 --- - The callbacks are described in more detail on `World:setCallbacks`.
+---
+--- [Open in browser](https://lovr.org/docs/World:getCallbacks)
 ---@return table # The World collision callbacks.
 function World:getCallbacks() end
 
 --- Returns the number of colliders in the world.  This includes sleeping and disabled colliders.
+---
+--- [Open in browser](https://lovr.org/docs/World:getColliderCount)
 ---@see World.getColliders
 ---@see World.getJointCount
 ---@return number # The number of colliders in the World.
 function World:getColliderCount() end
 
 --- Returns a list of colliders in the world.  This includes sleeping and disabled colliders.
+---
+--- [Open in browser](https://lovr.org/docs/World:getColliders)
 ---@see World.getColliderCount
 ---@see World.getJoints
 ---@return Collider[] # The list of `Collider` objects in the World.
@@ -1589,6 +2016,8 @@ function World:getColliders() end
 
 --- Returns the World's gravity.  Gravity is a constant acceleration applied to all colliders.  The default is `(0, -9.81, 0)` meters per second squared, causing colliders to fall downward.
 --- Use `Collider:setGravityScale` to change gravity strength for a single collider.
+---
+--- [Open in browser](https://lovr.org/docs/World:getGravity)
 ---@see Collider.getGravityScale
 ---@see Collider.setGravityScale
 ---@see Collider.getLinearDamping
@@ -1599,18 +2028,24 @@ function World:getColliders() end
 function World:getGravity() end
 
 --- Returns the number of joints in the world.  This includes disabled joints.
+---
+--- [Open in browser](https://lovr.org/docs/World:getJointCount)
 ---@see World.getJoints
 ---@see World.getColliderCount
 ---@return number # The number of joints in the World.
 function World:getJointCount() end
 
 --- Returns a table with all the joints in the World.  This includes disabled joints.
+---
+--- [Open in browser](https://lovr.org/docs/World:getJoints)
 ---@see World.getJointCount
 ---@see World.getColliders
 ---@return Joint[] # The list of `Joint` objects in the World.
 function World:getJoints() end
 
 --- Returns the linear damping parameters of the World.  Linear damping is similar to drag or air resistance, slowing down colliders over time as they move.
+---
+--- [Open in browser](https://lovr.org/docs/World:getLinearDamping)
 ---@see Collider.getLinearDamping
 ---@see Collider.setLinearDamping
 ---@return number # The linear damping.
@@ -1620,15 +2055,21 @@ function World:getLinearDamping() end
 --- Returns the response time factor of the World.
 --- The response time controls how relaxed collisions and joints are in the physics simulation, and functions similar to inertia.  A low response time means collisions are resolved quickly, and higher values make objects more spongy and soft.
 --- The value can be any positive number.  It can be changed on a per-joint basis for `DistanceJoint` and `BallJoint` objects.
+---
+--- [Open in browser](https://lovr.org/docs/World:getResponseTime)
 ---@return number # The response time setting for the World.
 function World:getResponseTime() end
 
 --- Returns the step count of the World.  The step count influences how many steps are taken during a call to `World:update`.  A higher number of steps will be slower, but more accurate.  The default step count is 20.
+---
+--- [Open in browser](https://lovr.org/docs/World:getStepCount)
 ---@see World.update
 ---@return number # The step count.
 function World:getStepCount() end
 
 --- Returns the list of collision tags that were specified when the World was created.  Tags are assigned to colliders using `Collider:setTag`, and collision can be enabled/disabled for pairs of tags with `World:enableCollisionBetween` and `World:disableCollisionBetween`.
+---
+--- [Open in browser](https://lovr.org/docs/World:getTags)
 ---@see lovr.physics.newWorld
 ---@see Collider.getTag
 ---@see Collider.setTag
@@ -1640,16 +2081,22 @@ function World:getTags() end
 
 --- Returns the tightness of joints in the World.
 --- The tightness controls how much force is applied to colliders connected by joints.  With a value of 0, no force will be applied and joints won't have any effect.  With a tightness of 1, a strong force will be used to try to keep the Colliders constrained.  A tightness larger than 1 will overcorrect the joints, which can sometimes be desirable.  Negative tightness values are not supported.
+---
+--- [Open in browser](https://lovr.org/docs/World:getTightness)
 ---@return number # The tightness of the World.
 function World:getTightness() end
 
 --- Interpolates collider poses between their previous pose and their current pose.  Methods like `Collider:getPosition` and `Collider:getOrientation` will return the smoothed values.
 --- After `World:update` is called, any interpolation is reset and `World:interpolate` will need to be called again to recompute the interpolated poses.
 --- This can be used to decouple the physics tick rate from the rendering rate.  For example, the physics simulation can be run at a fixed rate of 30Hz, and collider poses can be interpolated before rendering.  This leads to a more stable simulation, and allows the physics rate to be increased or decreased as desired, independent of the current display refresh rate.
+---
+--- [Open in browser](https://lovr.org/docs/World:interpolate)
 ---@param alpha number # The interpolation parameter.  An alpha of zero will use the previous collider pose, an alpha of 1.0 will use the latest collider pose, etc.  Can be less than zero or greater than one.
 function World:interpolate(alpha) end
 
 --- Returns whether collisions are enabled between a pair of tags.
+---
+--- [Open in browser](https://lovr.org/docs/World:isCollisionEnabledBetween)
 ---@see World.disableCollisionBetween
 ---@see World.enableCollisionBetween
 ---@see lovr.physics.newWorld
@@ -1661,6 +2108,8 @@ function World:interpolate(alpha) end
 function World:isCollisionEnabledBetween(tag1, tag2) end
 
 --- Returns whether the World has been destroyed.  Destroyed worlds can not be used for anything.
+---
+--- [Open in browser](https://lovr.org/docs/World:isDestroyed)
 ---@see World.destroy
 ---@see Collider.isDestroyed
 ---@see Shape.isDestroyed
@@ -1669,6 +2118,8 @@ function World:isCollisionEnabledBetween(tag1, tag2) end
 function World:isDestroyed() end
 
 --- Returns whether colliders can go to sleep in the World.
+---
+--- [Open in browser](https://lovr.org/docs/World:isSleepingAllowed)
 ---@see Collider.isSleepingAllowed
 ---@see Collider.setSleepingAllowed
 ---@see Collider.isAwake
@@ -1677,6 +2128,8 @@ function World:isDestroyed() end
 function World:isSleepingAllowed() end
 
 --- Adds a Collider to the world and attaches a `BoxShape`.
+---
+--- [Open in browser](https://lovr.org/docs/World:newBoxCollider)
 ---@see BoxShape
 ---@see Collider
 ---@see World.newCollider
@@ -1697,6 +2150,8 @@ function World:isSleepingAllowed() end
 function World:newBoxCollider(x, y, z, width, height, depth) end
 
 --- Adds a Collider to the world and attaches a `CapsuleShape`.
+---
+--- [Open in browser](https://lovr.org/docs/World:newCapsuleCollider)
 ---@see CapsuleShape
 ---@see Collider
 ---@see World.newCollider
@@ -1716,6 +2171,8 @@ function World:newBoxCollider(x, y, z, width, height, depth) end
 function World:newCapsuleCollider(x, y, z, radius, length) end
 
 --- Adds a new Collider to the World, without attaching any Shapes to it.  Use `Collider:addShape` to add shapes.
+---
+--- [Open in browser](https://lovr.org/docs/World:newCollider)
 ---@see World.newBoxCollider
 ---@see World.newSphereCollider
 ---@see World.newCapsuleCollider
@@ -1734,6 +2191,8 @@ function World:newCapsuleCollider(x, y, z, radius, length) end
 function World:newCollider(x, y, z) end
 
 --- Adds a Collider to the world and attaches a `ConvexShape`.  A `ConvexShape` is a convex hull of a set of points, kinda like if you wrapped them in wrapping paper.
+---
+--- [Open in browser](https://lovr.org/docs/World:newConvexCollider)
 ---@see ConvexShape
 ---@see Collider
 ---@see World.newCollider
@@ -1761,6 +2220,8 @@ function World:newCollider(x, y, z) end
 function World:newConvexCollider(x, y, z, points, scale) end
 
 --- Adds a Collider to the world and attaches a `CylinderShape`.
+---
+--- [Open in browser](https://lovr.org/docs/World:newCylinderCollider)
 ---@see CylinderShape
 ---@see Collider
 ---@see World.newCollider
@@ -1782,6 +2243,8 @@ function World:newCylinderCollider(x, y, z, radius, length) end
 --- Adds a Collider to the world and attaches a `MeshShape`.
 --- Colliders with mesh shapes are immobile and can only be used for static environment objects. The collider will be kinematic and forces/velocities will not move it.  Also, these colliders will not detect collisions with other kinematic objects.
 --- MeshShapes are not treated as solid objects, but instead a collection of triangles.  They do not have mass or volume, and there is no concept of being "inside" a mesh.  `ConvexShape` is a good alternative for making solid objects.
+---
+--- [Open in browser](https://lovr.org/docs/World:newMeshCollider)
 ---@see Collider
 ---@see MeshShape
 ---@see World.newCollider
@@ -1802,6 +2265,8 @@ function World:newCylinderCollider(x, y, z, radius, length) end
 function World:newMeshCollider(vertices, indices) end
 
 --- Adds a Collider to the world and attaches a `SphereShape`.
+---
+--- [Open in browser](https://lovr.org/docs/World:newSphereCollider)
 ---@see SphereShape
 ---@see Collider
 ---@see World.newCollider
@@ -1822,6 +2287,8 @@ function World:newSphereCollider(x, y, z, radius) end
 --- Adds a Collider to the world and attaches a `TerrainShape`.
 --- Colliders with terrain shapes are immobile and can only be used for static environment objects. The collider will be kinematic and forces/velocities will not move it.  Also, these colliders will not detect collisions with other kinematic objects.
 --- TerrainShapes are not treated as solid objects, but instead a collection of triangles.  They do not have mass or volume, and there is no concept of being "inside" the terrain.
+---
+--- [Open in browser](https://lovr.org/docs/World:newTerrainCollider)
 ---@see Collider
 ---@see TerrainShape
 ---@see World.newCollider
@@ -1844,6 +2311,8 @@ function World:newTerrainCollider(scale) end
 --- - Pass a tag name with a ~ in front of it to exclude colliders with that tag.
 --- - Pass multiple tags separated by spaces to include multiple tags (works with ~ too).
 --- Provide an optional callback to call for each shape detected.  If the callbacks nil, this function returns the first shape detected.  In either case this function returns the shape, the hit position, and a penetration vector.  The penetration vector represents the direction and distance the shape would need to move so that it is no longer colliding with the input shape.
+---
+--- [Open in browser](https://lovr.org/docs/World:overlapShape)
 ---@see World.shapecast
 ---@see World.raycast
 ---@see World.queryBox
@@ -1867,6 +2336,8 @@ function World:overlapShape(shape, x, y, z, angle, ax, ay, az, maxDistance, filt
 --- Find colliders within an axis-aligned bounding box.  This is a fast but imprecise query that only checks a rough box around colliders.  Use `World:overlapShape` for an exact collision test.
 --- Rough queries like this are useful for doing a quick check before doing lots of more expensive collision testing.
 --- Pass a callback function to call for each collider detected, or leave the callback off and this function will return the first collider found.
+---
+--- [Open in browser](https://lovr.org/docs/World:queryBox)
 ---@see World.querySphere
 ---@see World.overlapShape
 ---@see World.shapecast
@@ -1887,6 +2358,8 @@ function World:queryBox(x, y, z, width, height, depth, filter, callback) end
 --- Find colliders within a sphere.  This is a fast but imprecise query that only checks a rough box around colliders.  Use `World:overlapShape` for an exact collision test.
 --- Rough queries like this are useful for doing a quick check before doing lots of more expensive collision testing.
 --- Pass a callback function to call for each collider detected, or leave the callback off and this function will return the first collider found.
+---
+--- [Open in browser](https://lovr.org/docs/World:querySphere)
 ---@see World.queryBox
 ---@see World.overlapShape
 ---@see World.shapecast
@@ -1904,6 +2377,8 @@ function World:querySphere(x, y, z, radius, filter, callback) end
 
 --- Traces a ray through the world and calls a function for each collider that was hit.
 --- The callback can be left off, in which case the closest hit will be returned.
+---
+--- [Open in browser](https://lovr.org/docs/World:raycast)
 ---@see Shape.raycast
 ---@see World.shapecast
 ---@see World.overlapShape
@@ -1923,6 +2398,8 @@ function World:querySphere(x, y, z, radius, filter, callback) end
 function World:raycast(x1, y1, z1, x2, y2, z2, filter, callback) end
 
 --- Sets the angular damping of the World.  Angular damping makes things less "spinny", making them slow down their angular velocity over time. Damping is only applied when angular velocity is over the threshold value.
+---
+--- [Open in browser](https://lovr.org/docs/World:setAngularDamping)
 ---@see Collider.getAngularDamping
 ---@see Collider.setAngularDamping
 ---@param damping number # The angular damping.
@@ -1938,6 +2415,8 @@ function World:setAngularDamping(damping, threshold) end
 --- Called when two colliders stop touching.  Receives two colliders.
 --- ### Contact
 --- Called continuously while two colliders are touching.  Receives two colliders and a `Contact` object with more information about the collision.  The contact can also be disabled to disable the collision response, and its friction/resitution/velocity can be changed.  There can be multiple active contact areas (called "manifolds") between a pair of colliders; this callback will be called for each one.
+---
+--- [Open in browser](https://lovr.org/docs/World:setCallbacks)
 ---@see World.update
 ---@see Contact
 ---@param callbacks table # The World collision callbacks.  All of them are optional.
@@ -1945,6 +2424,8 @@ function World:setCallbacks(callbacks) end
 
 --- Sets the World's gravity.  Gravity is a constant acceleration applied to all colliders.  The default is `(0, -9.81, 0)` meters per second squared, causing colliders to fall downward.
 --- Use `Collider:setGravityScale` to change gravity strength for a single collider.
+---
+--- [Open in browser](https://lovr.org/docs/World:setGravity)
 ---@see Collider.getGravityScale
 ---@see Collider.setGravityScale
 ---@see Collider.getLinearDamping
@@ -1956,6 +2437,8 @@ function World:setCallbacks(callbacks) end
 function World:setGravity(xg, yg, zg) end
 
 --- Sets the linear damping of the World.  Linear damping is similar to drag or air resistance, slowing down colliders over time as they move. Damping is only applied when linear velocity is over the threshold value.
+---
+--- [Open in browser](https://lovr.org/docs/World:setLinearDamping)
 ---@see Collider.getLinearDamping
 ---@see Collider.setLinearDamping
 ---@param damping number # The linear damping.
@@ -1965,10 +2448,14 @@ function World:setLinearDamping(damping, threshold) end
 --- Sets the response time factor of the World.
 --- The response time controls how relaxed collisions and joints are in the physics simulation, and functions similar to inertia.  A low response time means collisions are resolved quickly, and higher values make objects more spongy and soft.
 --- The value can be any positive number.  It can be changed on a per-joint basis for `DistanceJoint` and `BallJoint` objects.
+---
+--- [Open in browser](https://lovr.org/docs/World:setResponseTime)
 ---@param responseTime number # The new response time setting for the World.
 function World:setResponseTime(responseTime) end
 
 --- Sets whether colliders can go to sleep in the World.
+---
+--- [Open in browser](https://lovr.org/docs/World:setSleepingAllowed)
 ---@see Collider.isSleepingAllowed
 ---@see Collider.setSleepingAllowed
 ---@see Collider.isAwake
@@ -1977,17 +2464,23 @@ function World:setResponseTime(responseTime) end
 function World:setSleepingAllowed(allowed) end
 
 --- Sets the step count of the World.  The step count influences how many steps are taken during a call to `World:update`.  A higher number of steps will be slower, but more accurate.  The default step count is 20.
+---
+--- [Open in browser](https://lovr.org/docs/World:setStepCount)
 ---@see World.update
 ---@param steps number # The new step count.
 function World:setStepCount(steps) end
 
 --- Sets the tightness of joints in the World.
 --- The tightness controls how much force is applied to colliders connected by joints.  With a value of 0, no force will be applied and joints won't have any effect.  With a tightness of 1, a strong force will be used to try to keep the Colliders constrained.  A tightness larger than 1 will overcorrect the joints, which can sometimes be desirable.  Negative tightness values are not supported.
+---
+--- [Open in browser](https://lovr.org/docs/World:setTightness)
 ---@param tightness number # The new tightness for the World.
 function World:setTightness(tightness) end
 
 --- Moves a shape from a starting point to an endpoint and returns any colliders it touches along its path.
 --- This is similar to a raycast, but with a `Shape` instead of a point.
+---
+--- [Open in browser](https://lovr.org/docs/World:shapecast)
 ---@see World.raycast
 ---@see World.overlapShape
 ---@see World.queryBox
@@ -2011,11 +2504,15 @@ function World:setTightness(tightness) end
 function World:shapecast(shape, x1, y1, z1, x2, y2, z2, angle, ax, ay, az, filter, callback) end
 
 --- Updates the World, advancing the physics simulation forward in time and moving all the colliders.
+---
+--- [Open in browser](https://lovr.org/docs/World:update)
 ---@see lovr.physics.newWorld
 ---@param dt number # The amount of time to advance the simulation forward.
 function World:update(dt) end
 
 --- Creates a new BallJoint.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newBallJoint)
 ---@see lovr.physics.newConeJoint
 ---@see lovr.physics.newDistanceJoint
 ---@see lovr.physics.newHingeJoint
@@ -2031,6 +2528,8 @@ function World:update(dt) end
 function physics.newBallJoint(colliderA, colliderB, x, y, z) end
 
 --- Creates a new BoxShape.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newBoxShape)
 ---@see BoxShape
 ---@see lovr.physics.newSphereShape
 ---@see lovr.physics.newCapsuleShape
@@ -2045,6 +2544,8 @@ function physics.newBallJoint(colliderA, colliderB, x, y, z) end
 function physics.newBoxShape(width, height, depth) end
 
 --- Creates a new CapsuleShape.  Capsules are cylinders with hemispheres on each end.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newCapsuleShape)
 ---@see CapsuleShape
 ---@see lovr.physics.newBoxShape
 ---@see lovr.physics.newSphereShape
@@ -2058,6 +2559,8 @@ function physics.newBoxShape(width, height, depth) end
 function physics.newCapsuleShape(radius, length) end
 
 --- Creates a new ConeJoint.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newConeJoint)
 ---@see lovr.physics.newWeldJoint
 ---@see lovr.physics.newBallJoint
 ---@see lovr.physics.newDistanceJoint
@@ -2076,6 +2579,8 @@ function physics.newCapsuleShape(radius, length) end
 function physics.newConeJoint(colliderA, colliderB, x, y, z, ax, ay, az) end
 
 --- Creates a new ConvexShape.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newConvexShape)
 ---@see ConvexShape
 ---@see lovr.physics.newBoxShape
 ---@see lovr.physics.newSphereShape
@@ -2091,6 +2596,8 @@ function physics.newConeJoint(colliderA, colliderB, x, y, z, ax, ay, az) end
 function physics.newConvexShape(points, scale) end
 
 --- Creates a new CylinderShape.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newCylinderShape)
 ---@see CylinderShape
 ---@see lovr.physics.newBoxShape
 ---@see lovr.physics.newSphereShape
@@ -2104,6 +2611,8 @@ function physics.newConvexShape(points, scale) end
 function physics.newCylinderShape(radius, length) end
 
 --- Creates a new DistanceJoint.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newDistanceJoint)
 ---@see lovr.physics.newBallJoint
 ---@see lovr.physics.newConeJoint
 ---@see lovr.physics.newHingeJoint
@@ -2122,6 +2631,8 @@ function physics.newCylinderShape(radius, length) end
 function physics.newDistanceJoint(colliderA, colliderB, x1, y1, z1, x2, y2, z2) end
 
 --- Creates a new HingeJoint.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newHingeJoint)
 ---@see lovr.physics.newBallJoint
 ---@see lovr.physics.newConeJoint
 ---@see lovr.physics.newDistanceJoint
@@ -2140,6 +2651,8 @@ function physics.newDistanceJoint(colliderA, colliderB, x1, y1, z1, x2, y2, z2) 
 function physics.newHingeJoint(colliderA, colliderB, x, y, z, ax, ay, az) end
 
 --- Creates a new MeshShape.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newMeshShape)
 ---@see MeshShape
 ---@see lovr.physics.newBoxShape
 ---@see lovr.physics.newSphereShape
@@ -2157,6 +2670,8 @@ function physics.newHingeJoint(colliderA, colliderB, x, y, z, ax, ay, az) end
 function physics.newMeshShape(vertices, indices, scale) end
 
 --- Creates a new SliderJoint.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newSliderJoint)
 ---@see lovr.physics.newBallJoint
 ---@see lovr.physics.newConeJoint
 ---@see lovr.physics.newDistanceJoint
@@ -2172,6 +2687,8 @@ function physics.newMeshShape(vertices, indices, scale) end
 function physics.newSliderJoint(colliderA, colliderB, ax, ay, az) end
 
 --- Creates a new SphereShape.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newSphereShape)
 ---@see SphereShape
 ---@see lovr.physics.newBoxShape
 ---@see lovr.physics.newCapsuleShape
@@ -2184,6 +2701,8 @@ function physics.newSliderJoint(colliderA, colliderB, ax, ay, az) end
 function physics.newSphereShape(radius) end
 
 --- Creates a new TerrainShape.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newTerrainShape)
 ---@see TerrainShape
 ---@see lovr.physics.newBoxShape
 ---@see lovr.physics.newSphereShape
@@ -2199,6 +2718,8 @@ function physics.newSphereShape(radius) end
 function physics.newTerrainShape(scale) end
 
 --- Creates a new WeldJoint.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newWeldJoint)
 ---@see lovr.physics.newBallJoint
 ---@see lovr.physics.newConeJoint
 ---@see lovr.physics.newDistanceJoint
@@ -2210,6 +2731,8 @@ function physics.newTerrainShape(scale) end
 function physics.newWeldJoint(colliderA, colliderB) end
 
 --- Creates a new physics World.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.physics.newWorld)
 ---@see World.update
 ---@param settings table? # An optional table with settings for the physics simulation. (default: nil)
 ---@return World # A whole new World.

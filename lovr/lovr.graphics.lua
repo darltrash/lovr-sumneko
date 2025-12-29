@@ -2,6 +2,8 @@
 
 --- The graphics module renders graphics and performs computation using the GPU.
 --- Most of the graphics functions are on the `Pass` object.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics)
 ---@class lovr.graphics
 local graphics = {}
 
@@ -204,10 +206,29 @@ local graphics = {}
 ---| '"mirror"' # Similar to `repeat`, but flips the texture each time it repeats.
 ---| '"border"' # Similar to `clamp`, but everything outside the 0-1 uv range will be filled with transparent black, i.e. `(0, 0, 0, 0)`.
 
+--- A Buffer is a block of memory on the GPU.  It's like a GPU version of a `Blob`.  Lua code can write data to the buffer which uploads to VRAM, and shaders read buffer data during rendering. Compute shaders can also write to buffers.
+--- The **size** of a Buffer is the number of bytes of VRAM it occupies.  It's set when the Buffer is created and can't be changed afterwards.
+--- Buffers can optionally have a **format**, which defines the type of data stored in the buffer. The format determines how Lua values are converted into binary.  Like the size, it can't change after the buffer is created.  `Shader:getBufferFormat` returns the format of a variable in a `Shader`.
+--- When a Buffer has a format, it also has a **length**, which is the number of items it holds, and a **stride**, which is the number of bytes between each item.
+--- `Buffer:setData` is used to upload data to the Buffer.  `Buffer:clear` can also be used to efficiently zero out a Buffer.
+--- `Buffer:getData` can be used to download data from the Buffer, but be aware that it stalls the GPU until the download is complete, which is very slow!  `Buffer:newReadback` will instead download the data in the background, which avoids costly stalls.
+--- Buffers are often used for mesh data.  Vertices stored in buffers can be drawn using `Pass:mesh`.  `Mesh` objects can also be used, which wrap Buffers along with some extra metadata.
+--- Buffers can be "bound" to a variable in a Shader using `Pass:send`.  That means that the next time the shader runs, the data from the Buffer will be used for the stuff in the variable.
+--- It's important to understand that data from a Buffer will only be used at the point when graphics commands are actually submitted.  This example records 2 draws, changing the buffer data between each one:
+---     buffer:setData(data1)
+---     pass:mesh(buffer)
+---     buffer:setData(data2)
+---     pass:mesh(buffer)
+---     lovr.graphics.submit(pass)
+--- **Both** draws will use `data2` here!  That's because `lovr.graphics.submit` is where the draws actually get processed, so they both see the "final" state of the buffer.  The data in a Buffer can't be 2 things at once!  If you need multiple versions of data, it's best to use a bigger buffer with offsets (or multiple buffers).
+---
+--- [Open in browser](https://lovr.org/docs/Buffer)
 ---@class Buffer
 local Buffer = {}
 
 --- Clears a range of data in the Buffer to a value.
+---
+--- [Open in browser](https://lovr.org/docs/Buffer:clear)
 ---@see Texture.clear
 ---@param offset number? # The offset of the range of the Buffer to clear, in bytes.  Must be a multiple of 4. (default: 0)
 ---@param extent number? # The number of bytes to clear.  If `nil`, clears to the end of the Buffer.  Must be a multiple of 4. (default: nil)
@@ -215,6 +236,8 @@ local Buffer = {}
 function Buffer:clear(offset, extent, value) end
 
 --- Downloads the Buffer's data from VRAM and returns it as a table.  This function is very very slow because it stalls the CPU until the data is finished downloading, so it should only be used for debugging or non-interactive scripts.  `Buffer:newReadback` is an alternative that returns a `Readback` object, which will not block the CPU.
+---
+--- [Open in browser](https://lovr.org/docs/Buffer:getData)
 ---@see Buffer.newReadback
 ---@see Buffer.mapData
 ---@see Readback.getData
@@ -224,6 +247,8 @@ function Buffer:clear(offset, extent, value) end
 function Buffer:getData(index, count) end
 
 --- Returns the format the Buffer was created with.
+---
+--- [Open in browser](https://lovr.org/docs/Buffer:getFormat)
 ---@see Buffer.getSize
 ---@see Buffer.getLength
 ---@see Buffer.getStride
@@ -231,6 +256,8 @@ function Buffer:getData(index, count) end
 function Buffer:getFormat() end
 
 --- Returns the length of the Buffer, or `nil` if the Buffer was not created with a format.
+---
+--- [Open in browser](https://lovr.org/docs/Buffer:getLength)
 ---@see Buffer.getSize
 ---@see Buffer.getStride
 ---@return number # The length of the Buffer.
@@ -238,18 +265,24 @@ function Buffer:getLength() end
 
 --- Returns the size of the Buffer in VRAM, in bytes.  This is the same as `length * stride`.
 --- The size of the Buffer can't change after it's created.
+---
+--- [Open in browser](https://lovr.org/docs/Buffer:getSize)
 ---@see Buffer.getLength
 ---@see Buffer.getStride
 ---@return number # The size of the Buffer, in bytes.
 function Buffer:getSize() end
 
 --- Returns the distance between each item in the Buffer, in bytes, or `nil` if the Buffer was not created with a format.
+---
+--- [Open in browser](https://lovr.org/docs/Buffer:getStride)
 ---@see Buffer.getSize
 ---@see Buffer.getLength
 ---@return number # The stride of the Buffer, in bytes.
 function Buffer:getStride() end
 
 --- Returns a pointer to GPU memory and schedules a copy from this pointer to the buffer's data. The data in the pointer will replace the data in the buffer.  This is intended for use with the LuaJIT FFI or for passing to C libraries.
+---
+--- [Open in browser](https://lovr.org/docs/Buffer:mapData)
 ---@see Blob.getPointer
 ---@param offset number? # A byte offset in the buffer to write to. (default: 0)
 ---@param extent number? # The number of bytes to replace.  If nil, writes to the rest of the buffer. (default: nil)
@@ -257,6 +290,8 @@ function Buffer:getStride() end
 function Buffer:mapData(offset, extent) end
 
 --- Creates and returns a new `Readback` that will download the data in the Buffer from VRAM. Once the readback is complete, `Readback:getData` returns the data as a table, or `Readback:getBlob` returns the data as a `Blob`.
+---
+--- [Open in browser](https://lovr.org/docs/Buffer:newReadback)
 ---@see Buffer.getData
 ---@see Texture.newReadback
 ---@param offset number? # A byte offset to read from. (default: 0)
@@ -265,6 +300,8 @@ function Buffer:mapData(offset, extent) end
 function Buffer:newReadback(offset, extent) end
 
 --- Copies data to the Buffer from either a table, `Blob`, or `Buffer`.
+---
+--- [Open in browser](https://lovr.org/docs/Buffer:setData)
 ---@param table table # A flat or nested table of items to copy to the Buffer (see notes for format).
 ---@param destinationIndex number? # The index of the first value in the Buffer to update. (default: 1)
 ---@param sourceIndex number? # The index in the table to copy from. (default: 1)
@@ -275,10 +312,17 @@ function Buffer:newReadback(offset, extent) end
 ---@overload fun(self: Buffer, buffer: Buffer, destinationOffset?: number, sourceOffset?: number, size?: number)
 function Buffer:setData(table, destinationIndex, sourceIndex, count) end
 
+--- Font objects are used to render text with `Pass:text`.  The active font can be changed using `Pass:setFont`.  The default font is Varela Round, which is used when no font is active, and can be retrieved using `lovr.graphics.getDefaultFont`.  Custom fonts can be loaded from TTF and BMFont files using `lovr.graphics.newFont`.
+--- Each Font uses a `Rasterizer` to load the font and create images for each glyph. As text is drawn, the Font uploads images from the Rasterizer to a GPU texture atlas as needed.  The Font also performs text layout and mesh generation for strings of text.
+--- For TTF fonts, LÖVR uses a text rendering technique called "multichannel signed distance fields" (MSDF), which makes the font rendering remain crisp when text is viewed up close.
+---
+--- [Open in browser](https://lovr.org/docs/Font)
 ---@class Font
 local Font = {}
 
 --- Returns the ascent of the font.  The ascent is the maximum amount glyphs ascend above the baseline.  The units depend on the font's pixel density.  With the default density, the units correspond to meters.
+---
+--- [Open in browser](https://lovr.org/docs/Font:getAscent)
 ---@see Rasterizer.getAscent
 ---@see Font.getDescent
 ---@see Font.getHeight
@@ -288,6 +332,8 @@ local Font = {}
 function Font:getAscent() end
 
 --- Returns the descent of the font.  The descent is the maximum amount glyphs descend below the baseline.  The units depend on the font's pixel density.  With the default density, the units correspond to meters.
+---
+--- [Open in browser](https://lovr.org/docs/Font:getDescent)
 ---@see Rasterizer.getDescent
 ---@see Font.getAscent
 ---@see Font.getHeight
@@ -297,6 +343,8 @@ function Font:getAscent() end
 function Font:getDescent() end
 
 --- Returns the height of the font, sometimes also called the leading.  This is the full height of a line of text, including the space between lines.  Each line of a multiline string is separated on the y axis by this height, multiplied by the font's line spacing.  The units depend on the font's pixel density.  With the default density, the units correspond to meters.
+---
+--- [Open in browser](https://lovr.org/docs/Font:getHeight)
 ---@see Rasterizer.getLeading
 ---@see Font.getLineSpacing
 ---@see Font.setLineSpacing
@@ -309,6 +357,8 @@ function Font:getDescent() end
 function Font:getHeight() end
 
 --- Returns the kerning between 2 glyphs.  Kerning is a slight horizontal adjustment between 2 glyphs to improve the visual appearance.  It will often be negative.  The units depend on the font's pixel density.  With the default density, the units correspond to meters.
+---
+--- [Open in browser](https://lovr.org/docs/Font:getKerning)
 ---@see Rasterizer.getKerning
 ---@see Font.getAscent
 ---@see Font.getDescent
@@ -320,12 +370,16 @@ function Font:getHeight() end
 function Font:getKerning(first, second) end
 
 --- Returns the line spacing of the Font.  When spacing out lines, the height of the font is multiplied the line spacing to get the final spacing value.  The default is 1.0.
+---
+--- [Open in browser](https://lovr.org/docs/Font:getLineSpacing)
 ---@see Font.getHeight
 ---@return number # The line spacing of the font.
 function Font:getLineSpacing() end
 
 --- Returns a table of wrapped lines for a piece of text, given a line length limit.
 --- By default the units for `limit` are in meters.  If text is being drawn with scale applied, make sure the scale is also applied to the `limit`.
+---
+--- [Open in browser](https://lovr.org/docs/Font:getLines)
 ---@see Font.getWidth
 ---@see Font.getHeight
 ---@see Pass.text
@@ -337,16 +391,22 @@ function Font:getLines(string, wrap) end
 
 --- Returns the pixel density of the font.  The density is a "pixels per world unit" factor that controls how the pixels in the font's texture are mapped to units in the coordinate space.
 --- The default pixel density is set to the height of the font.  This means that lines of text rendered with a scale of 1.0 come out to 1 unit (meter) tall.  However, if this font was drawn to a 2D texture where the units are in pixels, the font would still be drawn 1 unit (pixel) tall!  Scaling the coordinate space or the size of the text by the height of the font would fix this.  However, a more convenient option is to set the pixel density of the font to 1.0 when doing 2D rendering to make the font's size match up with the pixels of the canvas.
+---
+--- [Open in browser](https://lovr.org/docs/Font:getPixelDensity)
 ---@return number # The pixel density of the font.
 function Font:getPixelDensity() end
 
 --- Returns the Rasterizer object backing the Font.
+---
+--- [Open in browser](https://lovr.org/docs/Font:getRasterizer)
 ---@see lovr.graphics.newFont
 ---@see lovr.data.newRasterizer
 ---@return Rasterizer # The Rasterizer.
 function Font:getRasterizer() end
 
 --- Returns a table of vertices for a piece of text, along with a Material to use when rendering it. The Material returned by this function may not be the same if the Font's texture atlas needs to be recreated with a bigger size to make room for more glyphs.
+---
+--- [Open in browser](https://lovr.org/docs/Font:getVertices)
 ---@param string string # The text to render.
 ---@param wrap number? # The maximum line length.  The units depend on the pixel density of the font, but are in meters by default. (default: 0)
 ---@param halign HorizontalAlign # The horizontal align.
@@ -357,6 +417,8 @@ function Font:getRasterizer() end
 function Font:getVertices(string, wrap, halign, valign) end
 
 --- Returns the maximum width of a piece of text.  This function does not perform wrapping but does respect newlines in the text.
+---
+--- [Open in browser](https://lovr.org/docs/Font:getWidth)
 ---@see Font.getAscent
 ---@see Font.getDescent
 ---@see Font.getHeight
@@ -368,23 +430,47 @@ function Font:getVertices(string, wrap, halign, valign) end
 function Font:getWidth(string) end
 
 --- Sets the line spacing of the Font.  When spacing out lines, the height of the font is multiplied by the line spacing to get the final spacing value.  The default is 1.0.
+---
+--- [Open in browser](https://lovr.org/docs/Font:setLineSpacing)
 ---@see Font.getHeight
 ---@param spacing number # The new line spacing.
 function Font:setLineSpacing(spacing) end
 
 --- Sets the pixel density of the font.  The density is a "pixels per world unit" factor that controls how the pixels in the font's texture are mapped to units in the coordinate space.
 --- The default pixel density is set to the height of the font.  This means that lines of text rendered with a scale of 1.0 come out to 1 unit (meter) tall.  However, if this font was drawn to a 2D texture where the units are in pixels, the font would still be drawn 1 unit (pixel) tall!  Scaling the coordinate space or the size of the text by the height of the font would fix this.  However, a more convenient option is to set the pixel density of the font to 1.0 when doing 2D rendering to make the font's size match up with the pixels of the canvas.
+---
+--- [Open in browser](https://lovr.org/docs/Font:setPixelDensity)
 ---@param density number # The new pixel density of the font.
 ---@overload fun(self: Font)
 function Font:setPixelDensity(density) end
 
+--- Materials are a set of properties and textures that define the properties of a surface, like what color it is, how bumpy or shiny it is, etc. `Shader` code can use the data from a material to compute lighting.
+--- Materials are immutable, and can't be changed after they are created.  Instead, a new Material should be created with the updated properties.
+--- `Pass:setMaterial` changes the active material, causing it to affect rendering until the active material is changed again.
+--- Using material objects is optional.  `Pass:setMaterial` can take a `Texture`, and `Pass:setColor` can change the color of objects, so basic tinting and texturing of surfaces does not require a full material to be created.  Also, a custom material system could be developed by sending textures and other data to shaders manually.
+--- `Model` objects will create materials for all of the materials defined in the model file.
+--- In shader code, non-texture material properties can be accessed as `Material.<property>`, and material textures can be accessed as `<Type>Texture`, e.g. `RoughnessTexture`.
+---
+--- [Open in browser](https://lovr.org/docs/Material)
 ---@class Material
 local Material = {}
 
 --- Returns the properties of the Material in a table.
+---
+--- [Open in browser](https://lovr.org/docs/Material:getProperties)
 ---@return table # The Material properties.
 function Material:getProperties() end
 
+--- Meshes store arbitrary geometry data, and can be drawn with `Pass:draw`.
+--- Meshes hold a list of **vertices**.  The number of vertices is declared upfront when the Mesh is created, and it can not be resized afterwards.
+--- The Mesh has a **vertex format**, which is a set of **attributes** comprising each vertex, like a `position`, `color`, etc.
+--- The **vertex indices** in the Mesh describe the order that the vertices are rendered in.  This is an optimization that allows vertices to be reused if they are used for multiple triangles, without duplicating all of their data.
+--- The Mesh has a **draw mode**, which controls how the vertices are connected together to create pixels.  It can either be `points`, `lines`, or `triangles`.
+--- The Mesh can have a `Material` applied, which defines colors, textures, and other properties of its surface.
+--- The **draw range** of the Mesh defines a subset of the vertices to render when the Mesh is drawn.
+--- The **bounding box** of the Mesh allows LÖVR to skip rendering it when it's out of view.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh)
 ---@class Mesh
 local Mesh = {}
 
@@ -394,6 +480,8 @@ local Mesh = {}
 --- Otherwise, the bounding box will be set and the return value will be `true`.
 --- The bounding box can also be assigned manually using `Mesh:setBoundingBox`, which can be used to set the bounding box on a `gpu` mesh or for cases where the bounding box is already known.
 --- Passes will use the bounding box of a Mesh to cull it against the cameras when `Pass:setViewCull` is enabled, which avoids rendering it when it's out of view.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:computeBoundingBox)
 ---@see Mesh.getBoundingBox
 ---@see Mesh.setBoundingBox
 ---@see Pass.setViewCull
@@ -407,6 +495,8 @@ function Mesh:computeBoundingBox() end
 --- Returns the axis-aligned bounding box of the Mesh, or `nil` if the Mesh doesn't have a bounding box.
 --- Meshes with the `cpu` storage mode can compute their bounding box automatically using `Mesh:computeBoundingBox`.  The bounding box can also be set manually using `Mesh:setBoundingBox`.
 --- Passes will use the bounding box of a Mesh to cull it against the cameras when `Pass:setViewCull` is enabled, which avoids rendering it when it's out of view.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:getBoundingBox)
 ---@see Mesh.computeBoundingBox
 ---@see Pass.setViewCull
 ---@see Collider.getAABB
@@ -422,11 +512,15 @@ function Mesh:computeBoundingBox() end
 function Mesh:getBoundingBox() end
 
 --- Returns the `DrawMode` of the mesh, which controls how the vertices in the Mesh are connected together to create pixels.  The default is `triangles`.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:getDrawMode)
 ---@see Pass.setMeshMode
 ---@return DrawMode # The current draw mode.
 function Mesh:getDrawMode() end
 
 --- Returns the range of vertices drawn by the Mesh.  If different sets of mesh data are stored in a single Mesh object, the draw range can be used to select different sets of vertices to render.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:getDrawRange)
 ---@see Mesh.setIndices
 ---@return number # The index of the first vertex that will be drawn (or the first index, if the Mesh has vertex indices).
 ---@return number # The number of vertices that will be drawn (or indices, if the Mesh has vertex indices).
@@ -437,6 +531,8 @@ function Mesh:getDrawRange() end
 --- Returns the `Buffer` object that holds the data for the vertex indices in the Mesh.
 --- This can be `nil` if the Mesh doesn't have any indices.
 --- If a Mesh uses the `cpu` storage mode, the index buffer is internal to the `Mesh` and this function will return `nil`.  This ensures that the CPU data for the Mesh does not get out of sync with the GPU data in the Buffer.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:getIndexBuffer)
 ---@see Mesh.getIndices
 ---@see Mesh.setIndices
 ---@see Mesh.getVertexBuffer
@@ -444,12 +540,16 @@ function Mesh:getDrawRange() end
 function Mesh:getIndexBuffer() end
 
 --- Returns a table with the Mesh's vertex indices.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:getIndices)
 ---@see Mesh.getIndexBuffer
 ---@see Mesh.setIndexBuffer
 ---@return number[] # A table of numbers with the 1-based vertex indices.
 function Mesh:getIndices() end
 
 --- Returns the `Material` applied to the Mesh.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:getMaterial)
 ---@see Pass.setMaterial
 ---@see Model.getMaterial
 ---@see lovr.graphics.newMaterial
@@ -458,6 +558,8 @@ function Mesh:getMaterial() end
 
 --- Returns the `Buffer` object that holds the data for the vertices in the Mesh.
 --- If a Mesh uses the `cpu` storage mode, the vertex buffer is internal to the `Mesh` and this function will return `nil`.  This ensures that the CPU data for the Mesh does not get out of sync with the GPU data in the Buffer.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:getVertexBuffer)
 ---@see Mesh.getVertices
 ---@see Mesh.setVertices
 ---@see Mesh.getIndexBuffer
@@ -465,6 +567,8 @@ function Mesh:getMaterial() end
 function Mesh:getVertexBuffer() end
 
 --- Returns the number of vertices in the Mesh.  The vertex count is set when the Mesh is created and can't change afterwards.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:getVertexCount)
 ---@see Mesh.getVertexStride
 ---@see Mesh.getVertexFormat
 ---@see lovr.graphics.newMesh
@@ -473,6 +577,8 @@ function Mesh:getVertexBuffer() end
 function Mesh:getVertexCount() end
 
 --- Returns the vertex format of the Mesh, which is a list of "attributes" that make up the data for each vertex (position, color, UV, etc.).
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:getVertexFormat)
 ---@see Mesh.getVertexCount
 ---@see Mesh.getVertexStride
 ---@see lovr.graphics.newMesh
@@ -480,6 +586,8 @@ function Mesh:getVertexCount() end
 function Mesh:getVertexFormat() end
 
 --- Returns the stride of the Mesh, which is the number of bytes used by each vertex.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:getVertexStride)
 ---@see Mesh.getVertexCount
 ---@see Mesh.getVertexFormat
 ---@see lovr.graphics.newMesh
@@ -487,6 +595,8 @@ function Mesh:getVertexFormat() end
 function Mesh:getVertexStride() end
 
 --- Returns the vertices in the Mesh.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:getVertices)
 ---@see Mesh.getVertexBuffer
 ---@see Mesh.getVertexFormat
 ---@see Mesh.getIndices
@@ -499,6 +609,8 @@ function Mesh:getVertices(index, count) end
 --- Sets or removes the axis-aligned bounding box of the Mesh.
 --- Meshes with the `cpu` storage mode can compute their bounding box automatically using `Mesh:computeBoundingBox`.
 --- Passes will use the bounding box of a Mesh to cull it against the cameras when `Pass:setViewCull` is enabled, which avoids rendering it when it's out of view.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:setBoundingBox)
 ---@see Mesh.computeBoundingBox
 ---@see Pass.setViewCull
 ---@see Collider.getAABB
@@ -515,11 +627,15 @@ function Mesh:getVertices(index, count) end
 function Mesh:setBoundingBox(minx, maxx, miny, maxy, minz, maxz) end
 
 --- Changes the `DrawMode` of the mesh, which controls how the vertices in the Mesh are connected together to create pixels.  The default is `triangles`.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:setDrawMode)
 ---@see Pass.setMeshMode
 ---@param mode DrawMode # The current draw mode.
 function Mesh:setDrawMode(mode) end
 
 --- Sets the range of vertices drawn by the Mesh.  If different sets of mesh data are stored in a single Mesh object, the draw range can be used to select different sets of vertices to render.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:setDrawRange)
 ---@see Mesh.setIndices
 ---@param start number # The index of the first vertex that will be drawn (or the first index, if the Mesh has vertex indices).
 ---@param count number # The number of vertices that will be drawn (or indices, if the Mesh has vertex indices).
@@ -530,6 +646,8 @@ function Mesh:setDrawRange(start, count, offset) end
 --- Sets a `Buffer` object the Mesh will use for vertex indices.
 --- This can only be used if the Mesh uses the `gpu` storage mode.
 --- The Buffer must have a single field with the `u16`, `u32`, `index16`, or `index32` type.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:setIndexBuffer)
 ---@see Mesh.getIndices
 ---@see Mesh.setIndices
 ---@see Mesh.getVertexBuffer
@@ -538,6 +656,8 @@ function Mesh:setIndexBuffer(buffer) end
 
 --- Sets or clears the vertex indices of the Mesh.  Vertex indices define the list of triangles in the mesh.  They allow vertices to be reused multiple times without duplicating all their data, which can save a lot of memory and processing time if a vertex is used for multiple triangles.
 --- If a Mesh doesn't have vertex indices, then the vertices are rendered in order.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:setIndices)
 ---@see Mesh.getIndexBuffer
 ---@see Mesh.setIndexBuffer
 ---@see Mesh.setVertices
@@ -547,6 +667,8 @@ function Mesh:setIndexBuffer(buffer) end
 function Mesh:setIndices(t) end
 
 --- Sets a `Material` to use when drawing the Mesh.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:setMaterial)
 ---@see Pass.setMaterial
 ---@see Model.getMaterial
 ---@see lovr.graphics.newMaterial
@@ -555,6 +677,8 @@ function Mesh:setIndices(t) end
 function Mesh:setMaterial(material) end
 
 --- Sets the data for vertices in the Mesh.
+---
+--- [Open in browser](https://lovr.org/docs/Mesh:setVertices)
 ---@see Mesh.getVertexBuffer
 ---@see Mesh.getVertexFormat
 ---@see Mesh.getIndices
@@ -565,11 +689,21 @@ function Mesh:setMaterial(material) end
 ---@overload fun(self: Mesh, blob: Blob, index?: number, count?: number)
 function Mesh:setVertices(vertices, index, count) end
 
+--- Models are 3D model assets loaded from files.  Currently, OBJ, glTF, and binary STL files are supported.
+--- A model can be drawn using `Pass:draw`.
+--- The raw CPU data for a model is held in a `ModelData` object, which can be loaded on threads or reused for multiple Model instances.
+--- Models have a hierarchy of nodes which can have their transforms modified.  Meshes are attached to these nodes.  The same mesh can be attached to multiple nodes, allowing it to be drawn multiple times while only storing a single copy of its data.
+--- Models can have animations.  Animations have keyframes which affect the transforms of nodes. Right now each model can only be drawn with a single animated pose per frame.
+--- Models can have materials, which are collections of properties and textures that define how its surface is affected by lighting.  Each mesh in the model can use a single material.
+---
+--- [Open in browser](https://lovr.org/docs/Model)
 ---@class Model
 local Model = {}
 
 --- Animates a Model by setting or blending the transforms of nodes using data stored in the keyframes of an animation.
 --- The animation from the model file is evaluated at the timestamp, resulting in a set of node properties.  These properties are then applied to the nodes in the model, using an optional blend factor.  If the animation doesn't have keyframes that target a given node, the node will remain unchanged.
+---
+--- [Open in browser](https://lovr.org/docs/Model:animate)
 ---@see Model.resetNodeTransforms
 ---@see Model.getAnimationCount
 ---@see Model.getAnimationName
@@ -588,11 +722,15 @@ local Model = {}
 function Model:animate(animation, time, blend) end
 
 --- Returns a lightweight copy of a Model.  Most of the data will be shared between the two copies of the model, like the materials, textures, and metadata.  However, the clone has its own set of node transforms, allowing it to be animated separately from its parent.  This allows a single model to be rendered in multiple different animation poses in a frame.
+---
+--- [Open in browser](https://lovr.org/docs/Model:clone)
 ---@see lovr.graphics.newModel
 ---@return Model # A genetically identical copy of the Model.
 function Model:clone() end
 
 --- Returns the number of animations in the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getAnimationCount)
 ---@see Model.getAnimationName
 ---@see Model.getAnimationDuration
 ---@see Model.animate
@@ -600,6 +738,8 @@ function Model:clone() end
 function Model:getAnimationCount() end
 
 --- Returns the duration of an animation in the Model, in seconds.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getAnimationDuration)
 ---@see Model.getAnimationCount
 ---@see Model.getAnimationName
 ---@see Model.animate
@@ -608,6 +748,8 @@ function Model:getAnimationCount() end
 function Model:getAnimationDuration(animation) end
 
 --- Returns the name of an animation in the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getAnimationName)
 ---@see Model.getAnimationCount
 ---@see Model.getAnimationDuration
 ---@param index number # The index of an animation.
@@ -615,12 +757,16 @@ function Model:getAnimationDuration(animation) end
 function Model:getAnimationName(index) end
 
 --- Returns the number of blend shapes in the model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getBlendShapeCount)
 ---@see Model.getBlendShapeName
 ---@see ModelData.getBlendShapeCount
 ---@return number # The number of blend shapes in the model.
 function Model:getBlendShapeCount() end
 
 --- Returns the name of a blend shape in the model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getBlendShapeName)
 ---@see Model.getBlendShapeCount
 ---@see ModelData.getBlendShapeName
 ---@param index number # The index of a blend shape.
@@ -628,6 +774,8 @@ function Model:getBlendShapeCount() end
 function Model:getBlendShapeName(index) end
 
 --- Returns the weight of a blend shape.  A blend shape contains offset values for the vertices of one of the meshes in a Model.  Whenever the Model is drawn, the offsets are multiplied by the weight of the blend shape, allowing for smooth blending between different meshes.  A weight of zero won't apply any displacement and will skip processing of the blend shape.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getBlendShapeWeight)
 ---@see Model.getBlendShapeCount
 ---@see Model.getBlendShapeName
 ---@see Model.resetBlendShapes
@@ -636,6 +784,8 @@ function Model:getBlendShapeName(index) end
 function Model:getBlendShapeWeight(blendshape) end
 
 --- Returns the 6 values of the Model's axis-aligned bounding box.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getBoundingBox)
 ---@see Model.getWidth
 ---@see Model.getHeight
 ---@see Model.getDepth
@@ -653,6 +803,8 @@ function Model:getBlendShapeWeight(blendshape) end
 function Model:getBoundingBox() end
 
 --- Returns a sphere approximately enclosing the vertices in the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getBoundingSphere)
 ---@see Model.getWidth
 ---@see Model.getHeight
 ---@see Model.getDepth
@@ -667,6 +819,8 @@ function Model:getBoundingBox() end
 function Model:getBoundingSphere() end
 
 --- Returns the center of the Model's axis-aligned bounding box, relative to the Model's origin.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getCenter)
 ---@see Model.getWidth
 ---@see Model.getHeight
 ---@see Model.getDepth
@@ -679,11 +833,15 @@ function Model:getBoundingSphere() end
 function Model:getCenter() end
 
 --- Returns the ModelData this Model was created from.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getData)
 ---@see lovr.data.newModelData
 ---@return ModelData # The ModelData.
 function Model:getData() end
 
 --- Returns the depth of the Model, computed from its axis-aligned bounding box.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getDepth)
 ---@see Model.getWidth
 ---@see Model.getHeight
 ---@see Model.getDimensions
@@ -694,6 +852,8 @@ function Model:getData() end
 function Model:getDepth() end
 
 --- Returns the width, height, and depth of the Model, computed from its axis-aligned bounding box.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getDimensions)
 ---@see Model.getWidth
 ---@see Model.getHeight
 ---@see Model.getDepth
@@ -706,6 +866,8 @@ function Model:getDepth() end
 function Model:getDimensions() end
 
 --- Returns the height of the Model, computed from its axis-aligned bounding box.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getHeight)
 ---@see Model.getWidth
 ---@see Model.getDepth
 ---@see Model.getDimensions
@@ -716,12 +878,16 @@ function Model:getDimensions() end
 function Model:getHeight() end
 
 --- Returns the index buffer used by the Model.  The index buffer describes the order used to draw the vertices in each mesh.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getIndexBuffer)
 ---@see Model.getVertexBuffer
 ---@see Model.getMesh
 ---@return Buffer # The index buffer.
 function Model:getIndexBuffer() end
 
 --- Returns a `Material` loaded from the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getMaterial)
 ---@see Model.getMaterialCount
 ---@see Model.getMaterialName
 ---@param which string | number # The name or index of the Material to return.
@@ -729,12 +895,16 @@ function Model:getIndexBuffer() end
 function Model:getMaterial(which) end
 
 --- Returns the number of materials in the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getMaterialCount)
 ---@see Model.getMaterialName
 ---@see Model.getMaterial
 ---@return number # The number of materials in the Model.
 function Model:getMaterialCount() end
 
 --- Returns the name of a material in the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getMaterialName)
 ---@see Model.getMaterialCount
 ---@see Model.getMaterial
 ---@param index number # The index of a material.
@@ -742,6 +912,8 @@ function Model:getMaterialCount() end
 function Model:getMaterialName(index) end
 
 --- Returns a `Mesh` from the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getMesh)
 ---@see Model.getMeshCount
 ---@see lovr.graphics.newMesh
 ---@param index number # The index of the Mesh to return.
@@ -749,15 +921,21 @@ function Model:getMaterialName(index) end
 function Model:getMesh(index) end
 
 --- Returns the number of meshes in the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getMeshCount)
 ---@see Model.getMesh
 ---@return number # The number of meshes in the Model.
 function Model:getMeshCount() end
 
 --- Returns extra information stored in the model file.  Currently this is only implemented for glTF models and returns the JSON string from the glTF or glb file.  The metadata can be used to get application-specific data or add support for glTF extensions not supported by LÖVR.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getMetadata)
 ---@return string # The metadata from the model file.
 function Model:getMetadata() end
 
 --- Given a parent node, this function returns a table with the indices of its children.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getNodeChildren)
 ---@see Model.getNodeParent
 ---@see Model.getRootNode
 ---@param node string | number # The name or index of the parent node.
@@ -765,10 +943,14 @@ function Model:getMetadata() end
 function Model:getNodeChildren(node) end
 
 --- Returns the number of nodes in the model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getNodeCount)
 ---@return number # The number of nodes in the model.
 function Model:getNodeCount() end
 
 --- Returns the name of a node.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getNodeName)
 ---@see Model.getNodeCount
 ---@see Model.getAnimationName
 ---@see Model.getMaterialName
@@ -777,6 +959,8 @@ function Model:getNodeCount() end
 function Model:getNodeName(index) end
 
 --- Returns the orientation of a node.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getNodeOrientation)
 ---@see Model.getNodePosition
 ---@see Model.setNodePosition
 ---@see Model.getNodeScale
@@ -795,6 +979,8 @@ function Model:getNodeName(index) end
 function Model:getNodeOrientation(node, origin) end
 
 --- Given a child node, this function returns the index of its parent.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getNodeParent)
 ---@see Model.getNodeChildren
 ---@see Model.getRootNode
 ---@param node number # The name or index of the child node.
@@ -802,6 +988,8 @@ function Model:getNodeOrientation(node, origin) end
 function Model:getNodeParent(node) end
 
 --- Returns the pose (position and orientation) of a node.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getNodePose)
 ---@see Model.getNodePosition
 ---@see Model.setNodePosition
 ---@see Model.getNodeOrientation
@@ -823,6 +1011,8 @@ function Model:getNodeParent(node) end
 function Model:getNodePose(node, origin) end
 
 --- Returns the position of a node.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getNodePosition)
 ---@see Model.getNodeOrientation
 ---@see Model.setNodeOrientation
 ---@see Model.getNodeScale
@@ -840,6 +1030,8 @@ function Model:getNodePose(node, origin) end
 function Model:getNodePosition(node, space) end
 
 --- Returns the scale of a node.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getNodeScale)
 ---@see Model.getNodePosition
 ---@see Model.setNodePosition
 ---@see Model.getNodeOrientation
@@ -857,6 +1049,8 @@ function Model:getNodePosition(node, space) end
 function Model:getNodeScale(node, origin) end
 
 --- Returns the transform (position, scale, and rotation) of a node.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getNodeTransform)
 ---@see Model.getNodePosition
 ---@see Model.setNodePosition
 ---@see Model.getNodeOrientation
@@ -881,12 +1075,16 @@ function Model:getNodeScale(node, origin) end
 function Model:getNodeTransform(node, origin) end
 
 --- Returns the index of the model's root node.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getRootNode)
 ---@see Model.getNodeCount
 ---@see Model.getNodeParent
 ---@return number # The index of the root node.
 function Model:getRootNode() end
 
 --- Returns one of the textures in the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getTexture)
 ---@see Model.getTextureCount
 ---@see Model.getMaterial
 ---@param index number # The index of the texture to get.
@@ -894,11 +1092,15 @@ function Model:getRootNode() end
 function Model:getTexture(index) end
 
 --- Returns the number of textures in the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getTextureCount)
 ---@see Model.getTexture
 ---@return number # The number of textures in the Model.
 function Model:getTextureCount() end
 
 --- Returns the total number of triangles in the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getTriangleCount)
 ---@see Model.getTriangles
 ---@see Model.getVertexCount
 ---@see ModelData.getTriangleCount
@@ -909,6 +1111,8 @@ function Model:getTriangleCount() end
 --- Returns 2 tables containing mesh data for the Model.
 --- The first table is a list of vertex positions and contains 3 numbers for the x, y, and z coordinate of each vertex.  The second table is a list of triangles and contains 1-based indices into the first table representing the first, second, and third vertices that make up each triangle.
 --- The vertex positions will be affected by node transforms.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getTriangles)
 ---@see Model.getTriangleCount
 ---@see Model.getVertexCount
 ---@see Model.getMesh
@@ -918,12 +1122,16 @@ function Model:getTriangleCount() end
 function Model:getTriangles() end
 
 --- Returns a `Buffer` that holds the vertices of all of the meshes in the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getVertexBuffer)
 ---@see Model.getIndexBuffer
 ---@see Model.getMesh
 ---@return Buffer # The vertex buffer.
 function Model:getVertexBuffer() end
 
 --- Returns the total vertex count of the Model.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getVertexCount)
 ---@see Model.getTriangles
 ---@see Model.getTriangleCount
 ---@see ModelData.getVertexCount
@@ -931,6 +1139,8 @@ function Model:getVertexBuffer() end
 function Model:getVertexCount() end
 
 --- Returns the width of the Model, computed from its axis-aligned bounding box.
+---
+--- [Open in browser](https://lovr.org/docs/Model:getWidth)
 ---@see Model.getHeight
 ---@see Model.getDepth
 ---@see Model.getDimensions
@@ -941,20 +1151,28 @@ function Model:getVertexCount() end
 function Model:getWidth() end
 
 --- Returns whether the Model has any skeletal animations.
+---
+--- [Open in browser](https://lovr.org/docs/Model:hasJoints)
 ---@return boolean # Whether the animation uses joint nodes for skeletal animation.
 function Model:hasJoints() end
 
 --- Resets blend shape weights to the original ones defined in the model file.
+---
+--- [Open in browser](https://lovr.org/docs/Model:resetBlendShapes)
 ---@see Model.resetNodeTransforms
 ---@see Model.getBlendShapeWeight
 ---@see Model.setBlendShapeWeight
 function Model:resetBlendShapes() end
 
 --- Resets node transforms to the original ones defined in the model file.
+---
+--- [Open in browser](https://lovr.org/docs/Model:resetNodeTransforms)
 ---@see Model.resetBlendShapes
 function Model:resetNodeTransforms() end
 
 --- Sets the weight of a blend shape.  A blend shape contains offset values for the vertices of one of the meshes in a Model.  Whenever the Model is drawn, the offsets are multiplied by the weight of the blend shape, allowing for smooth blending between different meshes.  A weight of zero won't apply any displacement and will skip processing of the blend shape.
+---
+--- [Open in browser](https://lovr.org/docs/Model:setBlendShapeWeight)
 ---@see Model.getBlendShapeCount
 ---@see Model.getBlendShapeName
 ---@see Model.resetBlendShapes
@@ -963,6 +1181,8 @@ function Model:resetNodeTransforms() end
 function Model:setBlendShapeWeight(blendshape, weight) end
 
 --- Sets or blends the orientation of a node to a new orientation.  This sets the local orientation of the node, relative to its parent.
+---
+--- [Open in browser](https://lovr.org/docs/Model:setNodeOrientation)
 ---@see Model.getNodePosition
 ---@see Model.setNodePosition
 ---@see Model.getNodeScale
@@ -982,6 +1202,8 @@ function Model:setBlendShapeWeight(blendshape, weight) end
 function Model:setNodeOrientation(node, angle, ax, ay, az, blend) end
 
 --- Sets or blends the pose (position and orientation) of a node to a new pose.  This sets the local pose of the node, relative to its parent.  The scale will remain unchanged.
+---
+--- [Open in browser](https://lovr.org/docs/Model:setNodePose)
 ---@see Model.getNodePosition
 ---@see Model.setNodePosition
 ---@see Model.getNodeOrientation
@@ -1004,6 +1226,8 @@ function Model:setNodeOrientation(node, angle, ax, ay, az, blend) end
 function Model:setNodePose(node, x, y, z, angle, ax, ay, az, blend) end
 
 --- Sets or blends the position of a node.  This sets the local position of the node, relative to its parent.
+---
+--- [Open in browser](https://lovr.org/docs/Model:setNodePosition)
 ---@see Model.getNodeOrientation
 ---@see Model.setNodeOrientation
 ---@see Model.getNodeScale
@@ -1022,6 +1246,8 @@ function Model:setNodePose(node, x, y, z, angle, ax, ay, az, blend) end
 function Model:setNodePosition(node, x, y, z, blend) end
 
 --- Sets or blends the scale of a node to a new scale.  This sets the local scale of the node, relative to its parent.
+---
+--- [Open in browser](https://lovr.org/docs/Model:setNodeScale)
 ---@see Model.getNodePosition
 ---@see Model.setNodePosition
 ---@see Model.getNodeOrientation
@@ -1040,6 +1266,8 @@ function Model:setNodePosition(node, x, y, z, blend) end
 function Model:setNodeScale(node, sx, sy, sz, blend) end
 
 --- Sets or blends the transform of a node to a new transform.  This sets the local transform of the node, relative to its parent.
+---
+--- [Open in browser](https://lovr.org/docs/Model:setNodeTransform)
 ---@see Model.getNodePosition
 ---@see Model.setNodePosition
 ---@see Model.getNodeOrientation
@@ -1065,22 +1293,36 @@ function Model:setNodeScale(node, sx, sy, sz, blend) end
 ---@overload fun(self: Model, node: string | number, transform: Mat4, blend?: number)
 function Model:setNodeTransform(node, x, y, z, sx, sy, sz, angle, ax, ay, az, blend) end
 
+--- Pass objects record work for the GPU.  They contain a list of things to draw and a list of compute shaders to run.
+--- Methods like `Pass:sphere` will "record" a draw on the Pass, which adds it to the list.  Other methods like `Pass:setBlendMode` or `Pass:setShader` will change the way the next draws are processed.
+--- Once all of the work has been recorded to a Pass, it can be sent to the GPU using `lovr.graphics.submit`, which will start processing all of the compute work and draws (in that order).
+--- A Pass can have a canvas, which is a set of textures that the draws will render to.
+--- `Pass:reset` is used to clear all of the computes and draws, putting the Pass in a fresh state.
+--- `lovr.draw` is called every frame with a `Pass` that is configured to render to either the headset or the window.  The Pass will automatically get submitted afterwards.
+---
+--- [Open in browser](https://lovr.org/docs/Pass)
 ---@class Pass
 local Pass = {}
 
 --- Synchronizes compute work.
 --- By default, within a single Pass, multiple calls to `Pass:compute` can run on the GPU in any order, or all at the same time.  This is great because it lets the GPU process the work as efficiently as possible, but sometimes multiple compute dispatches need to be sequenced.
 --- Calling this function will insert a barrier.  All compute operations on the Pass after the barrier will only start once all of the previous compute operations on the Pass are finished.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:barrier)
 ---@see Pass.compute
 function Pass:barrier() end
 
 --- Begins a new tally.  The tally will count the number of pixels touched by any draws that occur while the tally is active.  If a pixel fails the depth test or stencil test then it won't be counted, so the tally is a way to detect if objects are visible.
 --- The results for all the tallies in the pass can be copied to a `Buffer` when the Pass finishes by setting a buffer with `Pass:setTallyBuffer`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:beginTally)
 ---@see Pass.finishTally
 ---@return number # The index of the tally that was started.
 function Pass:beginTally() end
 
 --- Draw a box.  This is like `Pass:cube`, except it takes 3 separate values for the scale.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:box)
 ---@see Pass.cube
 ---@param x number? # The x coordinate of the center of the box. (default: 0)
 ---@param y number? # The y coordinate of the center of the box. (default: 0)
@@ -1098,6 +1340,8 @@ function Pass:beginTally() end
 function Pass:box(x, y, z, width, height, depth, angle, ax, ay, az, style) end
 
 --- Draws a capsule.  A capsule is shaped like a cylinder with a hemisphere on each end.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:capsule)
 ---@param x number? # The x coordinate of the center of the capsule. (default: 0)
 ---@param y number? # The y coordinate of the center of the capsule. (default: 0)
 ---@param z number? # The z coordinate of the center of the capsule. (default: 0)
@@ -1114,6 +1358,8 @@ function Pass:box(x, y, z, width, height, depth, angle, ax, ay, az, style) end
 function Pass:capsule(x, y, z, radius, length, angle, ax, ay, az, segments) end
 
 --- Draws a circle.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:circle)
 ---@param x number? # The x coordinate of the center of the circle. (default: 0)
 ---@param y number? # The y coordinate of the center of the circle. (default: 0)
 ---@param z number? # The z coordinate of the center of the circle. (default: 0)
@@ -1132,6 +1378,8 @@ function Pass:circle(x, y, z, radius, angle, ax, ay, az, style, angle1, angle2, 
 
 --- Runs a compute shader.  There must be an active compute shader set using `Pass:setShader`.
 --- All of the compute shader dispatches in a Pass will run **before** all of the draws in the Pass (if any).  They will also run at the same time in parallel, unless `Pass:barrier` is used to control the order.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:compute)
 ---@see Pass.barrier
 ---@see Pass.setShader
 ---@see Pass.send
@@ -1143,6 +1391,8 @@ function Pass:circle(x, y, z, radius, angle, ax, ay, az, style, angle1, angle2, 
 function Pass:compute(x, y, z) end
 
 --- Draws a cone.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:cone)
 ---@param x number? # The x coordinate of the center of the base of the cone. (default: 0)
 ---@param y number? # The y coordinate of the center of the base of the cone. (default: 0)
 ---@param z number? # The z coordinate of the center of the base of the cone. (default: 0)
@@ -1159,6 +1409,8 @@ function Pass:compute(x, y, z) end
 function Pass:cone(x, y, z, radius, length, angle, ax, ay, az, segments) end
 
 --- Draws a cube.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:cube)
 ---@param x number? # The x coordinate of the center of the cube. (default: 0)
 ---@param y number? # The y coordinate of the center of the cube. (default: 0)
 ---@param z number? # The z coordinate of the center of the cube. (default: 0)
@@ -1173,6 +1425,8 @@ function Pass:cone(x, y, z, radius, length, angle, ax, ay, az, segments) end
 function Pass:cube(x, y, z, size, angle, ax, ay, az, style) end
 
 --- Draws a cylinder.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:cylinder)
 ---@param x number? # The x coordinate of the center of the cylinder. (default: 0)
 ---@param y number? # The y coordinate of the center of the cylinder. (default: 0)
 ---@param z number? # The z coordinate of the center of the cylinder. (default: 0)
@@ -1192,6 +1446,8 @@ function Pass:cube(x, y, z, size, angle, ax, ay, az, style) end
 function Pass:cylinder(x, y, z, radius, length, angle, ax, ay, az, capped, angle1, angle2, segments) end
 
 --- Draws a `Model`, `Mesh`, or `Texture`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:draw)
 ---@param object Model | Mesh | Texture # The object to draw.
 ---@param x number? # The x coordinate to draw the object at. (default: 0)
 ---@param y number? # The y coordinate to draw the object at. (default: 0)
@@ -1207,17 +1463,23 @@ function Pass:cylinder(x, y, z, radius, length, angle, ax, ay, az, capped, angle
 function Pass:draw(object, x, y, z, scale, angle, ax, ay, az, instances) end
 
 --- Draws a fullscreen triangle.  The `fill` shader is used, which stretches the triangle across the screen.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:fill)
 ---@param texture Texture # The texture to fill.  If nil, the texture from the active material is used.
 ---@overload fun(self: Pass)
 function Pass:fill(texture) end
 
 --- Finishes a tally that was previously started with `Pass:beginTally`.  This will stop counting the number of pixels affected by draws.
 --- The results for all the tallies in the pass can be copied to a `Buffer` when the Pass finishes by setting a buffer with `Pass:setTallyBuffer`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:finishTally)
 ---@see Pass.beginTally
 ---@return number # The index of the tally that was finished.
 function Pass:finishTally() end
 
 --- Returns the Pass's canvas, or `nil` if the Pass doesn't have a canvas.  The canvas is a set of textures that the Pass will draw to when it's submitted.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:getCanvas)
 ---@see Pass.getClear
 ---@see Pass.setClear
 ---@see Pass.getWidth
@@ -1228,11 +1490,15 @@ function Pass:finishTally() end
 function Pass:getCanvas() end
 
 --- Returns the clear values of the pass.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:getClear)
 ---@see Pass.getCanvas
 ---@return table # The clear values for the pass.  Each color texture's clear value is stored at its index, as either a 4-number rgba table or a boolean.  If the pass has a depth texture, there will also be a `depth` key with its clear value as a number or boolean.
 function Pass:getClear() end
 
 --- Returns the dimensions of the textures of the Pass's canvas, in pixels.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:getDimensions)
 ---@see Pass.getWidth
 ---@see Pass.getHeight
 ---@see Pass.getViewCount
@@ -1245,6 +1511,8 @@ function Pass:getClear() end
 function Pass:getDimensions() end
 
 --- Returns the height of the textures of the Pass's canvas, in pixels.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:getHeight)
 ---@see Pass.getWidth
 ---@see Pass.getDimensions
 ---@see Pass.getViewCount
@@ -1256,6 +1524,8 @@ function Pass:getDimensions() end
 function Pass:getHeight() end
 
 --- Returns the debug label of the Pass, which will show up when the Pass is printed and in some graphics debugging tools.  This is set when the Pass is created, and can't be changed afterwards.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:getLabel)
 ---@see lovr.graphics.newPass
 ---@see Texture.getLabel
 ---@see Shader.getLabel
@@ -1263,6 +1533,8 @@ function Pass:getHeight() end
 function Pass:getLabel() end
 
 --- Returns the projection for a single view.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:getProjection)
 ---@see lovr.headset.getViewAngles
 ---@see lovr.headset.getViewCount
 ---@see Pass.getViewPose
@@ -1276,6 +1548,8 @@ function Pass:getLabel() end
 function Pass:getProjection(view) end
 
 --- Returns statistics for the Pass.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:getStats)
 ---@see lovr.graphics.isTimingEnabled
 ---@see lovr.graphics.setTimingEnabled
 ---@see Pass.setViewCull
@@ -1284,6 +1558,8 @@ function Pass:getStats() end
 
 --- Returns the Buffer that tally results will be written to.  Each time the render pass finishes, the results of all the tallies will be copied to the Buffer at the specified offset.  The buffer can be used in a later pass in a compute shader, or the data in the buffer can be read back using e.g. `Buffer:newReadback`.
 --- If no buffer has been set, this function will return `nil`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:getTallyBuffer)
 ---@see Pass.beginTally
 ---@see Pass.finishTally
 ---@return Buffer # The buffer.
@@ -1291,6 +1567,8 @@ function Pass:getStats() end
 function Pass:getTallyBuffer() end
 
 --- Returns the view count of a render pass.  This is the layer count of the textures it is rendering to.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:getViewCount)
 ---@see Pass.getViewPose
 ---@see Pass.setViewPose
 ---@see Pass.getProjection
@@ -1300,6 +1578,8 @@ function Pass:getTallyBuffer() end
 function Pass:getViewCount() end
 
 --- Get the pose of a single view.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:getViewPose)
 ---@see lovr.headset.getViewPose
 ---@see lovr.headset.getViewCount
 ---@see Pass.getProjection
@@ -1316,6 +1596,8 @@ function Pass:getViewCount() end
 function Pass:getViewPose(view) end
 
 --- Returns the width of the textures of the Pass's canvas, in pixels.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:getWidth)
 ---@see Pass.getHeight
 ---@see Pass.getDimensions
 ---@see Pass.getViewCount
@@ -1327,6 +1609,8 @@ function Pass:getViewPose(view) end
 function Pass:getWidth() end
 
 --- Draws a line between points.  `Pass:mesh` can also be used to draw line segments using the `line` `DrawMode`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:line)
 ---@param x1 number # The x coordinate of the first point.
 ---@param y1 number # The y coordinate of the first point.
 ---@param z1 number # The z coordinate of the first point.
@@ -1339,6 +1623,8 @@ function Pass:getWidth() end
 function Pass:line(x1, y1, z1, x2, y2, z2, ...) end
 
 --- Draws a mesh.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:mesh)
 ---@see Pass.setMeshMode
 ---@param vertices Buffer? # The buffer containing the vertices to draw. (default: nil)
 ---@param x number? # The x coordinate of the position to draw the mesh at. (default: 0)
@@ -1361,6 +1647,8 @@ function Pass:line(x1, y1, z1, x2, y2, z2, ...) end
 function Pass:mesh(vertices, x, y, z, scale, angle, ax, ay, az, start, count, instances) end
 
 --- Resets the transform back to the origin.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:origin)
 ---@see Pass.translate
 ---@see Pass.rotate
 ---@see Pass.scale
@@ -1370,6 +1658,8 @@ function Pass:mesh(vertices, x, y, z, scale, angle, ax, ay, az, start, count, in
 function Pass:origin() end
 
 --- Draws a plane.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:plane)
 ---@param x number? # The x coordinate of the center of the plane. (default: 0)
 ---@param y number? # The y coordinate of the center of the plane. (default: 0)
 ---@param z number? # The z coordinate of the center of the plane. (default: 0)
@@ -1387,6 +1677,8 @@ function Pass:origin() end
 function Pass:plane(x, y, z, width, height, angle, ax, ay, az, style, columns, rows) end
 
 --- Draws points.  `Pass:mesh` can also be used to draw points using a `Buffer`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:points)
 ---@param x number # The x coordinate of the first point.
 ---@param y number # The y coordinate of the first point.
 ---@param z number # The z coordinate of the first point.
@@ -1396,6 +1688,8 @@ function Pass:plane(x, y, z, width, height, angle, ax, ay, az, style, columns, r
 function Pass:points(x, y, z, ...) end
 
 --- Draws a polygon.  The 3D vertices must be coplanar (all lie on the same plane), and the polygon must be convex (does not intersect itself or have any angles between vertices greater than 180 degrees), otherwise rendering artifacts may occur.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:polygon)
 ---@see Pass.points
 ---@see Pass.line
 ---@see Pass.draw
@@ -1411,21 +1705,29 @@ function Pass:points(x, y, z, ...) end
 function Pass:polygon(x1, y1, z1, x2, y2, z2, ...) end
 
 --- Pops the transform or render state stack, restoring it to the state it was in when it was last pushed.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:pop)
 ---@see Pass.push
 ---@see StackType
 ---@param stack StackType? # The type of stack to pop. (default: 'transform')
 function Pass:pop(stack) end
 
 --- Saves a copy of the transform or render states.  Further changes can be made to the transform or render states, and afterwards `Pass:pop` can be used to restore the original state.  Pushes and pops can be nested, but it's an error to pop without a corresponding push.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:push)
 ---@see Pass.pop
 ---@see StackType
 ---@param stack StackType? # The type of stack to push. (default: 'transform')
 function Pass:push(stack) end
 
 --- Resets the Pass, clearing all of its draws and computes and resetting all of its state to the default values.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:reset)
 function Pass:reset() end
 
 --- Rotates the coordinate system.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:rotate)
 ---@see Pass.translate
 ---@see Pass.scale
 ---@see Pass.transform
@@ -1440,6 +1742,8 @@ function Pass:reset() end
 function Pass:rotate(angle, ax, ay, az) end
 
 --- Draws a rounded rectangle.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:roundrect)
 ---@param x number? # The x coordinate of the center of the rectangle. (default: 0)
 ---@param y number? # The y coordinate of the center of the rectangle. (default: 0)
 ---@param z number? # The z coordinate of the center of the rectangle. (default: 0)
@@ -1457,6 +1761,8 @@ function Pass:rotate(angle, ax, ay, az) end
 function Pass:roundrect(x, y, z, width, height, thickness, angle, ax, ay, az, radius, segments) end
 
 --- Scales the coordinate system.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:scale)
 ---@see Pass.translate
 ---@see Pass.rotate
 ---@see Pass.transform
@@ -1470,6 +1776,8 @@ function Pass:roundrect(x, y, z, width, height, thickness, angle, ax, ay, az, ra
 function Pass:scale(sx, sy, sz) end
 
 --- Sends a value to a variable in the Pass's active `Shader`.  The active shader is changed using `Pass:setShader`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:send)
 ---@param name string # The name of the Shader variable.
 ---@param buffer Buffer # The Buffer to assign.
 ---@param offset number? # An offset from the start of the buffer where data will be read, in bytes. (default: 0)
@@ -1480,10 +1788,14 @@ function Pass:scale(sx, sy, sz) end
 function Pass:send(name, buffer, offset, extent) end
 
 --- Sets whether alpha to coverage is enabled.  Alpha to coverage factors the alpha of a pixel into antialiasing calculations.  It can be used to get antialiased edges on textures with transparency.  It's often used for foliage.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setAlphaToCoverage)
 ---@param enable boolean # Whether alpha to coverage should be enabled.
 function Pass:setAlphaToCoverage(enable) end
 
 --- Sets the blend mode.  When a pixel is drawn, the blend mode controls how it is mixed with the color and alpha of the pixel underneath it.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setBlendMode)
 ---@param blend BlendMode # The blend mode.
 ---@param alphaBlend BlendAlphaMode # The alpha blend mode, used to control premultiplied alpha.
 ---@overload fun(self: Pass)
@@ -1492,6 +1804,8 @@ function Pass:setAlphaToCoverage(enable) end
 function Pass:setBlendMode(blend, alphaBlend) end
 
 --- Sets the Pass's canvas.  The canvas is a set of textures that the Pass will draw to when it's submitted, along with configuration for the depth buffer and antialiasing.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setCanvas)
 ---@see Pass.getClear
 ---@see Pass.setClear
 ---@see Pass.getWidth
@@ -1508,6 +1822,8 @@ function Pass:setCanvas(...) end
 ---   up drawing to all of the texture's pixels.
 --- - `false`, to avoid clearing and load the texture's existing pixels.  This can be slow on mobile
 ---   GPUs.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setClear)
 ---@see Pass.setCanvas
 ---@see Texture.clear
 ---@param hex number # A hexcode color to clear all color textures to.
@@ -1517,6 +1833,8 @@ function Pass:setCanvas(...) end
 function Pass:setClear(hex) end
 
 --- Sets the color used for drawing.  Color components are from 0 to 1.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setColor)
 ---@param r number # The red component of the color.
 ---@param g number # The green component of the color.
 ---@param b number # The blue component of the color.
@@ -1526,6 +1844,8 @@ function Pass:setClear(hex) end
 function Pass:setColor(r, g, b, a) end
 
 --- Sets the color channels affected by drawing, on a per-channel basis.  Disabling color writes is often used to render to the depth or stencil buffer without affecting existing pixel colors.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setColorWrite)
 ---@see Pass.setDepthWrite
 ---@see Pass.setStencilWrite
 ---@param enable boolean # Whether all color components should be affected by draws.
@@ -1535,6 +1855,8 @@ function Pass:setColor(r, g, b, a) end
 function Pass:setColorWrite(enable) end
 
 --- Sets whether the front or back faces of triangles are culled.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setCullMode)
 ---@see Pass.setViewCull
 ---@see Pass.setWinding
 ---@param mode CullMode # Whether `front` faces, `back` faces, or `none` of the faces should be culled.
@@ -1542,6 +1864,8 @@ function Pass:setColorWrite(enable) end
 function Pass:setCullMode(mode) end
 
 --- Enables or disables depth clamp.  Normally, when pixels fall outside of the clipping planes, they are clipped (not rendered).  Depth clamp will instead render these pixels, clamping their depth on to the clipping planes.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setDepthClamp)
 ---@see Pass.setDepthTest
 ---@see Pass.setDepthWrite
 ---@see Pass.setDepthOffset
@@ -1550,6 +1874,8 @@ function Pass:setDepthClamp(enable) end
 
 --- Set the depth offset.  This is a constant offset added to the depth value of pixels, as well as a "sloped" depth offset that is scaled based on the "slope" of the depth at the pixel.
 --- This can be used to fix Z fighting when rendering decals or other nearly-overlapping objects, and is also useful for shadow biasing when implementing shadow mapping.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setDepthOffset)
 ---@see Pass.setDepthTest
 ---@see Pass.setDepthWrite
 ---@param offset number? # The depth offset. (default: 0.0)
@@ -1557,6 +1883,8 @@ function Pass:setDepthClamp(enable) end
 function Pass:setDepthOffset(offset, sloped) end
 
 --- Sets the depth test.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setDepthTest)
 ---@see Pass.setDepthWrite
 ---@see Pass.setDepthOffset
 ---@see Pass.setDepthClamp
@@ -1567,6 +1895,8 @@ function Pass:setDepthOffset(offset, sloped) end
 function Pass:setDepthTest(test) end
 
 --- Sets whether draws write to the depth buffer.  When a pixel is drawn, if depth writes are enabled and the pixel passes the depth test, the depth buffer will be updated with the pixel's depth value.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setDepthWrite)
 ---@see Pass.setStencilWrite
 ---@see Pass.setColorWrite
 ---@see Pass.setDepthTest
@@ -1574,6 +1904,8 @@ function Pass:setDepthTest(test) end
 function Pass:setDepthWrite(write) end
 
 --- Sets whether the front or back faces of triangles are culled.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setFaceCull)
 ---@see Pass.setViewCull
 ---@see Pass.setWinding
 ---@param mode CullMode # Whether `front` faces, `back` faces, or `none` of the faces should be culled.
@@ -1581,6 +1913,8 @@ function Pass:setDepthWrite(write) end
 function Pass:setFaceCull(mode) end
 
 --- Sets the font used for `Pass:text`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setFont)
 ---@see Pass.text
 ---@see lovr.graphics.newFont
 ---@see lovr.graphics.getDefaultFont
@@ -1588,16 +1922,22 @@ function Pass:setFaceCull(mode) end
 function Pass:setFont(font) end
 
 --- Sets the material.  This will apply to most drawing, except for text, skyboxes, and models, which use their own materials.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setMaterial)
 ---@param material Texture | Material # The texture or material to apply to surfaces.
 ---@overload fun(self: Pass)
 function Pass:setMaterial(material) end
 
 --- Changes the way vertices are connected together when drawing using `Pass:mesh`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setMeshMode)
 ---@param mode DrawMode # The mesh mode to use.
 function Pass:setMeshMode(mode) end
 
 --- Sets the projection for a single view.  4 field of view angles can be used, similar to the field of view returned by `lovr.headset.getViewAngles`.  Alternatively, a projection matrix can be used for other types of projections like orthographic, oblique, etc.
 --- Up to 6 views are supported.  The Pass returned by `lovr.headset.getPass` will have its views automatically configured to match the headset.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setProjection)
 ---@see lovr.headset.getViewAngles
 ---@see lovr.headset.getViewCount
 ---@see Pass.getViewPose
@@ -1613,10 +1953,14 @@ function Pass:setMeshMode(mode) end
 function Pass:setProjection(view, left, right, up, down, near, far) end
 
 --- Sets the default `Sampler` to use when sampling textures.  It is also possible to send a custom sampler to a shader using `Pass:send` and use that instead, which allows customizing the sampler on a per-texture basis.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setSampler)
 ---@param sampler Sampler | FilterMode? # The Sampler shaders will use when reading from textures.  It can also be a `FilterMode`, for convenience (other sampler settings will use their defaults). (default: 'linear')
 function Pass:setSampler(sampler) end
 
 --- Sets the scissor rectangle.  Any pixels outside the scissor rectangle will not be drawn.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setScissor)
 ---@see Pass.setViewport
 ---@param x number # The x coordinate of the upper-left corner of the scissor rectangle.
 ---@param y number # The y coordinate of the upper-left corner of the scissor rectangle.
@@ -1626,6 +1970,8 @@ function Pass:setSampler(sampler) end
 function Pass:setScissor(x, y, w, h) end
 
 --- Sets the active shader.  The Shader will affect all drawing operations until it is changed again.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setShader)
 ---@see Pass.send
 ---@see Pass.compute
 ---@param shader Shader | DefaultShader # The shader to use.
@@ -1633,6 +1979,8 @@ function Pass:setScissor(x, y, w, h) end
 function Pass:setShader(shader) end
 
 --- Sets the stencil test.  Any pixels that fail the stencil test won't be drawn.  For example, setting the stencil test to `('equal', 1)` will only draw pixels that have a stencil value of 1. The stencil buffer can be modified by drawing while stencil writes are enabled with `lovr.graphics.setStencilWrite`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setStencilTest)
 ---@see Pass.setStencilWrite
 ---@see Pass.setDepthTest
 ---@param test CompareMode # The new stencil test to use.
@@ -1642,6 +1990,8 @@ function Pass:setShader(shader) end
 function Pass:setStencilTest(test, value, mask) end
 
 --- Sets or disables stencil writes.  When stencil writes are enabled, any pixels drawn will update the values in the stencil buffer using the `StencilAction` set.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setStencilWrite)
 ---@see Pass.setStencilTest
 ---@see Pass.setDepthTest
 ---@param action StencilAction[] # How pixels should update the stencil buffer when they are drawn.  Can also be a list of 3 stencil actions, used when a pixel fails the stencil test, fails the depth test, or passes the stencil test, respectively.
@@ -1651,6 +2001,8 @@ function Pass:setStencilTest(test, value, mask) end
 function Pass:setStencilWrite(action, value, mask) end
 
 --- Sets the Buffer where tally results will be written to.  Each time the render pass finishes, the results of all the tallies will be copied to the Buffer at the specified offset.  The buffer can be used in a later pass in a compute shader, or the data in the buffer can be read back using e.g. `Buffer:newReadback`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setTallyBuffer)
 ---@see Pass.beginTally
 ---@see Pass.finishTally
 ---@param buffer Buffer # The buffer.
@@ -1659,6 +2011,8 @@ function Pass:setStencilWrite(action, value, mask) end
 function Pass:setTallyBuffer(buffer, offset) end
 
 --- Enables or disables view frustum culling.  When enabled, if an object is drawn outside of the camera view, the draw will be skipped.  This can improve performance.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setViewCull)
 ---@see Pass.setCullMode
 ---@see Mesh.computeBoundingBox
 ---@see Mesh.setBoundingBox
@@ -1669,6 +2023,8 @@ function Pass:setViewCull(enable) end
 
 --- Sets the pose for a single view.  Objects rendered in this view will appear as though the camera is positioned using the given pose.
 --- Up to 6 views are supported.  When rendering to the headset, views are changed to match the eye positions.  These view poses are also available using `lovr.headset.getViewPose`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setViewPose)
 ---@see lovr.headset.getViewPose
 ---@see lovr.headset.getViewCount
 ---@see Pass.getProjection
@@ -1686,6 +2042,8 @@ function Pass:setViewCull(enable) end
 function Pass:setViewPose(view, x, y, z, angle, ax, ay, az) end
 
 --- Sets the viewport.  Everything rendered will get mapped to the rectangle defined by the viewport.  More specifically, this defines the transformation from normalized device coordinates to pixel coordinates.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setViewport)
 ---@see Pass.setScissor
 ---@see Pass.getDimensions
 ---@param x number # The x coordinate of the upper-left corner of the viewport.
@@ -1698,21 +2056,29 @@ function Pass:setViewPose(view, x, y, z, angle, ax, ay, az) end
 function Pass:setViewport(x, y, w, h, dmin, dmax) end
 
 --- Sets whether vertices in the clockwise or counterclockwise order vertices are considered the "front" face of a triangle.  This is used for culling with `Pass:setCullMode`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setWinding)
 ---@see Pass.setCullMode
 ---@param winding Winding # Whether triangle vertices are ordered `clockwise` or `counterclockwise`.
 function Pass:setWinding(winding) end
 
 --- Enables or disables wireframe rendering.  This will draw all triangles as lines while active. It's intended to be used for debugging, since it usually has a performance cost.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:setWireframe)
 ---@see Pass.setMeshMode
 ---@param enable boolean # Whether wireframe rendering should be enabled.
 function Pass:setWireframe(enable) end
 
 --- Draws a skybox.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:skybox)
 ---@param skybox Texture # The skybox to render.  Its `TextureType` can be `cube` to render as a cubemap, or `2d` to render as an equirectangular (spherical) 2D image.
 ---@overload fun(self: Pass)
 function Pass:skybox(skybox) end
 
 --- Draws a sphere
+---
+--- [Open in browser](https://lovr.org/docs/Pass:sphere)
 ---@param x number? # The x coordinate of the center of the sphere. (default: 0)
 ---@param y number? # The y coordinate of the center of the sphere. (default: 0)
 ---@param z number? # The z coordinate of the center of the sphere. (default: 0)
@@ -1728,6 +2094,8 @@ function Pass:skybox(skybox) end
 function Pass:sphere(x, y, z, radius, angle, ax, ay, az, longitudes, latitudes) end
 
 --- Draws text.  The font can be changed using `Pass:setFont`.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:text)
 ---@see Pass.setFont
 ---@see lovr.graphics.getDefaultFont
 ---@see Pass.setShader
@@ -1756,6 +2124,8 @@ function Pass:sphere(x, y, z, radius, angle, ax, ay, az, longitudes, latitudes) 
 function Pass:text(text, x, y, z, scale, angle, ax, ay, az, wrap, halign, valign) end
 
 --- Draws a torus.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:torus)
 ---@param x number? # The x coordinate of the center of the torus. (default: 0)
 ---@param y number? # The y coordinate of the center of the torus. (default: 0)
 ---@param z number? # The z coordinate of the center of the torus. (default: 0)
@@ -1772,6 +2142,8 @@ function Pass:text(text, x, y, z, scale, angle, ax, ay, az, wrap, halign, valign
 function Pass:torus(x, y, z, radius, thickness, angle, ax, ay, az, tsegments, psegments) end
 
 --- Transforms the coordinate system.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:transform)
 ---@see Pass.translate
 ---@see Pass.rotate
 ---@see Pass.scale
@@ -1793,6 +2165,8 @@ function Pass:torus(x, y, z, radius, thickness, angle, ax, ay, az, tsegments, ps
 function Pass:transform(x, y, z, sx, sy, sz, angle, ax, ay, az) end
 
 --- Translates the coordinate system.
+---
+--- [Open in browser](https://lovr.org/docs/Pass:translate)
 ---@see Pass.rotate
 ---@see Pass.scale
 ---@see Pass.transform
@@ -1805,39 +2179,61 @@ function Pass:transform(x, y, z, sx, sy, sz, angle, ax, ay, az) end
 ---@overload fun(self: Pass, translation: Vec3)
 function Pass:translate(x, y, z) end
 
+--- Readbacks track the progress of an asynchronous read of a `Buffer` or `Texture`.  The Readback can be polled for completion or the CPU with `Readback:isComplete`, or you can wait for it to finish using `Readback:wait`.
+---
+--- [Open in browser](https://lovr.org/docs/Readback)
 ---@class Readback
 local Readback = {}
 
 --- Returns the Readback's data as a Blob.
+---
+--- [Open in browser](https://lovr.org/docs/Readback:getBlob)
 ---@see Readback.getData
 ---@see Readback.getImage
 ---@return Blob # The Blob.
 function Readback:getBlob() end
 
 --- Returns the data from the Readback, as a table.  See `Buffer:getData` for the way the table is structured.
+---
+--- [Open in browser](https://lovr.org/docs/Readback:getData)
 ---@see Readback.getBlob
 ---@see Readback.getImage
 ---@return table # A table containing the data that was read back.
 function Readback:getData() end
 
 --- Returns the Readback's data as an Image.
+---
+--- [Open in browser](https://lovr.org/docs/Readback:getImage)
 ---@see Readback.getData
 ---@see Readback.getBlob
 ---@return Image # The Image.
 function Readback:getImage() end
 
 --- Returns whether the Readback has completed on the GPU and its data is available.
+---
+--- [Open in browser](https://lovr.org/docs/Readback:isComplete)
 ---@return boolean # Whether the readback is complete.
 function Readback:isComplete() end
 
 --- Blocks the CPU until the Readback is finished on the GPU.
+---
+--- [Open in browser](https://lovr.org/docs/Readback:wait)
 ---@return boolean # Whether the CPU had to be blocked for waiting.
 function Readback:wait() end
 
+--- Samplers are objects that control how pixels are read from a texture.  They can control whether the pixels are smoothed, whether the texture wraps at the edge of its UVs, and more.
+--- Each `Pass` has a default sampler that will be used by default, which can be changed using `Pass:setSampler`.  Also, samplers can be declared in shaders using the following syntax:
+---     uniform sampler mySampler;
+--- A Sampler can be sent to the variable using `Pass:send('mySampler', sampler)`.
+--- The properties of a Sampler are immutable, and can't be changed after it's created.
+---
+--- [Open in browser](https://lovr.org/docs/Sampler)
 ---@class Sampler
 local Sampler = {}
 
 --- Returns the anisotropy level of the Sampler.  Anisotropy smooths out a texture's appearance when viewed at grazing angles.
+---
+--- [Open in browser](https://lovr.org/docs/Sampler:getAnisotropy)
 ---@see Sampler.getFilter
 ---@see Sampler.getWrap
 ---@see Sampler.getCompareMode
@@ -1846,6 +2242,8 @@ local Sampler = {}
 function Sampler:getAnisotropy() end
 
 --- Returns the compare mode of the Sampler.  This is a feature typically only used for shadow mapping.  Using a sampler with a compare mode requires it to be declared in a shader as a `samplerShadow` instead of a `sampler` variable, and used with a texture that has a depth format.  The result of sampling a depth texture with a shadow sampler is a number between 0 and 1, indicating the percentage of sampled pixels that passed the comparison.
+---
+--- [Open in browser](https://lovr.org/docs/Sampler:getCompareMode)
 ---@see Sampler.getFilter
 ---@see Sampler.getWrap
 ---@see Sampler.getAnisotropy
@@ -1854,6 +2252,8 @@ function Sampler:getAnisotropy() end
 function Sampler:getCompareMode() end
 
 --- Returns the filter mode of the Sampler.
+---
+--- [Open in browser](https://lovr.org/docs/Sampler:getFilter)
 ---@see Sampler.getWrap
 ---@see Sampler.getCompareMode
 ---@see Sampler.getAnisotropy
@@ -1864,6 +2264,8 @@ function Sampler:getCompareMode() end
 function Sampler:getFilter() end
 
 --- Returns the mipmap range of the Sampler.  This is used to clamp the range of mipmap levels that can be accessed from a texture.
+---
+--- [Open in browser](https://lovr.org/docs/Sampler:getMipmapRange)
 ---@see Sampler.getFilter
 ---@see Sampler.getWrap
 ---@see Sampler.getCompareMode
@@ -1873,6 +2275,8 @@ function Sampler:getFilter() end
 function Sampler:getMipmapRange() end
 
 --- Returns the wrap mode of the sampler, used to wrap or clamp texture coordinates when the extend outside of the 0-1 range.
+---
+--- [Open in browser](https://lovr.org/docs/Sampler:getWrap)
 ---@see Sampler.getFilter
 ---@see Sampler.getCompareMode
 ---@see Sampler.getAnisotropy
@@ -1882,16 +2286,23 @@ function Sampler:getMipmapRange() end
 ---@return WrapMode # The wrap mode used in the "z" direction, for 3D textures only.
 function Sampler:getWrap() end
 
+--- Shaders are small GPU programs.  See the `Shaders` guide for a full introduction to Shaders.
+---
+--- [Open in browser](https://lovr.org/docs/Shader)
 ---@class Shader
 local Shader = {}
 
 --- Clones a shader.  This creates an inexpensive copy of it with different flags.  It can be used to create several variants of a shader with different behavior.
+---
+--- [Open in browser](https://lovr.org/docs/Shader:clone)
 ---@param source Shader # The Shader to clone.
 ---@param flags table # The flags used by the clone.
 ---@return Shader # The new Shader.
 function Shader:clone(source, flags) end
 
 --- Returns the format of a buffer declared in shader code.  The return type matches the same syntax used by `lovr.graphics.newBuffer` and `Buffer:getFormat`, so it can be used to quickly create a Buffer that matches a variable from a Shader.
+---
+--- [Open in browser](https://lovr.org/docs/Shader:getBufferFormat)
 ---@see lovr.graphics.newBuffer
 ---@see Buffer.getFormat
 ---@param name string # The name of the buffer variable to return the format of.
@@ -1900,6 +2311,8 @@ function Shader:clone(source, flags) end
 function Shader:getBufferFormat(name) end
 
 --- Returns the debug label of the Shader, which will show up when the Shader is printed and in some graphics debugging tools.  This is set when the Shader is created, and can't be changed afterwards.
+---
+--- [Open in browser](https://lovr.org/docs/Shader:getLabel)
 ---@see lovr.graphics.newShader
 ---@see Texture.getLabel
 ---@see Pass.getLabel
@@ -1907,12 +2320,16 @@ function Shader:getBufferFormat(name) end
 function Shader:getLabel() end
 
 --- Returns whether the shader is a graphics or compute shader.
+---
+--- [Open in browser](https://lovr.org/docs/Shader:getType)
 ---@see Shader.hasStage
 ---@see lovr.graphics.newShader
 ---@return ShaderType # The type of the Shader.
 function Shader:getType() end
 
 --- Returns the workgroup size of a compute shader.  The workgroup size defines how many times a compute shader is invoked for each workgroup dispatched by `Pass:compute`.
+---
+--- [Open in browser](https://lovr.org/docs/Shader:getWorkgroupSize)
 ---@see Pass.compute
 ---@see lovr.graphics.getLimits
 ---@return number # The x size of a workgroup.
@@ -1921,28 +2338,39 @@ function Shader:getType() end
 function Shader:getWorkgroupSize() end
 
 --- Returns whether the Shader has a vertex attribute, by name or location.
+---
+--- [Open in browser](https://lovr.org/docs/Shader:hasAttribute)
 ---@param name string # The name of an attribute.
 ---@return boolean # Whether the Shader has the attribute.
 ---@overload fun(self: Shader, location: number): boolean
 function Shader:hasAttribute(name) end
 
 --- Returns whether the Shader has a given stage.
+---
+--- [Open in browser](https://lovr.org/docs/Shader:hasStage)
 ---@see Shader.getType
 ---@param stage ShaderStage # The stage.
 ---@return boolean # Whether the Shader has the stage.
 function Shader:hasStage(stage) end
 
 --- Returns whether the Shader has a variable.
+---
+--- [Open in browser](https://lovr.org/docs/Shader:hasVariable)
 ---@see Pass.send
 ---@param name string # The name of the variable to check.
 ---@return boolean # Whether the Shader has the variable.
 function Shader:hasVariable(name) end
 
+--- Textures are multidimensional blocks of memory on the GPU, contrasted with `Buffer` objects which are one-dimensional.  Textures are used as the destination for rendering operations, and textures loaded from images provide surface data to `Material` objects.
+---
+--- [Open in browser](https://lovr.org/docs/Texture)
 ---@class Texture
 local Texture = {}
 
 --- Clears layers and mipmaps in a texture to a given color.
 --- When a Texture is being used as a canvas for a `Pass`, the clear color can be set with `Pass:setClear`, which a more efficient way to clear the texture before rendering.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:clear)
 ---@see Buffer.clear
 ---@see Texture.setPixels
 ---@see Pass.setClear
@@ -1954,6 +2382,8 @@ local Texture = {}
 function Texture:clear() end
 
 --- Regenerates mipmap levels of a texture.  This downscales pixels from the texture to progressively smaller sizes and saves them.  If the texture is drawn at a smaller scale later, the mipmaps are used, which smooths out the appearance and improves performance.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:generateMipmaps)
 ---@see Texture.setPixels
 ---@see Texture.getMipmapCount
 ---@param base number? # The base mipmap level which will be used to generate subsequent mipmaps. (default: 1)
@@ -1961,6 +2391,8 @@ function Texture:clear() end
 function Texture:generateMipmaps(base, count) end
 
 --- Returns the width, height, and depth of the Texture.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:getDimensions)
 ---@see Texture.getWidth
 ---@see Texture.getHeight
 ---@see Texture.getLayerCount
@@ -1970,11 +2402,15 @@ function Texture:generateMipmaps(base, count) end
 function Texture:getDimensions() end
 
 --- Returns the format of the texture.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:getFormat)
 ---@return TextureFormat # The format of the Texture.
 ---@return boolean # Whether the format is linear or srgb.
 function Texture:getFormat() end
 
 --- Returns the height of the Texture, in pixels.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:getHeight)
 ---@see Texture.getWidth
 ---@see Texture.getLayerCount
 ---@see Texture.getDimensions
@@ -1982,6 +2418,8 @@ function Texture:getFormat() end
 function Texture:getHeight() end
 
 --- Returns the debug label of the Texture, which will show up when the Texture is printed and in some graphics debugging tools.  This is set when the Texture is created, and can't be changed afterwards.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:getLabel)
 ---@see lovr.graphics.newTexture
 ---@see Shader.getLabel
 ---@see Pass.getLabel
@@ -1989,6 +2427,8 @@ function Texture:getHeight() end
 function Texture:getLabel() end
 
 --- Returns the layer count of the Texture.  2D textures always have 1 layer and cubemaps always have a layer count divisible by 6.  3D and array textures have a variable number of layers.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:getLayerCount)
 ---@see Texture.getWidth
 ---@see Texture.getHeight
 ---@see Texture.getDimensions
@@ -1996,6 +2436,8 @@ function Texture:getLabel() end
 function Texture:getLayerCount() end
 
 --- Returns the number of mipmap levels in the Texture.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:getMipmapCount)
 ---@see lovr.graphics.newTexture
 ---@see Sampler.getMipmapRange
 ---@see Texture.generateMipmaps
@@ -2003,6 +2445,8 @@ function Texture:getLayerCount() end
 function Texture:getMipmapCount() end
 
 --- Creates and returns a new `Image` object with the current pixels of the Texture.  This function is very very slow because it stalls the CPU until the download is complete.  It should only be used for debugging, non-interactive scripts, etc.  For an asynchronous version that doesn't stall the CPU, see `Texture:newReadback`.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:getPixels)
 ---@see Texture.newReadback
 ---@param x number? # The x offset of the region to download. (default: 0)
 ---@param y number? # The y offset of the region to download. (default: 0)
@@ -2014,6 +2458,8 @@ function Texture:getMipmapCount() end
 function Texture:getPixels(x, y, layer, mipmap, width, height) end
 
 --- Returns the number of samples in the texture.  Multiple samples are used for multisample antialiasing when rendering to the texture.  Currently, the sample count is either 1 (not antialiased) or 4 (antialiased).
+---
+--- [Open in browser](https://lovr.org/docs/Texture:getSampleCount)
 ---@see lovr.graphics.newTexture
 ---@see Pass.setCanvas
 ---@return number # The number of samples in the Texture.
@@ -2021,14 +2467,20 @@ function Texture:getSampleCount() end
 
 --- Returns the Sampler object previously assigned with `Texture:setSampler`.
 --- This API is experimental, and subject to change in the future!
+---
+--- [Open in browser](https://lovr.org/docs/Texture:getSampler)
 ---@return Sampler # The Sampler object.
 function Texture:getSampler() end
 
 --- Returns the type of the texture.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:getType)
 ---@return TextureType # The type of the Texture.
 function Texture:getType() end
 
 --- Returns the width of the Texture, in pixels.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:getWidth)
 ---@see Texture.getHeight
 ---@see Texture.getLayerCount
 ---@see Texture.getDimensions
@@ -2036,12 +2488,16 @@ function Texture:getType() end
 function Texture:getWidth() end
 
 --- Returns whether a Texture was created with a set of `TextureUsage` flags.  Usage flags are specified when the Texture is created, and restrict what you can do with a Texture object.  By default, only the `sample` usage is enabled.  Applying a smaller set of usage flags helps LÖVR optimize things better.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:hasUsage)
 ---@see lovr.graphics.newTexture
 ---@param ... TextureUsage # One or more usage flags.
 ---@return boolean # Whether the Texture has all the provided usage flags.
 function Texture:hasUsage(...) end
 
 --- Creates and returns a new `Readback` that will download the pixels in the Texture from VRAM. Once the readback is complete, `Readback:getImage` returns an `Image` with a CPU copy of the data.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:newReadback)
 ---@see Texture.getPixels
 ---@see Buffer.newReadback
 ---@param x number? # The x offset of the region to download. (default: 0)
@@ -2054,6 +2510,8 @@ function Texture:hasUsage(...) end
 function Texture:newReadback(x, y, layer, mipmap, width, height) end
 
 --- Sets pixels in the texture.  The source data can be an `Image` with the pixels to upload, or another `Texture` object to copy from.
+---
+--- [Open in browser](https://lovr.org/docs/Texture:setPixels)
 ---@see Texture.newReadback
 ---@see Texture.generateMipmaps
 ---@see Image.paste
@@ -2079,12 +2537,16 @@ function Texture:setPixels(source, dstx, dsty, dstlayer, dstmipmap, srcx, srcy, 
 --- - `Pass:setSampler` exists, but it applies to all textures in all draws in the Pass.  It doesn't
 ---   allow for changing filtering settings on a per-texture basis.
 --- This API is experimental, and subject to change in the future!
+---
+--- [Open in browser](https://lovr.org/docs/Texture:setSampler)
 ---@param mode FilterMode # The FilterMode shaders will use when reading pixels from the texture.
 ---@overload fun(self: Texture, sampler: Sampler)
 ---@overload fun(self: Texture)
 function Texture:setSampler(mode) end
 
 --- Compiles shader code to SPIR-V bytecode.  The bytecode can be passed to `lovr.graphics.newShader` to create shaders, which will be faster than creating it from GLSL. The bytecode is portable, so bytecode compiled on one platform will work on other platforms. This allows shaders to be precompiled in a build step.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.compileShader)
 ---@see lovr.graphics.newShader
 ---@see Shader
 ---@param stage ShaderStage # The type of shader to compile.
@@ -2093,6 +2555,8 @@ function Texture:setSampler(mode) end
 function graphics.compileShader(stage, source) end
 
 --- Returns the global background color.  The textures in a render pass will be cleared to this color at the beginning of the pass if no other clear option is specified.  Additionally, the headset and window will be cleared to this color before rendering.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.getBackgroundColor)
 ---@see lovr.graphics.newPass
 ---@see Pass.setClear
 ---@see Texture.clear
@@ -2104,18 +2568,24 @@ function graphics.compileShader(stage, source) end
 function graphics.getBackgroundColor() end
 
 --- Returns the default Font.  The default font is Varela Round, created at 32px with a spread value of `4.0`.  It's used by `Pass:text` if no Font is provided.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.getDefaultFont)
 ---@see Pass.text
 ---@see lovr.graphics.newFont
 ---@return Font # The default Font object.
 function graphics.getDefaultFont() end
 
 --- Returns information about the graphics device and driver.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.getDevice)
 ---@see lovr.graphics.getFeatures
 ---@see lovr.graphics.getLimits
 ---@return table
 function graphics.getDevice() end
 
 --- Returns a table indicating which features are supported by the GPU.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.getFeatures)
 ---@see lovr.graphics.isFormatSupported
 ---@see lovr.graphics.getDevice
 ---@see lovr.graphics.getLimits
@@ -2123,6 +2593,8 @@ function graphics.getDevice() end
 function graphics.getFeatures() end
 
 --- Returns limits of the current GPU.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.getLimits)
 ---@see lovr.graphics.isFormatSupported
 ---@see lovr.graphics.getDevice
 ---@see lovr.graphics.getFeatures
@@ -2130,10 +2602,14 @@ function graphics.getFeatures() end
 function graphics.getLimits() end
 
 --- Returns the window pass.  This is a builtin render `Pass` object that renders to the desktop window texture.  If the desktop window was not open when the graphics module was initialized, this function will return `nil`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.getWindowPass)
 ---@return Pass | nil # The window pass, or `nil` if there is no window.
 function graphics.getWindowPass() end
 
 --- Returns the type of operations the GPU supports for a texture format, if any.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.isFormatSupported)
 ---@see lovr.graphics.getDevice
 ---@see lovr.graphics.getFeatures
 ---@see lovr.graphics.getLimits
@@ -2149,15 +2625,21 @@ function graphics.isFormatSupported(format, ...) end
 --- - The display will assume its colors are in the Rec.2020 color space, instead of sRGB.
 --- - The display will assume its colors are encoded with the PQ transfer function, instead of sRGB.
 --- For now, it's up to you to write PQ-encoded Rec.2020 color data from your shader when rendering to the window.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.isHDR)
 ---@return boolean # Whether HDR is enabled.
 function graphics.isHDR() end
 
 --- Returns whether timing stats are enabled.  When enabled, `Pass:getStats` will return `submitTime` and `gpuTime` durations.  Timing is enabled by default when `t.graphics.debug` is set in `lovr.conf`.  Timing has a small amount of overhead, so it should only be enabled when needed.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.isTimingEnabled)
 ---@see Pass.getStats
 ---@return boolean # Whether timing is enabled.
 function graphics.isTimingEnabled() end
 
 --- Creates a Buffer.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.newBuffer)
 ---@see Shader.getBufferFormat
 ---@param size number # The size of the Buffer, in bytes.
 ---@return Buffer # The new Buffer.
@@ -2167,6 +2649,8 @@ function graphics.isTimingEnabled() end
 function graphics.newBuffer(size) end
 
 --- Creates a new Font.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.newFont)
 ---@see lovr.graphics.getDefaultFont
 ---@see lovr.data.newRasterizer
 ---@see Pass.text
@@ -2179,6 +2663,8 @@ function graphics.newBuffer(size) end
 function graphics.newFont(file, size, spread) end
 
 --- Creates a new Material from a table of properties and textures.  All fields are optional.  Once a Material is created, its properties can not be changed.  Instead, a new Material should be created with the updated properties.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.newMaterial)
 ---@param properties table # Material properties.
 ---@return Material # The new material.
 function graphics.newMaterial(properties) end
@@ -2189,6 +2675,8 @@ function graphics.newMaterial(properties) end
 ---       { 'VertexNormal', 'vec3' },
 ---       { 'VertexUV', 'vec2' }
 ---     }
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.newMesh)
 ---@see lovr.graphics.newBuffer
 ---@see lovr.graphics.newModel
 ---@param count number # The number of vertices in the Mesh.
@@ -2203,6 +2691,8 @@ function graphics.newMaterial(properties) end
 function graphics.newMesh(count, storage) end
 
 --- Loads a 3D model from a file.  Currently, OBJ, glTF, and binary STL files are supported.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.newModel)
 ---@see lovr.data.newModelData
 ---@see Pass.draw
 ---@param file string | Blob # A filename or Blob containing 3D model data to import.
@@ -2212,6 +2702,8 @@ function graphics.newMesh(count, storage) end
 function graphics.newModel(file, options) end
 
 --- Creates and returns a new Pass object.  The canvas (the set of textures the Pass renders to) can be specified when creating the Pass, or later using `Pass:setCanvas`.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.newPass)
 ---@see lovr.graphics.submit
 ---@see lovr.graphics.getWindowPass
 ---@see lovr.headset.getPass
@@ -2222,6 +2714,8 @@ function graphics.newModel(file, options) end
 function graphics.newPass(...) end
 
 --- Creates a new Sampler.  Samplers are immutable, meaning their parameters can not be changed after the sampler is created.  Instead, a new sampler should be created with the updated properties.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.newSampler)
 ---@see Pass.setSampler
 ---@param parameters table # Parameters for the sampler.
 ---@return Sampler # The new sampler.
@@ -2230,6 +2724,8 @@ function graphics.newSampler(parameters) end
 --- Creates a Shader, which is a small program that runs on the GPU.
 --- Shader code is usually written in GLSL and compiled to SPIR-V bytecode.  SPIR-V is faster to load but requires a build step.  Either form can be used to create a shader.
 --- By default, the provided shader code is expected to implement a `vec4 lovrmain() { ... }` function that is called for each vertex or fragment.  If the `raw` option is set to `true`, the code is treated as a raw shader and the `lovrmain` function is not required. In this case, the shader code is expected to implement its own `main` function.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.newShader)
 ---@see lovr.graphics.compileShader
 ---@see ShaderType
 ---@see ShaderStage
@@ -2242,6 +2738,8 @@ function graphics.newSampler(parameters) end
 function graphics.newShader(vertex, fragment, options) end
 
 --- Creates a new Texture.  Image filenames or `Image` objects can be used to provide the initial pixel data and the dimensions, format, and type.  Alternatively, dimensions can be provided, which will create an empty texture.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.newTexture)
 ---@see lovr.graphics.newTextureView
 ---@param file string | Blob # A filename or Blob containing an image file to load.
 ---@param options table? # Texture options. (default: nil)
@@ -2258,6 +2756,8 @@ function graphics.newTexture(file, options) end
 ---   texture.
 --- - Rendering to a particular array layer or mipmap level of a texture.
 --- - Binding a particular range of layers or mipmap levels to a shader.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.newTextureView)
 ---@see lovr.graphics.newTexture
 ---@param parent Texture # The parent Texture to create a view of.
 ---@param options table? # Options for the texture view. (default: nil)
@@ -2265,11 +2765,15 @@ function graphics.newTexture(file, options) end
 function graphics.newTextureView(parent, options) end
 
 --- Presents the window texture to the desktop window.  This function is called automatically by the default implementation of `lovr.run`, so it normally does not need to be called.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.present)
 ---@see lovr.graphics.submit
 ---@see lovr.graphics.getWindowPass
 function graphics.present() end
 
 --- Changes the global background color.  The textures in a render pass will be cleared to this color at the beginning of the pass if no other clear option is specified.  Additionally, the headset and window will be cleared to this color before rendering.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.setBackgroundColor)
 ---@see lovr.graphics.newPass
 ---@see Pass.setClear
 ---@see Texture.clear
@@ -2283,11 +2787,15 @@ function graphics.present() end
 function graphics.setBackgroundColor(r, g, b, a) end
 
 --- Enables or disables timing stats.  When enabled, `Pass:getStats` will return `submitTime` and `gpuTime` durations.  Timing is enabled by default when `t.graphics.debug` is set in `lovr.conf`.  Timing has a small amount of overhead, so it should only be enabled when needed.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.setTimingEnabled)
 ---@see Pass.getStats
 ---@param enable boolean # Whether timing should be enabled.
 function graphics.setTimingEnabled(enable) end
 
 --- Submits work to the GPU.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.submit)
 ---@see lovr.graphics.wait
 ---@param ... Pass | boolean | nil # The pass objects to submit.  Falsy values will be skipped.
 ---@return boolean # Always returns true, for convenience when returning from `lovr.draw`.
@@ -2295,6 +2803,8 @@ function graphics.setTimingEnabled(enable) end
 function graphics.submit(...) end
 
 --- Waits for all submitted GPU work to finish.  A normal application that is trying to render graphics at a high framerate should never use this function, since waiting like this prevents the CPU from doing other useful work.  Otherwise, reasons to use this function might be for debugging or to force a `Readback` to finish immediately.
+---
+--- [Open in browser](https://lovr.org/docs/lovr.graphics.wait)
 ---@see lovr.graphics.submit
 function graphics.wait() end
 

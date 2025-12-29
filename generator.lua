@@ -33,6 +33,16 @@ local operators = {
     --["length"] = "len",
 }
 
+local function writeLink(key, f)
+    local DOCS_URL = "https://lovr.org/docs/"
+
+    f:write("---\n")
+    f:write("--- [Open in browser](")
+    f:write(DOCS_URL)
+    f:write(key)
+    f:write(")\n")
+end
+
 local function writeComment(cmt, f)
     for line in cmt:gmatch('[^\r\n]+') do
         f:write("--- ")
@@ -143,6 +153,7 @@ local function writeFunction(func, namespace, is_method, f)
     local name = func.name
 
     writeComment(func.description, f)
+    writeLink(key, f)
 
     if func.related then
         for _, rel in ipairs(func.related) do
@@ -245,6 +256,9 @@ local function writeCallback(call, f)
         table.insert(returns, handleType(ret.type))
     end
 
+    writeComment(call.description, f)
+    writeLink("lovr." .. name, f)
+
     f:write("---@field ")
     f:write(name)
     f:write(" fun(")
@@ -260,6 +274,9 @@ end
 local function writeObject(object, namespace, f)
     local key = object.key
     local name = object.name
+
+    writeComment(object.description, f)
+    writeLink(key, f)
 
     --# ---@class Blob
     f:write("---@class ")
@@ -322,6 +339,7 @@ local function processModule(module)
     f:write("\n\n")
 
     writeComment(module.description, f)
+    writeLink(key, f)
 
     local is_lovr = key == "lovr"
 
