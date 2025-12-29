@@ -95,6 +95,7 @@ local function handleParam(name)
     return name
 end
 
+-- Assumes that an object with :sub, also has :__sub, for example
 local function writeOperator(func, f)
     local name = operators[func.name]
     if not name then
@@ -226,6 +227,36 @@ local function writeFunction(func, namespace, is_method, f)
     f:write("\n\n")
 end
 
+local function writeCallback(call, f)
+    local name = call.name
+    local var = call.variants[1]
+
+    local p = {}
+    for _, arg in ipairs(var.arguments) do
+        local param = handleParam(arg.name)
+        if arg.default then
+            param = param .. "?"
+        end
+        table.insert(p, param .. ": " .. handleType(arg.type))
+    end
+
+    local returns = {}
+    for _, ret in ipairs(var.returns) do
+        table.insert(returns, handleType(ret.type))
+    end
+
+    f:write("---@field ")
+    f:write(name)
+    f:write(" fun(")
+    f:write(table.concat(p, ", "))
+    f:write(")")
+    if #returns > 0 then
+        f:write(": ")
+        f:write(table.concat(returns, ", "))
+    end
+    f:write("\n")
+end
+
 local function writeObject(object, namespace, f)
     local key = object.key
     local name = object.name
@@ -292,10 +323,21 @@ local function processModule(module)
 
     writeComment(module.description, f)
 
+    local is_lovr = key == "lovr"
+
     --# ---@class lovr.audio
     f:write("---@class ")
     f:write(key)
+    if is_lovr then
+        f:write(": table")
+    end
     f:write("\n")
+
+    if is_lovr then
+        for _, call in ipairs(data.callbacks) do
+            writeCallback(call, f)
+        end
+    end
 
     --# local audio = {}
     f:write("local ")
@@ -338,7 +380,7 @@ end
 -- Because we register each namespace as it's own class, effectively, we have
 -- forced ourselves to write a little index of subclasses :(
 local f = assert(io.open("lovr/lovr.lua", "a+"))
-f:write("\n")
+
 for _, key in ipairs(modules) do
     local name = key:match("([^.]+)$")
 
@@ -352,28 +394,15 @@ for _, key in ipairs(modules) do
     f:write("\n\n")
 end
 
-f:write("---@diagnostic disable: inject-field\n")
-f:write("---@diagnostic disable: duplicate-set-field\n")
-f:write("\n")
-
-for _, call in ipairs(data.callbacks) do
-    local key = call.key
-    local name = key:match("([^.]+)$")
-
-    writeFunction(call, "lovr", false, f)
-end
-
-f:write("\n")
-local shortcuts = {
-    "vec2", "vec3", "vec4",
-    "mat4", "quat"
-}
-for _, short in ipairs(shortcuts) do
-    f:write("_G.")
-    f:write(short)
-    f:write(" = _G.lovr.math.")
-    f:write(short)
-    f:write("\n")
-end
+f:write("vec2 = lovr.math.vec2\n")
+f:write("Vec2 = lovr.math.newVec2\n")
+f:write("vec3 = lovr.math.vec3\n")
+f:write("Vec3 = lovr.math.newVec3\n")
+f:write("vec4 = lovr.math.vec4\n")
+f:write("Vec4 = lovr.math.newVec4\n")
+f:write("mat4 = lovr.math.mat4\n")
+f:write("Mat4 = lovr.math.newMat4\n")
+f:write("quat = lovr.math.quat\n")
+f:write("Quat = lovr.math.newQuat\n")
 
 f:close()
