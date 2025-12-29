@@ -90,7 +90,7 @@ function Collider:addShape(shape) end
 ---@param x number # The x component of the world-space impulse vector, in newton meter seconds.
 ---@param y number # The y component of the world-space impulse vector, in newton meter seconds.
 ---@param z number # The z component of the world-space impulse vector, in newton meter seconds.
----@overload fun(impulse: Vec3)
+---@overload fun(self: Collider, impulse: Vec3)
 function Collider:applyAngularImpulse(x, y, z) end
 
 --- Applies a force to the Collider.
@@ -100,9 +100,9 @@ function Collider:applyAngularImpulse(x, y, z) end
 ---@param x number # The x component of the world-space force vector, in newtons.
 ---@param y number # The y component of the world-space force vector, in newtons.
 ---@param z number # The z component of the world-space force vector, in newtons.
----@overload fun(x: number, y: number, z: number, px: number, py: number, pz: number)
----@overload fun(force: Vec3)
----@overload fun(force: Vec3, position: Vec3)
+---@overload fun(self: Collider, x: number, y: number, z: number, px: number, py: number, pz: number)
+---@overload fun(self: Collider, force: Vec3)
+---@overload fun(self: Collider, force: Vec3, position: Vec3)
 function Collider:applyForce(x, y, z) end
 
 --- Applies a linear impulse to the Collider.
@@ -113,9 +113,9 @@ function Collider:applyForce(x, y, z) end
 ---@param x number # The x component of the world-space impulse vector, in newton seconds.
 ---@param y number # The y component of the world-space impulse vector, in newton seconds.
 ---@param z number # The z component of the world-space impulse vector, in newton seconds.
----@overload fun(x: number, y: number, z: number, px: number, py: number, pz: number)
----@overload fun(impulse: Vec3)
----@overload fun(impulse: Vec3, position: Vec3)
+---@overload fun(self: Collider, x: number, y: number, z: number, px: number, py: number, pz: number)
+---@overload fun(self: Collider, impulse: Vec3)
+---@overload fun(self: Collider, impulse: Vec3, position: Vec3)
 function Collider:applyLinearImpulse(x, y, z) end
 
 --- Applies torque to the Collider.
@@ -125,7 +125,7 @@ function Collider:applyLinearImpulse(x, y, z) end
 ---@param x number # The x component of the world-space torque vector, in newton meters.
 ---@param y number # The y component of the world-space torque vector, in newton meters.
 ---@param z number # The z component of the world-space torque vector, in newton meters.
----@overload fun(torque: Vec3)
+---@overload fun(self: Collider, torque: Vec3)
 function Collider:applyTorque(x, y, z) end
 
 --- Destroys the Collider, removing it from the World and destroying all Shapes and Joints attached to it.
@@ -279,7 +279,7 @@ function Collider:getLinearVelocity() end
 ---@return number # The x velocity of the point.
 ---@return number # The y velocity of the point.
 ---@return number # The z velocity of the point.
----@overload fun(point: Vec3): number, number, number
+---@overload fun(self: Collider, point: Vec3): number, number, number
 function Collider:getLinearVelocityFromLocalPoint(x, y, z) end
 
 --- Returns the linear velocity of a point on the Collider.  This includes the velocity of the center of mass plus the angular velocity at that point.
@@ -291,7 +291,7 @@ function Collider:getLinearVelocityFromLocalPoint(x, y, z) end
 ---@return number # The x velocity of the point.
 ---@return number # The y velocity of the point.
 ---@return number # The z velocity of the point.
----@overload fun(point: Vec3): number, number, number
+---@overload fun(self: Collider, point: Vec3): number, number, number
 function Collider:getLinearVelocityFromWorldPoint(x, y, z) end
 
 --- Transforms a point from world coordinates into local coordinates relative to the Collider.
@@ -304,7 +304,7 @@ function Collider:getLinearVelocityFromWorldPoint(x, y, z) end
 ---@return number # The x component of the local point.
 ---@return number # The y component of the local point.
 ---@return number # The z component of the local point.
----@overload fun(point: Vec3): number, number, number
+---@overload fun(self: Collider, point: Vec3): number, number, number
 function Collider:getLocalPoint(wx, wy, wz) end
 
 --- Transforms a direction vector from world space to local space.
@@ -317,7 +317,7 @@ function Collider:getLocalPoint(wx, wy, wz) end
 ---@return number # The x component of the local vector.
 ---@return number # The y component of the local vector.
 ---@return number # The z component of the local vector.
----@overload fun(vector: Vec3): number, number, number
+---@overload fun(self: Collider, vector: Vec3): number, number, number
 function Collider:getLocalVector(wx, wy, wz) end
 
 --- Returns the mass of the Collider.
@@ -435,7 +435,7 @@ function Collider:getWorld() end
 ---@return number # The x component of the world point.
 ---@return number # The y component of the world point.
 ---@return number # The z component of the world point.
----@overload fun(point: Vec3): number, number, number
+---@overload fun(self: Collider, point: Vec3): number, number, number
 function Collider:getWorldPoint(x, y, z) end
 
 --- Transforms a direction vector from local space to world space.
@@ -448,7 +448,7 @@ function Collider:getWorldPoint(x, y, z) end
 ---@return number # The x component of the world vector.
 ---@return number # The y component of the world vector.
 ---@return number # The z component of the world vector.
----@overload fun(vector: Vec3): number, number, number
+---@overload fun(self: Collider, vector: Vec3): number, number, number
 function Collider:getWorldVector(x, y, z) end
 
 --- Returns whether the Collider is awake.
@@ -512,7 +512,7 @@ function Collider:isSleepingAllowed() end
 ---@param ay number # The y component of the target axis of rotation.
 ---@param az number # The z component of the target axis of rotation.
 ---@param dt number # How long it should take to reach the destination.
----@overload fun(position: Vec3, orientation: Quat, dt: number)
+---@overload fun(self: Collider, position: Vec3, orientation: Quat, dt: number)
 function Collider:moveKinematic(x, y, z, angle, ax, ay, az, dt) end
 
 --- Removes a Shape from the Collider.
@@ -552,7 +552,7 @@ function Collider:setAngularDamping(damping) end
 ---@param vx number # The x component of the angular velocity.
 ---@param vy number # The y component of the angular velocity.
 ---@param vz number # The z component of the angular velocity.
----@overload fun(velocity: Vec3)
+---@overload fun(self: Collider, velocity: Vec3)
 function Collider:setAngularVelocity(vx, vy, vz) end
 
 --- Enables or disables automatic mass for the Collider.
@@ -594,7 +594,7 @@ function Collider:setAwake(awake) end
 ---@param x number # The x component of the center of mass.
 ---@param y number # The y component of the center of mass.
 ---@param z number # The z component of the center of mass.
----@overload fun(center: Vec3)
+---@overload fun(self: Collider, center: Vec3)
 function Collider:setCenterOfMass(x, y, z) end
 
 --- Sets whether the Collider uses continuous collision detection.
@@ -651,7 +651,7 @@ function Collider:setGravityScale(scale) end
 ---@param ax number # The x component of the rotation axis.
 ---@param ay number # The y component of the rotation axis.
 ---@param az number # The z component of the rotation axis.
----@overload fun(diagonal: Vec3, rotation: Quat)
+---@overload fun(self: Collider, diagonal: Vec3, rotation: Quat)
 function Collider:setInertia(dx, dy, dz, angle, ax, ay, az) end
 
 --- Sets whether the Collider is kinematic.
@@ -679,7 +679,7 @@ function Collider:setLinearDamping(damping) end
 ---@param vx number # The x component of the new velocity, in meters per second.
 ---@param vy number # The y component of the new velocity, in meters per second.
 ---@param vz number # The z component of the new velocity, in meters per second.
----@overload fun(velocity: Vec3)
+---@overload fun(self: Collider, velocity: Vec3)
 function Collider:setLinearVelocity(vx, vy, vz) end
 
 --- Sets the mass of the Collider.
@@ -712,7 +712,7 @@ function Collider:setMass(mass) end
 ---@param ax number # The x component of the axis of rotation.
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
----@overload fun(orientation: Quat)
+---@overload fun(self: Collider, orientation: Quat)
 function Collider:setOrientation(angle, ax, ay, az) end
 
 --- Sets the position and orientation of the Collider.
@@ -725,7 +725,7 @@ function Collider:setOrientation(angle, ax, ay, az) end
 ---@param ax number # The x component of the axis of rotation.
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
----@overload fun(position: Vec3, orientation: Quat)
+---@overload fun(self: Collider, position: Vec3, orientation: Quat)
 function Collider:setPose(x, y, z, angle, ax, ay, az) end
 
 --- Sets the position of the Collider.
@@ -739,7 +739,7 @@ function Collider:setPose(x, y, z, angle, ax, ay, az) end
 ---@param x number # The x position of the Collider, in meters.
 ---@param y number # The y position of the Collider, in meters.
 ---@param z number # The z position of the Collider, in meters.
----@overload fun(position: Vec3)
+---@overload fun(self: Collider, position: Vec3)
 function Collider:setPosition(x, y, z) end
 
 --- Sets the restitution of the Collider.  Restitution makes a Collider bounce when it collides with other objects.  A restitution value of zero would result in an inelastic collision response, whereas 1.0 would result in an elastic collision that preserves all of the velocity.
@@ -774,7 +774,7 @@ function Collider:setSleepingAllowed(sleepy) end
 ---@see World.isCollisionEnabledBetween
 ---@see lovr.physics.newWorld
 ---@param tag string # The Collider's tag.
----@overload fun()
+---@overload fun(self: Collider)
 function Collider:setTag(tag) end
 
 --- Associates a Lua value with the Collider.
@@ -887,7 +887,7 @@ function Contact:setRestitution(restitution) end
 ---@param x number # The x component of the surface velocity.
 ---@param y number # The y component of the surface velocity.
 ---@param z number # The z component of the surface velocity.
----@overload fun(velocity: Vec3)
+---@overload fun(self: Contact, velocity: Vec3)
 function Contact:setSurfaceVelocity(x, y, z) end
 
 ---@class ConvexShape
@@ -967,7 +967,7 @@ function DistanceJoint:getSpring() end
 --- Sets the minimum and maximum distance allowed between the Colliders.
 ---@param min number? # The minimum distance, in meters.  The Colliders won't be able to get closer than this. (default: 0)
 ---@param max number? # The maximum distance, in meters.  The Colliders won't be able to get further than this. (default: min)
----@overload fun()
+---@overload fun(self: DistanceJoint)
 function DistanceJoint:setLimits(min, max) end
 
 --- Sets the DistanceJoint's spring parameters.  Use this to control how fast the joint pulls the colliders back together at the distance limits.
@@ -1052,7 +1052,7 @@ function HingeJoint:setFriction(friction) end
 ---@see HingeJoint.getAngle
 ---@param min number # The minimum angle, in radians.  Should be between -π and 0.
 ---@param max number # The maximum angle, in radians.  Should be between 0 and π.
----@overload fun()
+---@overload fun(self: HingeJoint)
 function HingeJoint:setLimits(min, max) end
 
 --- Sets the maximum amount of torque the motor can use to reach its target, in newton meters.
@@ -1066,7 +1066,7 @@ function HingeJoint:setMaxMotorTorque(positive, negative) end
 ---@see HingeJoint.getMotorTarget
 ---@see HingeJoint.setMotorTarget
 ---@param mode MotorMode # The mode of the motor.
----@overload fun()
+---@overload fun(self: HingeJoint)
 function HingeJoint:setMotorMode(mode) end
 
 --- Sets the spring parameters of the motor target.  These are similar to the spring parameters set by `HingeJoint:setSpring`, but they apply to the motor when it reaches its target instead of the angle limits of the hinge joint.  Note that these only take effect when the motor mode is `position`.
@@ -1204,7 +1204,7 @@ local Shape = {}
 ---@param y number # The y coordinate of the point.
 ---@param z number # The z coordinate of the point.
 ---@return boolean # Whether the point is inside the Shape.
----@overload fun(point: Vec3): boolean
+---@overload fun(self: Shape, point: Vec3): boolean
 function Shape:containsPoint(x, y, z) end
 
 --- Destroys the Shape, removing it from the Collider it's attached to.
@@ -1372,7 +1372,7 @@ function Shape:isDestroyed() end
 ---@return number # The y component of the normal vector.
 ---@return number # The z component of the normal vector.
 ---@return number | nil # The index of the triangle that was hit, or `nil` if this is not a MeshShape.
----@overload fun(origin: Vec3, endpoint: Vec3): number, number, number, number, number, number, number | nil
+---@overload fun(self: Shape, origin: Vec3, endpoint: Vec3): number, number, number, number, number, number, number | nil
 function Shape:raycast(x1, y1, z1, x2, y2, z2) end
 
 --- Sets the density of the Shape, in kilograms per cubic meter.  The density, combined with the volume of the Shape, determines the Shape's overall mass.
@@ -1392,7 +1392,7 @@ function Shape:setDensity(density) end
 ---@param ax number # The x component of the axis of rotation.
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
----@overload fun(position: Vec3, rotation: Quat)
+---@overload fun(self: Shape, position: Vec3, rotation: Quat)
 function Shape:setOffset(x, y, z, angle, ax, ay, az) end
 
 --- Associates a Lua value with the Shape.
@@ -1478,7 +1478,7 @@ function SliderJoint:setFriction(friction) end
 ---@see SliderJoint.getPosition
 ---@param min number # The minimum position, in meters.  Must be less than or equal to zero.
 ---@param max number # The maximum position, in meters.  Must be greater than or equal to zero.
----@overload fun()
+---@overload fun(self: SliderJoint)
 function SliderJoint:setLimits(min, max) end
 
 --- Sets the maximum amount of force the motor can use to reach its target, in newtons.
@@ -1492,7 +1492,7 @@ function SliderJoint:setMaxMotorForce(positive, negative) end
 ---@see SliderJoint.getMotorTarget
 ---@see SliderJoint.setMotorTarget
 ---@param mode MotorMode # The mode of the motor.
----@overload fun()
+---@overload fun(self: SliderJoint)
 function SliderJoint:setMotorMode(mode) end
 
 --- Sets the spring parameters of the motor target.  These are similar to the spring parameters set by `SldierJoint:setSpring`, but they apply to the motor when it reaches its target instead of the position limits of the slider joint.  Note that these only take effect when the motor mode is `position`.
@@ -1693,7 +1693,7 @@ function World:isSleepingAllowed() end
 ---@param height number? # The height of the box, in meters. (default: width)
 ---@param depth number? # The depth of the box, in meters. (default: width)
 ---@return Collider # The new Collider.
----@overload fun(position: Vec3, size: Vec3): Collider
+---@overload fun(self: World, position: Vec3, size: Vec3): Collider
 function World:newBoxCollider(x, y, z, width, height, depth) end
 
 --- Adds a Collider to the world and attaches a `CapsuleShape`.
@@ -1712,7 +1712,7 @@ function World:newBoxCollider(x, y, z, width, height, depth) end
 ---@param radius number? # The radius of the capsule, in meters. (default: 1)
 ---@param length number? # The length of the capsule, not including the caps, in meters. (default: 1)
 ---@return Collider # The new Collider.
----@overload fun(position: Vec3, radius?: number, length?: number): Collider
+---@overload fun(self: World, position: Vec3, radius?: number, length?: number): Collider
 function World:newCapsuleCollider(x, y, z, radius, length) end
 
 --- Adds a new Collider to the World, without attaching any Shapes to it.  Use `Collider:addShape` to add shapes.
@@ -1730,7 +1730,7 @@ function World:newCapsuleCollider(x, y, z, radius, length) end
 ---@param y number # The y position of the Collider.
 ---@param z number # The z position of the Collider.
 ---@return Collider # The new Collider.
----@overload fun(position: Vec3): Collider
+---@overload fun(self: World, position: Vec3): Collider
 function World:newCollider(x, y, z) end
 
 --- Adds a Collider to the world and attaches a `ConvexShape`.  A `ConvexShape` is a convex hull of a set of points, kinda like if you wrapped them in wrapping paper.
@@ -1749,15 +1749,15 @@ function World:newCollider(x, y, z) end
 ---@param points table # A list of vertices to compute a convex hull from.  Can be a table of tables (each with 3 numbers) or a table of numbers (every 3 numbers form a 3D point).
 ---@param scale number? # A scale to apply to the points. (default: 1.0)
 ---@return Collider # The new Collider.
----@overload fun(position: Vec3, points: table, scale?: number): Collider
----@overload fun(x?: number, y?: number, z?: number, modelData: ModelData, scale?: number): Collider
----@overload fun(position: Vec3, modelData: ModelData, scale?: number): Collider
----@overload fun(x?: number, y?: number, z?: number, model: Model, scale?: number): Collider
----@overload fun(position: Vec3, model: Model, scale?: number): Collider
----@overload fun(x?: number, y?: number, z?: number, mesh: Mesh, scale?: number): Collider
----@overload fun(position: Vec3, mesh: Mesh, scale?: number): Collider
----@overload fun(x?: number, y?: number, z?: number, template: ConvexShape, scale?: number): Collider
----@overload fun(position: Vec3, template: ConvexShape, scale?: number): Collider
+---@overload fun(self: World, position: Vec3, points: table, scale?: number): Collider
+---@overload fun(self: World, x?: number, y?: number, z?: number, modelData: ModelData, scale?: number): Collider
+---@overload fun(self: World, position: Vec3, modelData: ModelData, scale?: number): Collider
+---@overload fun(self: World, x?: number, y?: number, z?: number, model: Model, scale?: number): Collider
+---@overload fun(self: World, position: Vec3, model: Model, scale?: number): Collider
+---@overload fun(self: World, x?: number, y?: number, z?: number, mesh: Mesh, scale?: number): Collider
+---@overload fun(self: World, position: Vec3, mesh: Mesh, scale?: number): Collider
+---@overload fun(self: World, x?: number, y?: number, z?: number, template: ConvexShape, scale?: number): Collider
+---@overload fun(self: World, position: Vec3, template: ConvexShape, scale?: number): Collider
 function World:newConvexCollider(x, y, z, points, scale) end
 
 --- Adds a Collider to the world and attaches a `CylinderShape`.
@@ -1776,7 +1776,7 @@ function World:newConvexCollider(x, y, z, points, scale) end
 ---@param radius number? # The radius of the cylinder, in meters. (default: 1)
 ---@param length number? # The length of the cylinder, in meters. (default: 1)
 ---@return Collider # The new Collider.
----@overload fun(position: Vec3, radius?: number, length?: number): Collider
+---@overload fun(self: World, position: Vec3, radius?: number, length?: number): Collider
 function World:newCylinderCollider(x, y, z, radius, length) end
 
 --- Adds a Collider to the world and attaches a `MeshShape`.
@@ -1795,10 +1795,10 @@ function World:newCylinderCollider(x, y, z, radius, length) end
 ---@param vertices table # A table of vertices in the mesh.  Can be a table of tables (each with 3 numbers) or a table of numbers (every 3 numbers form a 3D vertex).
 ---@param indices table # A table of triangle indices representing how the vertices are connected together into triangles.
 ---@return Collider # The new Collider.
----@overload fun(modelData: ModelData): Collider
----@overload fun(model: Model): Collider
----@overload fun(mesh: Mesh): Collider
----@overload fun(template: MeshShape): Collider
+---@overload fun(self: World, modelData: ModelData): Collider
+---@overload fun(self: World, model: Model): Collider
+---@overload fun(self: World, mesh: Mesh): Collider
+---@overload fun(self: World, template: MeshShape): Collider
 function World:newMeshCollider(vertices, indices) end
 
 --- Adds a Collider to the world and attaches a `SphereShape`.
@@ -1816,7 +1816,7 @@ function World:newMeshCollider(vertices, indices) end
 ---@param z number? # The z coordinate of the center of the sphere, in meters. (default: 0)
 ---@param radius number? # The radius of the sphere, in meters. (default: 1)
 ---@return Collider # The new Collider.
----@overload fun(position: Vec3, radius?: number): Collider
+---@overload fun(self: World, position: Vec3, radius?: number): Collider
 function World:newSphereCollider(x, y, z, radius) end
 
 --- Adds a Collider to the world and attaches a `TerrainShape`.
@@ -1833,8 +1833,8 @@ function World:newSphereCollider(x, y, z, radius) end
 ---@see lovr.data.newImage
 ---@param scale number # The width and depth of the terrain, in meters.
 ---@return Collider # The new Collider.
----@overload fun(scale: number, heightmap: Image, stretch?: number): Collider
----@overload fun(scale: number, callback: function, samples?: number): Collider
+---@overload fun(self: World, scale: number, heightmap: Image, stretch?: number): Collider
+---@overload fun(self: World, scale: number, callback: function, samples?: number): Collider
 function World:newTerrainCollider(scale) end
 
 --- Places a shape in the World, returning any shapes it intersects.
@@ -1859,9 +1859,9 @@ function World:newTerrainCollider(scale) end
 ---@param maxDistance number? # The maximum distance at which a shape can be detected, in meters.  Zero will detect shapes touching the input shape, 1.0 will detect shapes within 1 meter of the input shape, etc. (default: 0)
 ---@param filter string? # Tags to filter by, or nil for no filter. (default: nil)
 ---@param callback function? # The callback to call for each intersection detected. (default: nil)
----@overload fun(shape: Shape, position: Vec3, orientation: Quat, maxDistance?: number, filter?: string, callback?: function)
----@overload fun(shape: Shape, x: number, y: number, z: number, angle: number, ax: number, ay: number, az: number, maxDistance?: number, filter?: string): Collider, Shape, number, number, number, number, number, number
----@overload fun(shape: Shape, position: Vec3, orientation: Quat, maxDistance?: number, filter?: string): Collider, Shape, number, number, number, number, number, number
+---@overload fun(self: World, shape: Shape, position: Vec3, orientation: Quat, maxDistance?: number, filter?: string, callback?: function)
+---@overload fun(self: World, shape: Shape, x: number, y: number, z: number, angle: number, ax: number, ay: number, az: number, maxDistance?: number, filter?: string): Collider, Shape, number, number, number, number, number, number
+---@overload fun(self: World, shape: Shape, position: Vec3, orientation: Quat, maxDistance?: number, filter?: string): Collider, Shape, number, number, number, number, number, number
 function World:overlapShape(shape, x, y, z, angle, ax, ay, az, maxDistance, filter, callback) end
 
 --- Find colliders within an axis-aligned bounding box.  This is a fast but imprecise query that only checks a rough box around colliders.  Use `World:overlapShape` for an exact collision test.
@@ -1879,9 +1879,9 @@ function World:overlapShape(shape, x, y, z, angle, ax, ay, az, maxDistance, filt
 ---@param depth number # The depth of the box, in meters.
 ---@param filter string? # An optional tag filter.  Pass one or more tags separated by spaces to only return colliders with those tags.  Or, put `~` in front of the tags to exclude colliders with those tags. (default: nil)
 ---@param callback function? # A function to call when a collider is detected.  The function will be called with a single `Collider` argument. (default: nil)
----@overload fun(position: Vec3, size: Vec3, filter?: string, callback?: function)
----@overload fun(x: number, y: number, z: number, width: number, height: number, depth: number, filter?: string): Collider
----@overload fun(position: Vec3, size: Vec3, filter?: string): Collider
+---@overload fun(self: World, position: Vec3, size: Vec3, filter?: string, callback?: function)
+---@overload fun(self: World, x: number, y: number, z: number, width: number, height: number, depth: number, filter?: string): Collider
+---@overload fun(self: World, position: Vec3, size: Vec3, filter?: string): Collider
 function World:queryBox(x, y, z, width, height, depth, filter, callback) end
 
 --- Find colliders within a sphere.  This is a fast but imprecise query that only checks a rough box around colliders.  Use `World:overlapShape` for an exact collision test.
@@ -1897,9 +1897,9 @@ function World:queryBox(x, y, z, width, height, depth, filter, callback) end
 ---@param radius number # The radius of the sphere, in meters
 ---@param filter string? # An optional tag filter.  Pass one or more tags separated by spaces to only return colliders with those tags.  Or, put `~` in front of the tags to exclude colliders with those tags. (default: nil)
 ---@param callback function? # A function to call when an intersection is detected.  The function will be called with a single `Collider` argument. (default: nil)
----@overload fun(position: Vec3, radius: number, filter?: string, callback?: function)
----@overload fun(x: number, y: number, z: number, radius: number, filter?: string): Collider
----@overload fun(position: Vec3, radius: number, filter?: string): Collider
+---@overload fun(self: World, position: Vec3, radius: number, filter?: string, callback?: function)
+---@overload fun(self: World, x: number, y: number, z: number, radius: number, filter?: string): Collider
+---@overload fun(self: World, position: Vec3, radius: number, filter?: string): Collider
 function World:querySphere(x, y, z, radius, filter, callback) end
 
 --- Traces a ray through the world and calls a function for each collider that was hit.
@@ -1917,9 +1917,9 @@ function World:querySphere(x, y, z, radius, filter, callback) end
 ---@param z2 number # The z coordinate of the endpoint of the ray.
 ---@param filter string? # An optional tag filter.  Pass one or more tags separated by spaces to only return colliders with those tags.  Or, put `~` in front the tags to exclude colliders with those tags. (default: nil)
 ---@param callback function? # The function to call when an intersection is detected (see notes). (default: nil)
----@overload fun(origin: Vec3, endpoint: Vec3, filter?: string, callback?: function)
----@overload fun(x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, filter?: string): Collider, Shape, number, number, number, number, number, number, number | nil
----@overload fun(origin: Vec3, endpoint: Vec3, filter?: string): Collider, Shape, number, number, number, number, number, number, number | nil
+---@overload fun(self: World, origin: Vec3, endpoint: Vec3, filter?: string, callback?: function)
+---@overload fun(self: World, x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, filter?: string): Collider, Shape, number, number, number, number, number, number, number | nil
+---@overload fun(self: World, origin: Vec3, endpoint: Vec3, filter?: string): Collider, Shape, number, number, number, number, number, number, number | nil
 function World:raycast(x1, y1, z1, x2, y2, z2, filter, callback) end
 
 --- Sets the angular damping of the World.  Angular damping makes things less "spinny", making them slow down their angular velocity over time. Damping is only applied when angular velocity is over the threshold value.
@@ -1952,7 +1952,7 @@ function World:setCallbacks(callbacks) end
 ---@param xg number # The x component of the gravity force.
 ---@param yg number # The y component of the gravity force.
 ---@param zg number # The z component of the gravity force.
----@overload fun(gravity: Vec3)
+---@overload fun(self: World, gravity: Vec3)
 function World:setGravity(xg, yg, zg) end
 
 --- Sets the linear damping of the World.  Linear damping is similar to drag or air resistance, slowing down colliders over time as they move. Damping is only applied when linear velocity is over the threshold value.
@@ -2005,9 +2005,9 @@ function World:setTightness(tightness) end
 ---@param az number # The z component of the rotation axis.
 ---@param filter string? # An optional tag filter.  Pass one or more tags separated by spaces to only return colliders with those tags.  Or, put `~` in front the tags to exclude colliders with those tags. (default: nil)
 ---@param callback function # The function to call when an intersection is detected (see notes).
----@overload fun(shape: Shape, position: Vec3, destination: Vec3, orientation: Quat, filter?: string, callback: function)
----@overload fun(shape: Shape, x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, angle: number, ax: number, ay: number, az: number, filter?: string): Collider, Shape, number, number, number, number, number, number, number, number
----@overload fun(shape: Shape, position: Vec3, destination: Vec3, orientation: Quat, filter?: string): Collider, Shape, number, number, number, number, number, number, number, number
+---@overload fun(self: World, shape: Shape, position: Vec3, destination: Vec3, orientation: Quat, filter?: string, callback: function)
+---@overload fun(self: World, shape: Shape, x1: number, y1: number, z1: number, x2: number, y2: number, z2: number, angle: number, ax: number, ay: number, az: number, filter?: string): Collider, Shape, number, number, number, number, number, number, number, number
+---@overload fun(self: World, shape: Shape, position: Vec3, destination: Vec3, orientation: Quat, filter?: string): Collider, Shape, number, number, number, number, number, number, number, number
 function World:shapecast(shape, x1, y1, z1, x2, y2, z2, angle, ax, ay, az, filter, callback) end
 
 --- Updates the World, advancing the physics simulation forward in time and moving all the colliders.

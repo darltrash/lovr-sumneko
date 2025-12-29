@@ -254,7 +254,7 @@ function Blob:getF64(offset, count) end
 ---@see Blob.setF64
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 8-bit signed integers (each taking up 1 byte, ranging from-127 to 128).
----@overload fun(offset: number, table: number[])
+---@overload fun(self: Blob, offset: number, table: number[])
 function Blob:setI8(offset, ...) end
 
 --- Writes 8-bit unsigned integers to the Blob.
@@ -268,7 +268,7 @@ function Blob:setI8(offset, ...) end
 ---@see Blob.setF64
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 8-bit unsigned integers (each taking up 1 byte, ranging from 0 to 255).
----@overload fun(offset: number, table: number[])
+---@overload fun(self: Blob, offset: number, table: number[])
 function Blob:setU8(offset, ...) end
 
 --- Writes 16-bit signed integers to the Blob.
@@ -282,7 +282,7 @@ function Blob:setU8(offset, ...) end
 ---@see Blob.setF64
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 16-bit signed integers (each taking up 2 bytes, ranging from-32768 to 32767).
----@overload fun(offset: number, table: number[])
+---@overload fun(self: Blob, offset: number, table: number[])
 function Blob:setI16(offset, ...) end
 
 --- Writes 16-bit unsigned integers to the Blob.
@@ -296,7 +296,7 @@ function Blob:setI16(offset, ...) end
 ---@see Blob.setF64
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 16-bit unsigned integers (each taking up 2 bytes, ranging from 0 to 65535).
----@overload fun(offset: number, table: number[])
+---@overload fun(self: Blob, offset: number, table: number[])
 function Blob:setU16(offset, ...) end
 
 --- Writes 32-bit signed integers to the Blob.
@@ -310,7 +310,7 @@ function Blob:setU16(offset, ...) end
 ---@see Blob.setF64
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 32-bit signed integers (each taking up 4 bytes, ranging from-2147483648 to 2147483647).
----@overload fun(offset: number, table: number[])
+---@overload fun(self: Blob, offset: number, table: number[])
 function Blob:setI32(offset, ...) end
 
 --- Writes 32-bit unsigned integers to the Blob.
@@ -324,7 +324,7 @@ function Blob:setI32(offset, ...) end
 ---@see Blob.setF64
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 32-bit unsigned integers (each taking up 4 bytes, ranging from 0 to 4294967296).
----@overload fun(offset: number, table: number[])
+---@overload fun(self: Blob, offset: number, table: number[])
 function Blob:setU32(offset, ...) end
 
 --- Writes 32-bit floating point numbers to the Blob.
@@ -338,7 +338,7 @@ function Blob:setU32(offset, ...) end
 ---@see Blob.setF64
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 32-bit floats (each taking up 4 bytes).
----@overload fun(offset: number, table: number[])
+---@overload fun(self: Blob, offset: number, table: number[])
 function Blob:setF32(offset, ...) end
 
 --- Writes 64-bit floating point numbers to the Blob.
@@ -352,7 +352,7 @@ function Blob:setF32(offset, ...) end
 ---@see Blob.setF32
 ---@param offset number # A non-negative byte offset to start writing at.
 ---@param ... number # Numbers to write to the blob as 64-bit floating point numbers (each taking up 8 bytes).
----@overload fun(offset: number, table: number[])
+---@overload fun(self: Blob, offset: number, table: number[])
 function Blob:setF64(offset, ...) end
 
 ---@class Image
@@ -927,7 +927,7 @@ function Rasterizer:getBearing(glyph) end
 ---@return number # The bottom edge of the bounding box, in pixels.
 ---@return number # The right edge of the bounding box, in pixels.
 ---@return number # The top edge of the bounding box, in pixels.
----@overload fun(): number, number, number, number
+---@overload fun(self: Rasterizer): number, number, number, number
 function Rasterizer:getBoundingBox(glyph) end
 
 --- Returns the bezier curve control points defining the shape of a glyph.
@@ -951,7 +951,7 @@ function Rasterizer:getDescent() end
 ---@param glyph string # A character or codepoint.
 ---@return number # The width, in pixels.
 ---@return number # The height, in pixels.
----@overload fun(): number, number
+---@overload fun(self: Rasterizer): number, number
 function Rasterizer:getDimensions(glyph) end
 
 --- Returns the size of the font, in pixels.  This is the size the rasterizer was created with, and determines the size of images it rasterizes.
@@ -970,7 +970,7 @@ function Rasterizer:getGlyphCount() end
 ---@see Rasterizer.getBoundingBox
 ---@param glyph string | number # A character or codepoint.
 ---@return number # The height, in pixels.
----@overload fun(): number
+---@overload fun(self: Rasterizer): number
 function Rasterizer:getHeight(glyph) end
 
 --- Returns the kerning between 2 glyphs, in pixels.  Kerning is a slight horizontal adjustment between 2 glyphs to improve the visual appearance.  It will often be negative.
@@ -992,7 +992,7 @@ function Rasterizer:getLeading() end
 ---@see Rasterizer.getBoundingBox
 ---@param glyph string | number # A character or codepoint.
 ---@return number # The width, in pixels.
----@overload fun(): number
+---@overload fun(self: Rasterizer): number
 function Rasterizer:getWidth(glyph) end
 
 --- Returns whether the Rasterizer can rasterize a set of glyphs.
@@ -1070,9 +1070,9 @@ function Sound:getFrameCount() end
 ---@param srcOffset number? # A frame offset to apply to the sound when reading frames. (default: 0)
 ---@return number[] # A table containing audio frames.
 ---@return number # The number of frames read.
----@overload fun(t: table, count?: number, srcOffset?: number, dstOffset?: number): number[], number
----@overload fun(blob: Blob, count?: number, srcOffset?: number, dstOffset?: number): number
----@overload fun(sound: Sound, count?: number, srcOffset?: number, dstOffset?: number): number
+---@overload fun(self: Sound, t: table, count?: number, srcOffset?: number, dstOffset?: number): number[], number
+---@overload fun(self: Sound, blob: Blob, count?: number, srcOffset?: number, dstOffset?: number): number
+---@overload fun(self: Sound, sound: Sound, count?: number, srcOffset?: number, dstOffset?: number): number
 function Sound:getFrames(count, srcOffset) end
 
 --- Returns the total number of samples in the Sound.

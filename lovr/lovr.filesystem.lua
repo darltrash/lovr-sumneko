@@ -92,7 +92,7 @@ function File:tell() end
 ---@param size number? # The number of bytes to write, or nil to write all of the data from the string/Blob. (default: nil)
 ---@return boolean # Whether the data was successfully written.
 ---@return string # The error message.
----@overload fun(blob: Blob, size?: number): boolean, string
+---@overload fun(self: File, blob: Blob, size?: number): boolean, string
 function File:write(string, size) end
 
 --- Appends content to the end of a file.

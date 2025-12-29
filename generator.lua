@@ -188,6 +188,10 @@ local function writeFunction(func, namespace, is_method, f)
         local var = func.variants[i]
 
         local p = {}
+        if is_method then
+            table.insert(p, "self: " .. namespace)
+        end
+
         for _, arg in ipairs(var.arguments) do
             local param = handleParam(arg.name)
             if arg.default then

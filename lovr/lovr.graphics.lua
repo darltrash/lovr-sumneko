@@ -269,10 +269,10 @@ function Buffer:newReadback(offset, extent) end
 ---@param destinationIndex number? # The index of the first value in the Buffer to update. (default: 1)
 ---@param sourceIndex number? # The index in the table to copy from. (default: 1)
 ---@param count number? # The number of items to copy.  `nil` will copy as many items as possible, based on the lengths of the source and destination. (default: nil)
----@overload fun(...: number)
----@overload fun(vector: any)
----@overload fun(blob: Blob, destinationOffset?: number, sourceOffset?: number, size?: number)
----@overload fun(buffer: Buffer, destinationOffset?: number, sourceOffset?: number, size?: number)
+---@overload fun(self: Buffer, ...: number)
+---@overload fun(self: Buffer, vector: any)
+---@overload fun(self: Buffer, blob: Blob, destinationOffset?: number, sourceOffset?: number, size?: number)
+---@overload fun(self: Buffer, buffer: Buffer, destinationOffset?: number, sourceOffset?: number, size?: number)
 function Buffer:setData(table, destinationIndex, sourceIndex, count) end
 
 ---@class Font
@@ -332,7 +332,7 @@ function Font:getLineSpacing() end
 ---@param string string # The text to wrap.
 ---@param wrap number # The line length to wrap at.
 ---@return string[] # A table of strings, one for each wrapped line.
----@overload fun(strings: table, wrap: number): string[]
+---@overload fun(self: Font, strings: table, wrap: number): string[]
 function Font:getLines(string, wrap) end
 
 --- Returns the pixel density of the font.  The density is a "pixels per world unit" factor that controls how the pixels in the font's texture are mapped to units in the coordinate space.
@@ -353,7 +353,7 @@ function Font:getRasterizer() end
 ---@param valign VerticalAlign # The vertical align.
 ---@return number[] # The table of vertices.  See below for the format of each vertex.
 ---@return Material # A Material to use when rendering the vertices.
----@overload fun(strings: table, wrap?: number, halign: HorizontalAlign, valign: VerticalAlign): number[], Material
+---@overload fun(self: Font, strings: table, wrap?: number, halign: HorizontalAlign, valign: VerticalAlign): number[], Material
 function Font:getVertices(string, wrap, halign, valign) end
 
 --- Returns the maximum width of a piece of text.  This function does not perform wrapping but does respect newlines in the text.
@@ -364,7 +364,7 @@ function Font:getVertices(string, wrap, halign, valign) end
 ---@see Font.getLines
 ---@param string string # The text to measure.
 ---@return number # The maximum width of the text.
----@overload fun(strings: table): number
+---@overload fun(self: Font, strings: table): number
 function Font:getWidth(string) end
 
 --- Sets the line spacing of the Font.  When spacing out lines, the height of the font is multiplied by the line spacing to get the final spacing value.  The default is 1.0.
@@ -375,7 +375,7 @@ function Font:setLineSpacing(spacing) end
 --- Sets the pixel density of the font.  The density is a "pixels per world unit" factor that controls how the pixels in the font's texture are mapped to units in the coordinate space.
 --- The default pixel density is set to the height of the font.  This means that lines of text rendered with a scale of 1.0 come out to 1 unit (meter) tall.  However, if this font was drawn to a 2D texture where the units are in pixels, the font would still be drawn 1 unit (pixel) tall!  Scaling the coordinate space or the size of the text by the height of the font would fix this.  However, a more convenient option is to set the pixel density of the font to 1.0 when doing 2D rendering to make the font's size match up with the pixels of the canvas.
 ---@param density number # The new pixel density of the font.
----@overload fun()
+---@overload fun(self: Font)
 function Font:setPixelDensity(density) end
 
 ---@class Material
@@ -431,7 +431,7 @@ function Mesh:getDrawMode() end
 ---@return number # The index of the first vertex that will be drawn (or the first index, if the Mesh has vertex indices).
 ---@return number # The number of vertices that will be drawn (or indices, if the Mesh has vertex indices).
 ---@return number # When the Mesh has vertex indices, an offset that will be added to the index values before fetching the corresponding vertex.  This is ignored if the Mesh does not have vertex indices.
----@overload fun()
+---@overload fun(self: Mesh)
 function Mesh:getDrawRange() end
 
 --- Returns the `Buffer` object that holds the data for the vertex indices in the Mesh.
@@ -511,7 +511,7 @@ function Mesh:getVertices(index, count) end
 ---@param maxy number # The maximum y coordinate of the bounding box.
 ---@param minz number # The minimum z coordinate of the bounding box.
 ---@param maxz number # The maximum z coordinate of the bounding box.
----@overload fun()
+---@overload fun(self: Mesh)
 function Mesh:setBoundingBox(minx, maxx, miny, maxy, minz, maxz) end
 
 --- Changes the `DrawMode` of the mesh, which controls how the vertices in the Mesh are connected together to create pixels.  The default is `triangles`.
@@ -524,7 +524,7 @@ function Mesh:setDrawMode(mode) end
 ---@param start number # The index of the first vertex that will be drawn (or the first index, if the Mesh has vertex indices).
 ---@param count number # The number of vertices that will be drawn (or indices, if the Mesh has vertex indices).
 ---@param offset number # When the Mesh has vertex indices, an offset that will be added to the index values before fetching the corresponding vertex.  This is ignored if the Mesh does not have vertex indices.
----@overload fun()
+---@overload fun(self: Mesh)
 function Mesh:setDrawRange(start, count, offset) end
 
 --- Sets a `Buffer` object the Mesh will use for vertex indices.
@@ -542,8 +542,8 @@ function Mesh:setIndexBuffer(buffer) end
 ---@see Mesh.setIndexBuffer
 ---@see Mesh.setVertices
 ---@param t number[] # A list of numbers (1-based).
----@overload fun(blob: Blob, type: DataType)
----@overload fun()
+---@overload fun(self: Mesh, blob: Blob, type: DataType)
+---@overload fun(self: Mesh)
 function Mesh:setIndices(t) end
 
 --- Sets a `Material` to use when drawing the Mesh.
@@ -551,7 +551,7 @@ function Mesh:setIndices(t) end
 ---@see Model.getMaterial
 ---@see lovr.graphics.newMaterial
 ---@param material Material # The material to use.
----@overload fun(texture: Texture)
+---@overload fun(self: Mesh, texture: Texture)
 function Mesh:setMaterial(material) end
 
 --- Sets the data for vertices in the Mesh.
@@ -562,7 +562,7 @@ function Mesh:setMaterial(material) end
 ---@param vertices number[][] # A table of vertices, where each vertex is a table of numbers matching the vertex format of the Mesh.
 ---@param index number? # The index of the first vertex to set. (default: 1)
 ---@param count number? # The number of vertices to set. (default: nil)
----@overload fun(blob: Blob, index?: number, count?: number)
+---@overload fun(self: Mesh, blob: Blob, index?: number, count?: number)
 function Mesh:setVertices(vertices, index, count) end
 
 ---@class Model
@@ -978,7 +978,7 @@ function Model:setBlendShapeWeight(blendshape, weight) end
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
 ---@param blend number? # A number from 0 to 1 indicating how much of the target orientation to blend in.  A value of 0 will not change the node's orientation at all, whereas 1 will fully blend to the target orientation. (default: 1.0)
----@overload fun(node: string | number, orientation: Quat, blend?: number)
+---@overload fun(self: Model, node: string | number, orientation: Quat, blend?: number)
 function Model:setNodeOrientation(node, angle, ax, ay, az, blend) end
 
 --- Sets or blends the pose (position and orientation) of a node to a new pose.  This sets the local pose of the node, relative to its parent.  The scale will remain unchanged.
@@ -1000,7 +1000,7 @@ function Model:setNodeOrientation(node, angle, ax, ay, az, blend) end
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
 ---@param blend number? # A number from 0 to 1 indicating how much of the target pose to blend in.  A value of 0 will not change the node's pose at all, whereas 1 will fully blend to the target pose. (default: 1.0)
----@overload fun(node: string | number, position: Vec3, orientation: Quat, blend?: number)
+---@overload fun(self: Model, node: string | number, position: Vec3, orientation: Quat, blend?: number)
 function Model:setNodePose(node, x, y, z, angle, ax, ay, az, blend) end
 
 --- Sets or blends the position of a node.  This sets the local position of the node, relative to its parent.
@@ -1018,7 +1018,7 @@ function Model:setNodePose(node, x, y, z, angle, ax, ay, az, blend) end
 ---@param y number # The y coordinate of the new position.
 ---@param z number # The z coordinate of the new position.
 ---@param blend number? # A number from 0 to 1 indicating how much of the new position to blend in.  A value of 0 will not change the node's position at all, whereas 1 will fully blend to the target position. (default: 1.0)
----@overload fun(node: string | number, position: Vec3, blend?: number)
+---@overload fun(self: Model, node: string | number, position: Vec3, blend?: number)
 function Model:setNodePosition(node, x, y, z, blend) end
 
 --- Sets or blends the scale of a node to a new scale.  This sets the local scale of the node, relative to its parent.
@@ -1036,7 +1036,7 @@ function Model:setNodePosition(node, x, y, z, blend) end
 ---@param sy number # The y scale.
 ---@param sz number # The z scale.
 ---@param blend number? # A number from 0 to 1 indicating how much of the new scale to blend in.  A value of 0 will not change the node's scale at all, whereas 1 will fully blend to the target scale. (default: 1.0)
----@overload fun(node: string | number, scale: Vec3, blend?: number)
+---@overload fun(self: Model, node: string | number, scale: Vec3, blend?: number)
 function Model:setNodeScale(node, sx, sy, sz, blend) end
 
 --- Sets or blends the transform of a node to a new transform.  This sets the local transform of the node, relative to its parent.
@@ -1061,8 +1061,8 @@ function Model:setNodeScale(node, sx, sy, sz, blend) end
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
 ---@param blend number? # A number from 0 to 1 indicating how much of the target transform to blend in.  A value of 0 will not change the node's transform at all, whereas 1 will fully blend to the target transform. (default: 1.0)
----@overload fun(node: string | number, position: Vec3, scale: Vec3, orientation: Quat, blend?: number)
----@overload fun(node: string | number, transform: Mat4, blend?: number)
+---@overload fun(self: Model, node: string | number, position: Vec3, scale: Vec3, orientation: Quat, blend?: number)
+---@overload fun(self: Model, node: string | number, transform: Mat4, blend?: number)
 function Model:setNodeTransform(node, x, y, z, sx, sy, sz, angle, ax, ay, az, blend) end
 
 ---@class Pass
@@ -1093,8 +1093,8 @@ function Pass:beginTally() end
 ---@param ay number? # The y component of the axis of rotation. (default: 1)
 ---@param az number? # The z component of the axis of rotation. (default: 0)
 ---@param style DrawStyle? # Whether the box should be drawn filled or outlined. (default: 'fill')
----@overload fun(position: Vec3, size: Vec3, orientation: Quat, style?: DrawStyle)
----@overload fun(transform: Mat4, style?: DrawStyle)
+---@overload fun(self: Pass, position: Vec3, size: Vec3, orientation: Quat, style?: DrawStyle)
+---@overload fun(self: Pass, transform: Mat4, style?: DrawStyle)
 function Pass:box(x, y, z, width, height, depth, angle, ax, ay, az, style) end
 
 --- Draws a capsule.  A capsule is shaped like a cylinder with a hemisphere on each end.
@@ -1108,9 +1108,9 @@ function Pass:box(x, y, z, width, height, depth, angle, ax, ay, az, style) end
 ---@param ay number? # The y component of the axis of rotation. (default: 1)
 ---@param az number? # The z component of the axis of rotation. (default: 0)
 ---@param segments number? # The number of circular segments to render. (default: 32)
----@overload fun(position: Vec3, radius?: number, length?: number, orientation: Quat, segments?: number)
----@overload fun(transform: Mat4, segments?: number)
----@overload fun(p1: Vec3, p2: Vec3, radius?: number, segments?: number)
+---@overload fun(self: Pass, position: Vec3, radius?: number, length?: number, orientation: Quat, segments?: number)
+---@overload fun(self: Pass, transform: Mat4, segments?: number)
+---@overload fun(self: Pass, p1: Vec3, p2: Vec3, radius?: number, segments?: number)
 function Pass:capsule(x, y, z, radius, length, angle, ax, ay, az, segments) end
 
 --- Draws a circle.
@@ -1126,8 +1126,8 @@ function Pass:capsule(x, y, z, radius, length, angle, ax, ay, az, segments) end
 ---@param angle1 number? # The angle of the beginning of the arc. (default: 0)
 ---@param angle2 number? # angle of the end of the arc. (default: 2 * math.pi)
 ---@param segments number? # The number of segments to render. (default: 64)
----@overload fun(position: Vec3, radius?: number, orientation: Quat, style?: DrawStyle, angle1?: number, angle2?: number, segments?: number)
----@overload fun(transform: Mat4, style?: DrawStyle, angle1?: number, angle2?: number, segments?: number)
+---@overload fun(self: Pass, position: Vec3, radius?: number, orientation: Quat, style?: DrawStyle, angle1?: number, angle2?: number, segments?: number)
+---@overload fun(self: Pass, transform: Mat4, style?: DrawStyle, angle1?: number, angle2?: number, segments?: number)
 function Pass:circle(x, y, z, radius, angle, ax, ay, az, style, angle1, angle2, segments) end
 
 --- Runs a compute shader.  There must be an active compute shader set using `Pass:setShader`.
@@ -1139,7 +1139,7 @@ function Pass:circle(x, y, z, radius, angle, ax, ay, az, style, angle1, angle2, 
 ---@param x number? # The number of workgroups to dispatch in the x dimension. (default: 1)
 ---@param y number? # The number of workgroups to dispatch in the y dimension. (default: 1)
 ---@param z number? # The number of workgroups to dispatch in the z dimension. (default: 1)
----@overload fun(buffer: Buffer, offset?: number)
+---@overload fun(self: Pass, buffer: Buffer, offset?: number)
 function Pass:compute(x, y, z) end
 
 --- Draws a cone.
@@ -1153,9 +1153,9 @@ function Pass:compute(x, y, z) end
 ---@param ay number? # The y component of the axis of rotation. (default: 1)
 ---@param az number? # The z component of the axis of rotation. (default: 0)
 ---@param segments number? # The number of segments in the cone. (default: 64)
----@overload fun(position: Vec3, radius?: number, length?: number, orientation: Quat, segments?: number)
----@overload fun(transform: Mat4, segments?: number)
----@overload fun(p1: Vec3, p2: Vec3, radius?: number, segments?: number)
+---@overload fun(self: Pass, position: Vec3, radius?: number, length?: number, orientation: Quat, segments?: number)
+---@overload fun(self: Pass, transform: Mat4, segments?: number)
+---@overload fun(self: Pass, p1: Vec3, p2: Vec3, radius?: number, segments?: number)
 function Pass:cone(x, y, z, radius, length, angle, ax, ay, az, segments) end
 
 --- Draws a cube.
@@ -1168,8 +1168,8 @@ function Pass:cone(x, y, z, radius, length, angle, ax, ay, az, segments) end
 ---@param ay number? # The y component of the axis of rotation. (default: 1)
 ---@param az number? # The z component of the axis of rotation. (default: 0)
 ---@param style DrawStyle? # Whether the cube should be drawn filled or outlined. (default: 'fill')
----@overload fun(position: Vec3, size?: number, orientation: Quat, style?: DrawStyle)
----@overload fun(transform: Mat4, style?: DrawStyle)
+---@overload fun(self: Pass, position: Vec3, size?: number, orientation: Quat, style?: DrawStyle)
+---@overload fun(self: Pass, transform: Mat4, style?: DrawStyle)
 function Pass:cube(x, y, z, size, angle, ax, ay, az, style) end
 
 --- Draws a cylinder.
@@ -1186,9 +1186,9 @@ function Pass:cube(x, y, z, size, angle, ax, ay, az, style) end
 ---@param angle1 number? # The angle of the beginning of the arc. (default: 0)
 ---@param angle2 number? # angle of the end of the arc. (default: 2 * math.pi)
 ---@param segments number? # The number of circular segments to render. (default: 64)
----@overload fun(position: Vec3, radius?: number, length?: number, orientation: Quat, capped?: boolean, angle1?: number, angle2?: number, segments?: number)
----@overload fun(transform: Mat4, capped?: boolean, angle1?: number, angle2?: number, segments?: number)
----@overload fun(p1: Vec3, p2: Vec3, radius?: number, capped?: boolean, angle1?: number, angle2?: number, segments?: number)
+---@overload fun(self: Pass, position: Vec3, radius?: number, length?: number, orientation: Quat, capped?: boolean, angle1?: number, angle2?: number, segments?: number)
+---@overload fun(self: Pass, transform: Mat4, capped?: boolean, angle1?: number, angle2?: number, segments?: number)
+---@overload fun(self: Pass, p1: Vec3, p2: Vec3, radius?: number, capped?: boolean, angle1?: number, angle2?: number, segments?: number)
 function Pass:cylinder(x, y, z, radius, length, angle, ax, ay, az, capped, angle1, angle2, segments) end
 
 --- Draws a `Model`, `Mesh`, or `Texture`.
@@ -1202,13 +1202,13 @@ function Pass:cylinder(x, y, z, radius, length, angle, ax, ay, az, capped, angle
 ---@param ay number? # The y component of the axis of rotation. (default: 1)
 ---@param az number? # The z component of the axis of rotation. (default: 0)
 ---@param instances number? # The number of instances to draw. (default: 1)
----@overload fun(object: Model | Mesh | Texture, position: Vec3, scale3: Vec3, orientation: Quat, instances?: number)
----@overload fun(object: Model | Mesh | Texture, transform: Mat4, instances?: number)
+---@overload fun(self: Pass, object: Model | Mesh | Texture, position: Vec3, scale3: Vec3, orientation: Quat, instances?: number)
+---@overload fun(self: Pass, object: Model | Mesh | Texture, transform: Mat4, instances?: number)
 function Pass:draw(object, x, y, z, scale, angle, ax, ay, az, instances) end
 
 --- Draws a fullscreen triangle.  The `fill` shader is used, which stretches the triangle across the screen.
 ---@param texture Texture # The texture to fill.  If nil, the texture from the active material is used.
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:fill(texture) end
 
 --- Finishes a tally that was previously started with `Pass:beginTally`.  This will stop counting the number of pixels affected by draws.
@@ -1224,7 +1224,7 @@ function Pass:finishTally() end
 ---@see Pass.getHeight
 ---@see Pass.getDimensions
 ---@return table # The canvas.  Numeric keys will contain the color Textures, along with the following keys:
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:getCanvas() end
 
 --- Returns the clear values of the pass.
@@ -1272,7 +1272,7 @@ function Pass:getLabel() end
 ---@return number # The right field of view angle, in radians.
 ---@return number # The top field of view angle, in radians.
 ---@return number # The bottom field of view angle, in radians.
----@overload fun(view: number, matrix: Mat4): Mat4
+---@overload fun(self: Pass, view: number, matrix: Mat4): Mat4
 function Pass:getProjection(view) end
 
 --- Returns statistics for the Pass.
@@ -1312,7 +1312,7 @@ function Pass:getViewCount() end
 ---@return number # The x component of the axis of rotation.
 ---@return number # The y component of the axis of rotation.
 ---@return number # The z component of the axis of rotation.
----@overload fun(view: number, matrix: Mat4, invert: boolean): Mat4
+---@overload fun(self: Pass, view: number, matrix: Mat4, invert: boolean): Mat4
 function Pass:getViewPose(view) end
 
 --- Returns the width of the textures of the Pass's canvas, in pixels.
@@ -1334,8 +1334,8 @@ function Pass:getWidth() end
 ---@param y2 number # The y coordinate of the next point.
 ---@param z2 number # The z coordinate of the next point.
 ---@param ... number # More points to add to the line.
----@overload fun(t: (number|Vec3)[])
----@overload fun(v1: Vec3, v2: Vec3, ...: Vec3)
+---@overload fun(self: Pass, t: (number|Vec3)[])
+---@overload fun(self: Pass, v1: Vec3, v2: Vec3, ...: Vec3)
 function Pass:line(x1, y1, z1, x2, y2, z2, ...) end
 
 --- Draws a mesh.
@@ -1352,12 +1352,12 @@ function Pass:line(x1, y1, z1, x2, y2, z2, ...) end
 ---@param start number? # The 1-based index of the first vertex to render from the vertex buffer (or the first index, when using an index buffer). (default: 1)
 ---@param count number? # The number of vertices to render (or the number of indices, when using an index buffer). When `nil`, as many vertices or indices as possible will be drawn (based on the length of the Buffers and `start`). (default: nil)
 ---@param instances number? # The number of copies of the mesh to render. (default: 1)
----@overload fun(vertices?: Buffer, position: Vec3, scales: Vec3, orientation: Quat, start?: number, count?: number, instances?: number)
----@overload fun(vertices?: Buffer, transform: Mat4, start?: number, count?: number, instances?: number)
----@overload fun(vertices?: Buffer, indices: Buffer, x?: number, y?: number, z?: number, scale?: number, angle?: number, ax?: number, ay?: number, az?: number, start?: number, count?: number, instances?: number, base?: number)
----@overload fun(vertices?: Buffer, indices: Buffer, position: Vec3, scales: Vec3, orientation: Quat, start?: number, count?: number, instances?: number, base?: number)
----@overload fun(vertices?: Buffer, indices: Buffer, transform: Mat4, start?: number, count?: number, instances?: number, base?: number)
----@overload fun(vertices?: Buffer, indices: Buffer, draws: Buffer, drawcount?: number, offset?: number, stride?: number)
+---@overload fun(self: Pass, vertices?: Buffer, position: Vec3, scales: Vec3, orientation: Quat, start?: number, count?: number, instances?: number)
+---@overload fun(self: Pass, vertices?: Buffer, transform: Mat4, start?: number, count?: number, instances?: number)
+---@overload fun(self: Pass, vertices?: Buffer, indices: Buffer, x?: number, y?: number, z?: number, scale?: number, angle?: number, ax?: number, ay?: number, az?: number, start?: number, count?: number, instances?: number, base?: number)
+---@overload fun(self: Pass, vertices?: Buffer, indices: Buffer, position: Vec3, scales: Vec3, orientation: Quat, start?: number, count?: number, instances?: number, base?: number)
+---@overload fun(self: Pass, vertices?: Buffer, indices: Buffer, transform: Mat4, start?: number, count?: number, instances?: number, base?: number)
+---@overload fun(self: Pass, vertices?: Buffer, indices: Buffer, draws: Buffer, drawcount?: number, offset?: number, stride?: number)
 function Pass:mesh(vertices, x, y, z, scale, angle, ax, ay, az, start, count, instances) end
 
 --- Resets the transform back to the origin.
@@ -1382,8 +1382,8 @@ function Pass:origin() end
 ---@param style DrawStyle? # Whether the plane should be drawn filled or outlined. (default: 'fill')
 ---@param columns number? # The number of horizontal segments in the plane. (default: 1)
 ---@param rows number? # The number of vertical segments in the plane. (default: columns)
----@overload fun(position: Vec3, size: Vec2, orientation: Quat, style?: DrawStyle, columns?: number, rows?: number)
----@overload fun(transform: Mat4, style?: DrawStyle, columns?: number, rows?: number)
+---@overload fun(self: Pass, position: Vec3, size: Vec2, orientation: Quat, style?: DrawStyle, columns?: number, rows?: number)
+---@overload fun(self: Pass, transform: Mat4, style?: DrawStyle, columns?: number, rows?: number)
 function Pass:plane(x, y, z, width, height, angle, ax, ay, az, style, columns, rows) end
 
 --- Draws points.  `Pass:mesh` can also be used to draw points using a `Buffer`.
@@ -1391,8 +1391,8 @@ function Pass:plane(x, y, z, width, height, angle, ax, ay, az, style, columns, r
 ---@param y number # The y coordinate of the first point.
 ---@param z number # The z coordinate of the first point.
 ---@param ... any # More points.
----@overload fun(t: (number|Vec3)[])
----@overload fun(v: Vec3, ...: any)
+---@overload fun(self: Pass, t: (number|Vec3)[])
+---@overload fun(self: Pass, v: Vec3, ...: any)
 function Pass:points(x, y, z, ...) end
 
 --- Draws a polygon.  The 3D vertices must be coplanar (all lie on the same plane), and the polygon must be convex (does not intersect itself or have any angles between vertices greater than 180 degrees), otherwise rendering artifacts may occur.
@@ -1406,8 +1406,8 @@ function Pass:points(x, y, z, ...) end
 ---@param y2 number # The y coordinate of the next vertex.
 ---@param z2 number # The z coordinate of the next vertex.
 ---@param ... any # More vertices to add to the polygon.
----@overload fun(t: (number|Vec3)[])
----@overload fun(v1: Vec3, v2: Vec3, ...: any)
+---@overload fun(self: Pass, t: (number|Vec3)[])
+---@overload fun(self: Pass, v1: Vec3, v2: Vec3, ...: any)
 function Pass:polygon(x1, y1, z1, x2, y2, z2, ...) end
 
 --- Pops the transform or render state stack, restoring it to the state it was in when it was last pushed.
@@ -1436,7 +1436,7 @@ function Pass:reset() end
 ---@param ax number # The x component of the axis of rotation.
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
----@overload fun(rotation: Quat)
+---@overload fun(self: Pass, rotation: Quat)
 function Pass:rotate(angle, ax, ay, az) end
 
 --- Draws a rounded rectangle.
@@ -1452,8 +1452,8 @@ function Pass:rotate(angle, ax, ay, az) end
 ---@param az number? # The z component of the axis of rotation. (default: 0)
 ---@param radius number? # The radius of the rectangle corners.  If the radius is zero or negative, the rectangle will have sharp corners. (default: 0)
 ---@param segments number? # The number of circular segments to use for each corner.  This increases the smoothness, but increases the number of vertices in the mesh. (default: 8)
----@overload fun(position: Vec3, size: Vec3, orientation: Quat, radius?: number, segments?: number)
----@overload fun(transform: Mat4, radius?: number, segments?: number)
+---@overload fun(self: Pass, position: Vec3, size: Vec3, orientation: Quat, radius?: number, segments?: number)
+---@overload fun(self: Pass, transform: Mat4, radius?: number, segments?: number)
 function Pass:roundrect(x, y, z, width, height, thickness, angle, ax, ay, az, radius, segments) end
 
 --- Scales the coordinate system.
@@ -1466,7 +1466,7 @@ function Pass:roundrect(x, y, z, width, height, thickness, angle, ax, ay, az, ra
 ---@param sx number # The x component of the scale.
 ---@param sy number? # The y component of the scale. (default: sx)
 ---@param sz number? # The z component of the scale. (default: sx)
----@overload fun(scale: Vec3)
+---@overload fun(self: Pass, scale: Vec3)
 function Pass:scale(sx, sy, sz) end
 
 --- Sends a value to a variable in the Pass's active `Shader`.  The active shader is changed using `Pass:setShader`.
@@ -1474,9 +1474,9 @@ function Pass:scale(sx, sy, sz) end
 ---@param buffer Buffer # The Buffer to assign.
 ---@param offset number? # An offset from the start of the buffer where data will be read, in bytes. (default: 0)
 ---@param extent number? # The number of bytes that will be available for reading.  If zero, as much data as possible will be bound, depending on the offset, buffer size, and the `uniformBufferRange` or `storageBufferRange` limit. (default: 0)
----@overload fun(name: string, texture: Texture)
----@overload fun(name: string, sampler: Sampler)
----@overload fun(name: string, data: any)
+---@overload fun(self: Pass, name: string, texture: Texture)
+---@overload fun(self: Pass, name: string, sampler: Sampler)
+---@overload fun(self: Pass, name: string, data: any)
 function Pass:send(name, buffer, offset, extent) end
 
 --- Sets whether alpha to coverage is enabled.  Alpha to coverage factors the alpha of a pixel into antialiasing calculations.  It can be used to get antialiased edges on textures with transparency.  It's often used for foliage.
@@ -1486,9 +1486,9 @@ function Pass:setAlphaToCoverage(enable) end
 --- Sets the blend mode.  When a pixel is drawn, the blend mode controls how it is mixed with the color and alpha of the pixel underneath it.
 ---@param blend BlendMode # The blend mode.
 ---@param alphaBlend BlendAlphaMode # The alpha blend mode, used to control premultiplied alpha.
----@overload fun()
----@overload fun(index: number, blend: BlendMode, alphaBlend: BlendAlphaMode)
----@overload fun(index: number)
+---@overload fun(self: Pass)
+---@overload fun(self: Pass, index: number, blend: BlendMode, alphaBlend: BlendAlphaMode)
+---@overload fun(self: Pass, index: number)
 function Pass:setBlendMode(blend, alphaBlend) end
 
 --- Sets the Pass's canvas.  The canvas is a set of textures that the Pass will draw to when it's submitted, along with configuration for the depth buffer and antialiasing.
@@ -1498,8 +1498,8 @@ function Pass:setBlendMode(blend, alphaBlend) end
 ---@see Pass.getHeight
 ---@see Pass.getDimensions
 ---@param ... Texture # One or more color textures the pass will render to.
----@overload fun(canvas: table)
----@overload fun()
+---@overload fun(self: Pass, canvas: table)
+---@overload fun(self: Pass)
 function Pass:setCanvas(...) end
 
 --- Sets the clear values of the pass.  This controls the initial colors of the canvas texture pixels at the beginning of the render pass.  For each color texture, it can be one of the following:
@@ -1511,9 +1511,9 @@ function Pass:setCanvas(...) end
 ---@see Pass.setCanvas
 ---@see Texture.clear
 ---@param hex number # A hexcode color to clear all color textures to.
----@overload fun(r: number, g: number, b: number, a?: number)
----@overload fun(clear: boolean)
----@overload fun(t: table)
+---@overload fun(self: Pass, r: number, g: number, b: number, a?: number)
+---@overload fun(self: Pass, clear: boolean)
+---@overload fun(self: Pass, t: table)
 function Pass:setClear(hex) end
 
 --- Sets the color used for drawing.  Color components are from 0 to 1.
@@ -1521,24 +1521,24 @@ function Pass:setClear(hex) end
 ---@param g number # The green component of the color.
 ---@param b number # The blue component of the color.
 ---@param a number? # The alpha component of the color. (default: 1.0)
----@overload fun(t: number[])
----@overload fun(hex: number, a?: number)
+---@overload fun(self: Pass, t: number[])
+---@overload fun(self: Pass, hex: number, a?: number)
 function Pass:setColor(r, g, b, a) end
 
 --- Sets the color channels affected by drawing, on a per-channel basis.  Disabling color writes is often used to render to the depth or stencil buffer without affecting existing pixel colors.
 ---@see Pass.setDepthWrite
 ---@see Pass.setStencilWrite
 ---@param enable boolean # Whether all color components should be affected by draws.
----@overload fun(r: boolean, g: boolean, b: boolean, a: boolean)
----@overload fun(index: number, enable: boolean)
----@overload fun(index: number, r: boolean, g: boolean, b: boolean, a: boolean)
+---@overload fun(self: Pass, r: boolean, g: boolean, b: boolean, a: boolean)
+---@overload fun(self: Pass, index: number, enable: boolean)
+---@overload fun(self: Pass, index: number, r: boolean, g: boolean, b: boolean, a: boolean)
 function Pass:setColorWrite(enable) end
 
 --- Sets whether the front or back faces of triangles are culled.
 ---@see Pass.setViewCull
 ---@see Pass.setWinding
 ---@param mode CullMode # Whether `front` faces, `back` faces, or `none` of the faces should be culled.
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:setCullMode(mode) end
 
 --- Enables or disables depth clamp.  Normally, when pixels fall outside of the clipping planes, they are clipped (not rendered).  Depth clamp will instead render these pixels, clamping their depth on to the clipping planes.
@@ -1563,7 +1563,7 @@ function Pass:setDepthOffset(offset, sloped) end
 ---@see Pass.setStencilTest
 ---@see Pass.setProjection
 ---@param test CompareMode # The new depth test to use.
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:setDepthTest(test) end
 
 --- Sets whether draws write to the depth buffer.  When a pixel is drawn, if depth writes are enabled and the pixel passes the depth test, the depth buffer will be updated with the pixel's depth value.
@@ -1577,7 +1577,7 @@ function Pass:setDepthWrite(write) end
 ---@see Pass.setViewCull
 ---@see Pass.setWinding
 ---@param mode CullMode # Whether `front` faces, `back` faces, or `none` of the faces should be culled.
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:setFaceCull(mode) end
 
 --- Sets the font used for `Pass:text`.
@@ -1589,7 +1589,7 @@ function Pass:setFont(font) end
 
 --- Sets the material.  This will apply to most drawing, except for text, skyboxes, and models, which use their own materials.
 ---@param material Texture | Material # The texture or material to apply to surfaces.
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:setMaterial(material) end
 
 --- Changes the way vertices are connected together when drawing using `Pass:mesh`.
@@ -1609,7 +1609,7 @@ function Pass:setMeshMode(mode) end
 ---@param down number # The bottom field of view angle, in radians.
 ---@param near number? # The near clipping plane distance, in meters. (default: .01)
 ---@param far number? # The far clipping plane distance, in meters. (default: 0.0)
----@overload fun(view: number, matrix: Mat4)
+---@overload fun(self: Pass, view: number, matrix: Mat4)
 function Pass:setProjection(view, left, right, up, down, near, far) end
 
 --- Sets the default `Sampler` to use when sampling textures.  It is also possible to send a custom sampler to a shader using `Pass:send` and use that instead, which allows customizing the sampler on a per-texture basis.
@@ -1622,14 +1622,14 @@ function Pass:setSampler(sampler) end
 ---@param y number # The y coordinate of the upper-left corner of the scissor rectangle.
 ---@param w number # The width of the scissor rectangle.
 ---@param h number # The height of the scissor rectangle.
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:setScissor(x, y, w, h) end
 
 --- Sets the active shader.  The Shader will affect all drawing operations until it is changed again.
 ---@see Pass.send
 ---@see Pass.compute
 ---@param shader Shader | DefaultShader # The shader to use.
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:setShader(shader) end
 
 --- Sets the stencil test.  Any pixels that fail the stencil test won't be drawn.  For example, setting the stencil test to `('equal', 1)` will only draw pixels that have a stencil value of 1. The stencil buffer can be modified by drawing while stencil writes are enabled with `lovr.graphics.setStencilWrite`.
@@ -1638,7 +1638,7 @@ function Pass:setShader(shader) end
 ---@param test CompareMode # The new stencil test to use.
 ---@param value number # The stencil value to compare against.
 ---@param mask number? # An optional mask to apply to stencil values before the comparison. (default: 0xff)
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:setStencilTest(test, value, mask) end
 
 --- Sets or disables stencil writes.  When stencil writes are enabled, any pixels drawn will update the values in the stencil buffer using the `StencilAction` set.
@@ -1647,7 +1647,7 @@ function Pass:setStencilTest(test, value, mask) end
 ---@param action StencilAction[] # How pixels should update the stencil buffer when they are drawn.  Can also be a list of 3 stencil actions, used when a pixel fails the stencil test, fails the depth test, or passes the stencil test, respectively.
 ---@param value number? # When using the 'replace' action, this is the value to replace with. (default: 1)
 ---@param mask number? # An optional mask to apply to stencil values before writing. (default: 0xff)
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:setStencilWrite(action, value, mask) end
 
 --- Sets the Buffer where tally results will be written to.  Each time the render pass finishes, the results of all the tallies will be copied to the Buffer at the specified offset.  The buffer can be used in a later pass in a compute shader, or the data in the buffer can be read back using e.g. `Buffer:newReadback`.
@@ -1655,7 +1655,7 @@ function Pass:setStencilWrite(action, value, mask) end
 ---@see Pass.finishTally
 ---@param buffer Buffer # The buffer.
 ---@param offset number # A byte offset where results will be written.  Must be a multiple of 4.
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:setTallyBuffer(buffer, offset) end
 
 --- Enables or disables view frustum culling.  When enabled, if an object is drawn outside of the camera view, the draw will be skipped.  This can improve performance.
@@ -1681,8 +1681,8 @@ function Pass:setViewCull(enable) end
 ---@param ax number # The x component of the axis of rotation.
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
----@overload fun(view: number, position: Vec3, orientation: Quat)
----@overload fun(view: number, matrix: Mat4, inverted: boolean)
+---@overload fun(self: Pass, view: number, position: Vec3, orientation: Quat)
+---@overload fun(self: Pass, view: number, matrix: Mat4, inverted: boolean)
 function Pass:setViewPose(view, x, y, z, angle, ax, ay, az) end
 
 --- Sets the viewport.  Everything rendered will get mapped to the rectangle defined by the viewport.  More specifically, this defines the transformation from normalized device coordinates to pixel coordinates.
@@ -1694,7 +1694,7 @@ function Pass:setViewPose(view, x, y, z, angle, ax, ay, az) end
 ---@param h number # The height of the viewport.  May be negative.
 ---@param dmin number? # The min component of the depth range, between 0 and 1. (default: 0.0)
 ---@param dmax number? # The max component of the depth range, between 0 and 1. (default: 1.0)
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:setViewport(x, y, w, h, dmin, dmax) end
 
 --- Sets whether vertices in the clockwise or counterclockwise order vertices are considered the "front" face of a triangle.  This is used for culling with `Pass:setCullMode`.
@@ -1709,7 +1709,7 @@ function Pass:setWireframe(enable) end
 
 --- Draws a skybox.
 ---@param skybox Texture # The skybox to render.  Its `TextureType` can be `cube` to render as a cubemap, or `2d` to render as an equirectangular (spherical) 2D image.
----@overload fun()
+---@overload fun(self: Pass)
 function Pass:skybox(skybox) end
 
 --- Draws a sphere
@@ -1723,8 +1723,8 @@ function Pass:skybox(skybox) end
 ---@param az number? # The z component of the axis of rotation. (default: 0)
 ---@param longitudes number? # The number of "horizontal" segments. (default: 48)
 ---@param latitudes number? # The number of "vertical" segments. (default: longitudes / 2)
----@overload fun(position: Vec3, radius?: number, orientation: Quat, longitudes?: number, latitudes?: number)
----@overload fun(transform: Mat4, longitudes?: number, latitudes?: number)
+---@overload fun(self: Pass, position: Vec3, radius?: number, orientation: Quat, longitudes?: number, latitudes?: number)
+---@overload fun(self: Pass, transform: Mat4, longitudes?: number, latitudes?: number)
 function Pass:sphere(x, y, z, radius, angle, ax, ay, az, longitudes, latitudes) end
 
 --- Draws text.  The font can be changed using `Pass:setFont`.
@@ -1748,11 +1748,11 @@ function Pass:sphere(x, y, z, radius, angle, ax, ay, az, longitudes, latitudes) 
 ---@param wrap number? # The maximum width of each line in meters (before scale is applied).  When zero, the text will not wrap. (default: 0)
 ---@param halign HorizontalAlign? # The horizontal alignment relative to the text origin. (default: 'center')
 ---@param valign VerticalAlign? # The vertical alignment relative to the text origin. (default: 'middle')
----@overload fun(text: string, position: Vec3, scale?: number, orientation: Quat, wrap?: number, halign?: HorizontalAlign, valign?: VerticalAlign)
----@overload fun(text: string, transform: Mat4, wrap?: number, halign?: HorizontalAlign, valign?: VerticalAlign)
----@overload fun(colortext: table, x?: number, y?: number, z?: number, scale?: number, angle?: number, ax?: number, ay?: number, az?: number, wrap?: number, halign?: HorizontalAlign, valign?: VerticalAlign)
----@overload fun(colortext: table, position: Vec3, scale?: number, orientation: Quat, wrap?: number, halign?: HorizontalAlign, valign?: VerticalAlign)
----@overload fun(colortext: table, transform: Mat4, wrap?: number, halign?: HorizontalAlign, valign?: VerticalAlign)
+---@overload fun(self: Pass, text: string, position: Vec3, scale?: number, orientation: Quat, wrap?: number, halign?: HorizontalAlign, valign?: VerticalAlign)
+---@overload fun(self: Pass, text: string, transform: Mat4, wrap?: number, halign?: HorizontalAlign, valign?: VerticalAlign)
+---@overload fun(self: Pass, colortext: table, x?: number, y?: number, z?: number, scale?: number, angle?: number, ax?: number, ay?: number, az?: number, wrap?: number, halign?: HorizontalAlign, valign?: VerticalAlign)
+---@overload fun(self: Pass, colortext: table, position: Vec3, scale?: number, orientation: Quat, wrap?: number, halign?: HorizontalAlign, valign?: VerticalAlign)
+---@overload fun(self: Pass, colortext: table, transform: Mat4, wrap?: number, halign?: HorizontalAlign, valign?: VerticalAlign)
 function Pass:text(text, x, y, z, scale, angle, ax, ay, az, wrap, halign, valign) end
 
 --- Draws a torus.
@@ -1767,8 +1767,8 @@ function Pass:text(text, x, y, z, scale, angle, ax, ay, az, wrap, halign, valign
 ---@param az number? # The z component of the axis of rotation. (default: 0)
 ---@param tsegments number? # The number of toroidal (circular) segments to render. (default: 64)
 ---@param psegments number? # The number of poloidal (tubular) segments to render. (default: 32)
----@overload fun(position: Vec3, scale: Vec3, orientation: Quat, tsegments?: number, psegments?: number)
----@overload fun(transform: Mat4, tsegments?: number, psegments?: number)
+---@overload fun(self: Pass, position: Vec3, scale: Vec3, orientation: Quat, tsegments?: number, psegments?: number)
+---@overload fun(self: Pass, transform: Mat4, tsegments?: number, psegments?: number)
 function Pass:torus(x, y, z, radius, thickness, angle, ax, ay, az, tsegments, psegments) end
 
 --- Transforms the coordinate system.
@@ -1788,8 +1788,8 @@ function Pass:torus(x, y, z, radius, thickness, angle, ax, ay, az, tsegments, ps
 ---@param ax number # The x component of the axis of rotation.
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
----@overload fun(translation: Vec3, scale: Vec3, rotation: Quat)
----@overload fun(transform: Mat4)
+---@overload fun(self: Pass, translation: Vec3, scale: Vec3, rotation: Quat)
+---@overload fun(self: Pass, transform: Mat4)
 function Pass:transform(x, y, z, sx, sy, sz, angle, ax, ay, az) end
 
 --- Translates the coordinate system.
@@ -1802,7 +1802,7 @@ function Pass:transform(x, y, z, sx, sy, sz, angle, ax, ay, az) end
 ---@param x number # The x component of the translation.
 ---@param y number # The y component of the translation.
 ---@param z number # The z component of the translation.
----@overload fun(translation: Vec3)
+---@overload fun(self: Pass, translation: Vec3)
 function Pass:translate(x, y, z) end
 
 ---@class Readback
@@ -1923,7 +1923,7 @@ function Shader:getWorkgroupSize() end
 --- Returns whether the Shader has a vertex attribute, by name or location.
 ---@param name string # The name of an attribute.
 ---@return boolean # Whether the Shader has the attribute.
----@overload fun(location: number): boolean
+---@overload fun(self: Shader, location: number): boolean
 function Shader:hasAttribute(name) end
 
 --- Returns whether the Shader has a given stage.
@@ -1946,11 +1946,11 @@ local Texture = {}
 ---@see Buffer.clear
 ---@see Texture.setPixels
 ---@see Pass.setClear
----@overload fun(hex: number, layer?: number, layerCount?: number, mipmap?: number, mipmapCount?: number)
----@overload fun(r: number, g: number, b: number, a: number, layer?: number, layerCount?: number, mipmap?: number, mipmapCount?: number)
----@overload fun(t: number[], layer?: number, layerCount?: number, mipmap?: number, mipmapCount?: number)
----@overload fun(v3: Vec3, layer?: number, layerCount?: number, mipmap?: number, mipmapCount?: number)
----@overload fun(v4: Vec4, layer?: number, layerCount?: number, mipmap?: number, mipmapCount?: number)
+---@overload fun(self: Texture, hex: number, layer?: number, layerCount?: number, mipmap?: number, mipmapCount?: number)
+---@overload fun(self: Texture, r: number, g: number, b: number, a: number, layer?: number, layerCount?: number, mipmap?: number, mipmapCount?: number)
+---@overload fun(self: Texture, t: number[], layer?: number, layerCount?: number, mipmap?: number, mipmapCount?: number)
+---@overload fun(self: Texture, v3: Vec3, layer?: number, layerCount?: number, mipmap?: number, mipmapCount?: number)
+---@overload fun(self: Texture, v4: Vec4, layer?: number, layerCount?: number, mipmap?: number, mipmapCount?: number)
 function Texture:clear() end
 
 --- Regenerates mipmap levels of a texture.  This downscales pixels from the texture to progressively smaller sizes and saves them.  If the texture is drawn at a smaller scale later, the mipmaps are used, which smooths out the appearance and improves performance.
@@ -2080,8 +2080,8 @@ function Texture:setPixels(source, dstx, dsty, dstlayer, dstmipmap, srcx, srcy, 
 ---   allow for changing filtering settings on a per-texture basis.
 --- This API is experimental, and subject to change in the future!
 ---@param mode FilterMode # The FilterMode shaders will use when reading pixels from the texture.
----@overload fun(sampler: Sampler)
----@overload fun()
+---@overload fun(self: Texture, sampler: Sampler)
+---@overload fun(self: Texture)
 function Texture:setSampler(mode) end
 
 --- Compiles shader code to SPIR-V bytecode.  The bytecode can be passed to `lovr.graphics.newShader` to create shaders, which will be faster than creating it from GLSL. The bytecode is portable, so bytecode compiled on one platform will work on other platforms. This allows shaders to be precompiled in a build step.

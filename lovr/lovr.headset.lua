@@ -160,8 +160,8 @@ function Layer:getViewport() end
 ---@param g number # The green component of the color.
 ---@param b number # The blue component of the color.
 ---@param a number? # The alpha component of the color. (default: 1.0)
----@overload fun(t: number[])
----@overload fun(hex: number, a?: number)
+---@overload fun(self: Layer, t: number[])
+---@overload fun(self: Layer, hex: number, a?: number)
 function Layer:setColor(r, g, b, a) end
 
 --- Sets the curve of the layer.  Curving a layer renders it on a piece of a cylinder instead of a plane. The radius of the cylinder is `1 / curve` meters, so increasing the curve decreases the radius of the cylinder.
@@ -182,7 +182,7 @@ function Layer:setDimensions(width, height) end
 ---@param ax number # The x component of the axis of rotation.
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
----@overload fun(orientation: Quat)
+---@overload fun(self: Layer, orientation: Quat)
 function Layer:setOrientation(angle, ax, ay, az) end
 
 --- Sets the position and orientation of the layer.
@@ -197,7 +197,7 @@ function Layer:setOrientation(angle, ax, ay, az) end
 ---@param ax number # The x component of the axis of rotation.
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
----@overload fun(position: Vec3, orientation: Quat)
+---@overload fun(self: Layer, position: Vec3, orientation: Quat)
 function Layer:setPose(x, y, z, angle, ax, ay, az) end
 
 --- Sets the position of the layer, in meters.

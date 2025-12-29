@@ -200,8 +200,8 @@ function Mat4:lookAt(from, to, up) end
 ---@see Mat4.scale
 ---@param n Mat4 # The matrix.
 ---@return Mat4 # The modified matrix.
----@overload fun(v3: Vec3): Vec3
----@overload fun(v4: Vec4): Vec4
+---@overload fun(self: Mat4, v3: Vec3): Vec3
+---@overload fun(self: Mat4, v4: Vec4): Vec4
 function Mat4:mul(n) end
 
 --- Sets this matrix to represent an orthographic projection, useful for 2D/isometric rendering.
@@ -216,7 +216,7 @@ function Mat4:mul(n) end
 ---@param near number # The position of the near clipping plane.
 ---@param far number # The position of the far clipping plane.
 ---@return Mat4 # The modified matrix.
----@overload fun(width: number, height: number, near: number, far: number): Mat4
+---@overload fun(self: Mat4, width: number, height: number, near: number, far: number): Mat4
 function Mat4:orthographic(left, right, bottom, top, near, far) end
 
 --- Sets this matrix to represent a perspective projection.
@@ -243,7 +243,7 @@ function Mat4:reflect(position, normal) end
 ---@see Mat4.identity
 ---@param q Quat # The rotation to apply to the matrix.
 ---@return Mat4 # The rotated matrix.
----@overload fun(angle: number, ax?: number, ay?: number, az?: number): Mat4
+---@overload fun(self: Mat4, angle: number, ax?: number, ay?: number, az?: number): Mat4
 function Mat4:rotate(q) end
 
 --- Scales the matrix.
@@ -252,19 +252,19 @@ function Mat4:rotate(q) end
 ---@see Mat4.identity
 ---@param scale Vec3 # The 3D scale to apply.
 ---@return Mat4 # The modified matrix.
----@overload fun(sx: number, sy?: number, sz?: number): Mat4
+---@overload fun(self: Mat4, sx: number, sy?: number, sz?: number): Mat4
 function Mat4:scale(scale) end
 
 --- Sets the components of the matrix from separate position, rotation, and scale arguments or an existing matrix.
 ---@see Mat4.unpack
 ---@return Mat4 # The input matrix.
----@overload fun(n: Mat4): Mat4
----@overload fun(x: number, y: number, z: number, sx: number, sy: number, sz: number, angle: number, ax: number, ay: number, az: number): Mat4
----@overload fun(x: number, y: number, z: number, angle: number, ax: number, ay: number, az: number): Mat4
----@overload fun(position: Vec3, scale: Vec3, rotation: Quat): Mat4
----@overload fun(position: Vec3, rotation: Quat): Mat4
----@overload fun(...: number): Mat4
----@overload fun(d: number): Mat4
+---@overload fun(self: Mat4, n: Mat4): Mat4
+---@overload fun(self: Mat4, x: number, y: number, z: number, sx: number, sy: number, sz: number, angle: number, ax: number, ay: number, az: number): Mat4
+---@overload fun(self: Mat4, x: number, y: number, z: number, angle: number, ax: number, ay: number, az: number): Mat4
+---@overload fun(self: Mat4, position: Vec3, scale: Vec3, rotation: Quat): Mat4
+---@overload fun(self: Mat4, position: Vec3, rotation: Quat): Mat4
+---@overload fun(self: Mat4, ...: number): Mat4
+---@overload fun(self: Mat4, d: number): Mat4
 function Mat4:set() end
 
 --- Sets a model transform matrix that moves to `from` and orients model towards `to` point.
@@ -284,7 +284,7 @@ function Mat4:target(from, to, up) end
 ---@see Mat4.identity
 ---@param v Vec3 # The translation vector.
 ---@return Mat4 # The translated matrix.
----@overload fun(x: number, y: number, z: number): Mat4
+---@overload fun(self: Mat4, x: number, y: number, z: number): Mat4
 function Mat4:translate(v) end
 
 --- Transposes the matrix, mirroring its values along the diagonal.
@@ -338,7 +338,7 @@ function Quat:length() end
 --- Multiplies this quaternion by another value.  If the value is a quaternion, the rotations in the two quaternions are applied sequentially and the result is stored in the first quaternion.  If the value is a vector, then the input vector is rotated by the quaternion and returned.
 ---@param r Quat # A quaternion to combine with the original.
 ---@return Quat # The modified quaternion.
----@overload fun(v3: Vec3): Vec3
+---@overload fun(self: Quat, v3: Vec3): Vec3
 function Quat:mul(r) end
 
 --- Adjusts the values in the quaternion so that its length becomes 1.
@@ -362,11 +362,11 @@ function Quat:normalize() end
 ---@param az number? # The z component of the axis of rotation. (default: 0)
 ---@param raw boolean? # Whether the components should be interpreted as raw `(x, y, z, w)` components. (default: false)
 ---@return Quat # The modified quaternion.
----@overload fun(r: Quat): Quat
----@overload fun(v: Vec3): Quat
----@overload fun(v: Vec3, u: Vec3): Quat
----@overload fun(m: Mat4): Quat
----@overload fun(): Quat
+---@overload fun(self: Quat, r: Quat): Quat
+---@overload fun(self: Quat, v: Vec3): Quat
+---@overload fun(self: Quat, v: Vec3, u: Vec3): Quat
+---@overload fun(self: Quat, m: Mat4): Quat
+---@overload fun(self: Quat): Quat
 function Quat:set(angle, ax, ay, az, raw) end
 
 --- Sets the value of the quaternion using euler angles.  The rotation order is YXZ.
@@ -410,8 +410,8 @@ function RandomGenerator:getState() end
 ---@see lovr.math.random
 ---@see RandomGenerator.randomNormal
 ---@return number # A pseudo-random number.
----@overload fun(high: number): number
----@overload fun(low: number, high: number): number
+---@overload fun(self: RandomGenerator, high: number): number
+---@overload fun(self: RandomGenerator, low: number, high: number): number
 function RandomGenerator:random() end
 
 --- Returns a pseudo-random number from a normal distribution (a bell curve).  You can control the center of the bell curve (the mean value) and the overall width (sigma, or standard deviation).
@@ -424,7 +424,7 @@ function RandomGenerator:randomNormal(sigma, mu) end
 
 --- Seed the RandomGenerator with a new seed.  Each seed will cause the RandomGenerator to produce a unique sequence of random numbers.
 ---@param seed number # The random seed.
----@overload fun(low: number, high: number)
+---@overload fun(self: RandomGenerator, low: number, high: number)
 function RandomGenerator:setSeed(seed) end
 
 --- Sets the state of the RandomGenerator, as previously obtained using `RandomGenerator:getState`. This can be used to reliably restore a previous state of the generator.
@@ -446,7 +446,7 @@ local Vec2 = {}
 ---@see Vec2.div
 ---@param u Vec2 # The other vector.
 ---@return Vec2 # The modified vector.
----@overload fun(x: number, y?: number): Vec2
+---@overload fun(self: Vec2, x: number, y?: number): Vec2
 function Vec2:add(u) end
 
 --- Returns the angle between vectors.
@@ -454,7 +454,7 @@ function Vec2:add(u) end
 ---@see Vec2.length
 ---@param u Vec2 # The other vector.
 ---@return number # The angle to the other vector, in radians.
----@overload fun(x: number, y: number): number
+---@overload fun(self: Vec2, x: number, y: number): number
 function Vec2:angle(u) end
 
 --- Returns the distance to another vector.
@@ -462,7 +462,7 @@ function Vec2:angle(u) end
 ---@see Vec2.length
 ---@param u Vec2 # The vector to measure the distance to.
 ---@return number # The distance to `u`.
----@overload fun(x: number, y: number): number
+---@overload fun(self: Vec2, x: number, y: number): number
 function Vec2:distance(u) end
 
 --- Divides the vector by a vector or a number.
@@ -471,13 +471,13 @@ function Vec2:distance(u) end
 ---@see Vec2.mul
 ---@param u Vec2 # The other vector to divide the components by.
 ---@return Vec2 # The modified vector.
----@overload fun(x: number, y?: number): Vec2
+---@overload fun(self: Vec2, x: number, y?: number): Vec2
 function Vec2:div(u) end
 
 --- Returns the dot product between this vector and another one.
 ---@param u Vec2 # The vector to compute the dot product with.
 ---@return number # The dot product between `v` and `u`.
----@overload fun(x: number, y: number): number
+---@overload fun(self: Vec2, x: number, y: number): number
 function Vec2:dot(u) end
 
 --- Returns whether a vector is approximately equal to another vector.
@@ -487,7 +487,7 @@ function Vec2:dot(u) end
 ---@see Mat4.equals
 ---@param u Vec2 # The other vector.
 ---@return boolean # Whether the 2 vectors approximately equal each other.
----@overload fun(x: number, y: number): boolean
+---@overload fun(self: Vec2, x: number, y: number): boolean
 function Vec2:equals(u) end
 
 --- Returns the length of the vector.
@@ -501,7 +501,7 @@ function Vec2:length() end
 ---@param u Vec2 # The vector to lerp towards.
 ---@param t number # The lerping parameter.
 ---@return Vec2 # The interpolated vector.
----@overload fun(x: number, y: number, t: number): Vec2
+---@overload fun(self: Vec2, x: number, y: number, t: number): Vec2
 function Vec2:lerp(u, t) end
 
 --- Multiplies the vector by a vector or a number.
@@ -510,7 +510,7 @@ function Vec2:lerp(u, t) end
 ---@see Vec2.div
 ---@param u Vec2 # The other vector to multiply the components by.
 ---@return Vec2 # The modified vector.
----@overload fun(x: number, y?: number): Vec2
+---@overload fun(self: Vec2, x: number, y?: number): Vec2
 function Vec2:mul(u) end
 
 --- Adjusts the values in the vector so that its direction stays the same but its length becomes 1.
@@ -523,7 +523,7 @@ function Vec2:normalize() end
 ---@param x number? # The new x value of the vector. (default: 0)
 ---@param y number? # The new y value of the vector. (default: x)
 ---@return Vec2 # The input vector.
----@overload fun(u: Vec2): Vec2
+---@overload fun(self: Vec2, u: Vec2): Vec2
 function Vec2:set(x, y) end
 
 --- Subtracts a vector or a number from the vector.
@@ -532,7 +532,7 @@ function Vec2:set(x, y) end
 ---@see Vec2.div
 ---@param u Vec2 # The other vector.
 ---@return Vec2 # The modified vector.
----@overload fun(x: number, y?: number): Vec2
+---@overload fun(self: Vec2, x: number, y?: number): Vec2
 function Vec2:sub(u) end
 
 --- Returns the 2 components of the vector as numbers.
@@ -557,7 +557,7 @@ local Vec3 = {}
 ---@see Vec3.div
 ---@param u Vec3 # The other vector.
 ---@return Vec3 # The modified vector.
----@overload fun(x: number, y?: number, z?: number): Vec3
+---@overload fun(self: Vec3, x: number, y?: number, z?: number): Vec3
 function Vec3:add(u) end
 
 --- Returns the angle between vectors.
@@ -565,14 +565,14 @@ function Vec3:add(u) end
 ---@see Vec3.length
 ---@param u Vec3 # The other vector.
 ---@return number # The angle to the other vector, in radians.
----@overload fun(x: number, y: number, z: number): number
+---@overload fun(self: Vec3, x: number, y: number, z: number): number
 function Vec3:angle(u) end
 
 --- Sets this vector to be equal to the cross product between this vector and another one.  The new `v` will be perpendicular to both the old `v` and `u`.
 ---@see Vec3.dot
 ---@param u Vec3 # The vector to compute the cross product with.
 ---@return Vec3 # The modified vector.
----@overload fun(x: number, y: number, z: number): Vec3
+---@overload fun(self: Vec3, x: number, y: number, z: number): Vec3
 function Vec3:cross(u) end
 
 --- Returns the distance to another vector.
@@ -580,7 +580,7 @@ function Vec3:cross(u) end
 ---@see Vec3.length
 ---@param u Vec3 # The vector to measure the distance to.
 ---@return number # The distance to `u`.
----@overload fun(x: number, y: number, z: number): number
+---@overload fun(self: Vec3, x: number, y: number, z: number): number
 function Vec3:distance(u) end
 
 --- Divides the vector by a vector or a number.
@@ -589,14 +589,14 @@ function Vec3:distance(u) end
 ---@see Vec3.mul
 ---@param u Vec3 # The other vector to divide the components by.
 ---@return Vec3 # The modified vector.
----@overload fun(x: number, y?: number, z?: number): Vec3
+---@overload fun(self: Vec3, x: number, y?: number, z?: number): Vec3
 function Vec3:div(u) end
 
 --- Returns the dot product between this vector and another one.
 ---@see Vec3.cross
 ---@param u Vec3 # The vector to compute the dot product with.
 ---@return number # The dot product between `v` and `u`.
----@overload fun(x: number, y: number, z: number): number
+---@overload fun(self: Vec3, x: number, y: number, z: number): number
 function Vec3:dot(u) end
 
 --- Returns whether a vector is approximately equal to another vector.
@@ -606,7 +606,7 @@ function Vec3:dot(u) end
 ---@see Mat4.equals
 ---@param u Vec3 # The other vector.
 ---@return boolean # Whether the 2 vectors approximately equal each other.
----@overload fun(x: number, y: number, z: number): boolean
+---@overload fun(self: Vec3, x: number, y: number, z: number): boolean
 function Vec3:equals(u) end
 
 --- Returns the length of the vector.
@@ -620,7 +620,7 @@ function Vec3:length() end
 ---@param u Vec3 # The vector to lerp towards.
 ---@param t number # The lerping parameter.
 ---@return Vec3 # The interpolated vector.
----@overload fun(x: number, y: number, z: number, t: number): Vec3
+---@overload fun(self: Vec3, x: number, y: number, z: number, t: number): Vec3
 function Vec3:lerp(u, t) end
 
 --- Multiplies the vector by a vector or a number.
@@ -629,7 +629,7 @@ function Vec3:lerp(u, t) end
 ---@see Vec3.div
 ---@param u Vec3 # The other vector to multiply the components by.
 ---@return Vec3 # The modified vector.
----@overload fun(x: number, y?: number, z?: number): Vec3
+---@overload fun(self: Vec3, x: number, y?: number, z?: number): Vec3
 function Vec3:mul(u) end
 
 --- Adjusts the values in the vector so that its direction stays the same but its length becomes 1.
@@ -641,7 +641,7 @@ function Vec3:normalize() end
 ---@see Quat.mul
 ---@param q Quat # The quaternion to apply.
 ---@return Vec3 # The modified vector.
----@overload fun(angle: number, ax: number, ay: number, az: number): Vec3
+---@overload fun(self: Vec3, angle: number, ax: number, ay: number, az: number): Vec3
 function Vec3:rotate(q) end
 
 --- Sets the components of the vector, either from numbers or an existing vector.
@@ -650,9 +650,9 @@ function Vec3:rotate(q) end
 ---@param y number? # The new y value of the vector. (default: x)
 ---@param z number? # The new z value of the vector. (default: x)
 ---@return Vec3 # The input vector.
----@overload fun(u: Vec3): Vec3
----@overload fun(q: Quat): Vec3
----@overload fun(m: Mat4): Vec3
+---@overload fun(self: Vec3, u: Vec3): Vec3
+---@overload fun(self: Vec3, q: Quat): Vec3
+---@overload fun(self: Vec3, m: Mat4): Vec3
 function Vec3:set(x, y, z) end
 
 --- Subtracts a vector or a number from the vector.
@@ -661,7 +661,7 @@ function Vec3:set(x, y, z) end
 ---@see Vec3.div
 ---@param u Vec3 # The other vector.
 ---@return Vec3 # The modified vector.
----@overload fun(x: number, y?: number, z?: number): Vec3
+---@overload fun(self: Vec3, x: number, y?: number, z?: number): Vec3
 function Vec3:sub(u) end
 
 --- Applies a transform (translation, rotation, scale) to the vector using a `Mat4` or numbers. This is the same as multiplying the vector by a matrix.  This treats the vector as a point.
@@ -670,8 +670,8 @@ function Vec3:sub(u) end
 ---@see Vec3.rotate
 ---@param m Mat4 # The matrix to apply.
 ---@return Vec3 # The original vector, with transformed components.
----@overload fun(x?: number, y?: number, z?: number, scale?: number, angle?: number, ax?: number, ay?: number, az?: number): Vec3
----@overload fun(translation: Vec3, scale?: number, rotation: Quat): Vec3
+---@overload fun(self: Vec3, x?: number, y?: number, z?: number, scale?: number, angle?: number, ax?: number, ay?: number, az?: number): Vec3
+---@overload fun(self: Vec3, translation: Vec3, scale?: number, rotation: Quat): Vec3
 function Vec3:transform(m) end
 
 --- Returns the 3 components of the vector as numbers.
@@ -698,7 +698,7 @@ local Vec4 = {}
 ---@see Vec4.div
 ---@param u Vec4 # The other vector.
 ---@return Vec4 # The modified vector.
----@overload fun(x: number, y?: number, z?: number, w?: number): Vec4
+---@overload fun(self: Vec4, x: number, y?: number, z?: number, w?: number): Vec4
 function Vec4:add(u) end
 
 --- Returns the angle between vectors.
@@ -706,7 +706,7 @@ function Vec4:add(u) end
 ---@see Vec4.length
 ---@param u Vec4 # The other vector.
 ---@return number # The angle to other vector, in radians.
----@overload fun(x: number, y: number, z: number, w: number): number
+---@overload fun(self: Vec4, x: number, y: number, z: number, w: number): number
 function Vec4:angle(u) end
 
 --- Returns the distance to another vector.
@@ -714,7 +714,7 @@ function Vec4:angle(u) end
 ---@see Vec4.length
 ---@param u Vec4 # The vector to measure the distance to.
 ---@return number # The distance to `u`.
----@overload fun(x: number, y: number, z: number, w: number): number
+---@overload fun(self: Vec4, x: number, y: number, z: number, w: number): number
 function Vec4:distance(u) end
 
 --- Divides the vector by a vector or a number.
@@ -723,13 +723,13 @@ function Vec4:distance(u) end
 ---@see Vec4.mul
 ---@param u Vec4 # The other vector to divide the components by.
 ---@return Vec4 # The modified vector.
----@overload fun(x: number, y?: number, z?: number, w?: number): Vec4
+---@overload fun(self: Vec4, x: number, y?: number, z?: number, w?: number): Vec4
 function Vec4:div(u) end
 
 --- Returns the dot product between this vector and another one.
 ---@param u Vec4 # The vector to compute the dot product with.
 ---@return number # The dot product between `v` and `u`.
----@overload fun(x: number, y: number, z: number, w: number): number
+---@overload fun(self: Vec4, x: number, y: number, z: number, w: number): number
 function Vec4:dot(u) end
 
 --- Returns whether a vector is approximately equal to another vector.
@@ -739,7 +739,7 @@ function Vec4:dot(u) end
 ---@see Mat4.equals
 ---@param u Vec4 # The other vector.
 ---@return boolean # Whether the 2 vectors approximately equal each other.
----@overload fun(x: number, y: number, z: number, w: number): boolean
+---@overload fun(self: Vec4, x: number, y: number, z: number, w: number): boolean
 function Vec4:equals(u) end
 
 --- Returns the length of the vector.
@@ -753,7 +753,7 @@ function Vec4:length() end
 ---@param u Vec4 # The vector to lerp towards.
 ---@param t number # The lerping parameter.
 ---@return Vec4 # The interpolated vector.
----@overload fun(x: number, y: number, z: number, w: number, t: number): Vec4
+---@overload fun(self: Vec4, x: number, y: number, z: number, w: number, t: number): Vec4
 function Vec4:lerp(u, t) end
 
 --- Multiplies the vector by a vector or a number.
@@ -762,7 +762,7 @@ function Vec4:lerp(u, t) end
 ---@see Vec4.div
 ---@param u Vec4 # The other vector to multiply the components by.
 ---@return Vec4 # The modified vector.
----@overload fun(x: number, y?: number, z?: number, w?: number): Vec4
+---@overload fun(self: Vec4, x: number, y?: number, z?: number, w?: number): Vec4
 function Vec4:mul(u) end
 
 --- Adjusts the values in the vector so that its direction stays the same but its length becomes 1.
@@ -777,7 +777,7 @@ function Vec4:normalize() end
 ---@param z number? # The new z value of the vector. (default: x)
 ---@param w number? # The new w value of the vector. (default: x)
 ---@return Vec4 # The input vector.
----@overload fun(u: Vec4): Vec4
+---@overload fun(self: Vec4, u: Vec4): Vec4
 function Vec4:set(x, y, z, w) end
 
 --- Subtracts a vector or a number from the vector.
@@ -786,7 +786,7 @@ function Vec4:set(x, y, z, w) end
 ---@see Vec4.div
 ---@param u Vec4 # The other vector.
 ---@return Vec4 # The modified vector.
----@overload fun(x: number, y?: number, z?: number, w?: number): Vec4
+---@overload fun(self: Vec4, x: number, y?: number, z?: number, w?: number): Vec4
 function Vec4:sub(u) end
 
 --- Applies a transform (translation, rotation, scale) to the vector using a `Mat4` or numbers. This is the same as multiplying the vector by a matrix.
@@ -794,8 +794,8 @@ function Vec4:sub(u) end
 ---@see Vec3.transform
 ---@param m Mat4 # The matrix to apply.
 ---@return Vec4 # The original vector, with transformed components.
----@overload fun(x?: number, y?: number, z?: number, scale?: number, angle?: number, ax?: number, ay?: number, az?: number): Vec4
----@overload fun(translation: Vec3, scale?: number, rotation: Quat): Vec4
+---@overload fun(self: Vec4, x?: number, y?: number, z?: number, scale?: number, angle?: number, ax?: number, ay?: number, az?: number): Vec4
+---@overload fun(self: Vec4, translation: Vec3, scale?: number, rotation: Quat): Vec4
 function Vec4:transform(m) end
 
 --- Returns the 4 components of the vector as numbers.

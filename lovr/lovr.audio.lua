@@ -182,7 +182,7 @@ function Source:setLooping(loop) end
 ---@param ax number # The x component of the axis of rotation.
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
----@overload fun(orientation: Quat)
+---@overload fun(self: Source, orientation: Quat)
 function Source:setOrientation(angle, ax, ay, az) end
 
 --- Sets the pitch of the Source.
@@ -200,7 +200,7 @@ function Source:setPitch(pitch) end
 ---@param ax number # The x component of the axis of rotation.
 ---@param ay number # The y component of the axis of rotation.
 ---@param az number # The z component of the axis of rotation.
----@overload fun(position: Vec3, orientation: Quat)
+---@overload fun(self: Source, position: Vec3, orientation: Quat)
 function Source:setPose(x, y, z, angle, ax, ay, az) end
 
 --- Sets the position of the Source.  Setting the position will cause the Source to be distorted and attenuated based on its position relative to the listener.
@@ -210,7 +210,7 @@ function Source:setPose(x, y, z, angle, ax, ay, az) end
 ---@param x number # The x coordinate of the position.
 ---@param y number # The y coordinate of the position.
 ---@param z number # The z coordinate of the position.
----@overload fun(position: Vec3)
+---@overload fun(self: Source, position: Vec3)
 function Source:setPosition(x, y, z) end
 
 --- Sets the radius of the Source, in meters.
