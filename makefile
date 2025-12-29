@@ -1,6 +1,7 @@
 generate:
 	@rm -rf lovr/
 	@mkdir lovr
+	@mkdir lovr/library
 	@luajit generator.lua
 
 package: generate

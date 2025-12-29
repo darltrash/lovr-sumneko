@@ -1,5 +1,9 @@
 local data = require "api.api.init"
 
+local OUTPUT = "lovr/"
+local API_OUTPUT = OUTPUT .. "library/"
+local DOCS_URL = "https://lovr.org/docs/"
+
 local reserved = {
     ["and"] = true,
     ["break"] = true,
@@ -34,8 +38,6 @@ local operators = {
 }
 
 local function writeLink(key, f)
-    local DOCS_URL = "https://lovr.org/docs/"
-
     f:write("---\n")
     f:write("--- [Open in browser](")
     f:write(DOCS_URL)
@@ -330,7 +332,7 @@ local function processModule(module)
         return
     end
 
-    local f = io.open("lovr/" .. key .. ".lua", "w+")
+    local f = io.open(API_OUTPUT .. key .. ".lua", "w+")
     assert(f, "Could not open file, make sure you got permissions!")
 
     --# ---@meta lovr.audio
@@ -386,41 +388,57 @@ local function processModule(module)
     print("OK")
 end
 
-print("Processing modules")
 local modules = {} -- Somewhat of a hack, don't mind me.
-for _, v in ipairs(data.modules) do
-    processModule(v)
-    if not v.external then
-        table.insert(modules, v.key)
+do
+    print("Processing modules")
+    for _, v in ipairs(data.modules) do
+        processModule(v)
+        if not v.external then
+            table.insert(modules, v.key)
+        end
     end
 end
 
 -- Because we register each namespace as it's own class, effectively, we have
 -- forced ourselves to write a little index of subclasses :(
-local f = assert(io.open("lovr/lovr.lua", "a+"))
+do
+    local f = assert(io.open(API_OUTPUT .. "lovr.lua", "a+"))
 
-for _, key in ipairs(modules) do
-    local name = key:match("([^.]+)$")
+    for _, key in ipairs(modules) do
+        local name = key:match("([^.]+)$")
 
-    f:write("---@module '")
-    f:write(key)
-    f:write("'\n")
-    f:write("lovr.")
-    f:write(name)
-    f:write(" = ")
-    f:write(key)
-    f:write("\n\n")
+        f:write("---@module '")
+        f:write(key)
+        f:write("'\n")
+        f:write("lovr.")
+        f:write(name)
+        f:write(" = ")
+        f:write(key)
+        f:write("\n\n")
+    end
+
+    f:write("vec2 = lovr.math.vec2\n")
+    f:write("Vec2 = lovr.math.newVec2\n")
+    f:write("vec3 = lovr.math.vec3\n")
+    f:write("Vec3 = lovr.math.newVec3\n")
+    f:write("vec4 = lovr.math.vec4\n")
+    f:write("Vec4 = lovr.math.newVec4\n")
+    f:write("mat4 = lovr.math.mat4\n")
+    f:write("Mat4 = lovr.math.newMat4\n")
+    f:write("quat = lovr.math.quat\n")
+    f:write("Quat = lovr.math.newQuat\n")
+
+    f:close()
 end
 
-f:write("vec2 = lovr.math.vec2\n")
-f:write("Vec2 = lovr.math.newVec2\n")
-f:write("vec3 = lovr.math.vec3\n")
-f:write("Vec3 = lovr.math.newVec3\n")
-f:write("vec4 = lovr.math.vec4\n")
-f:write("Vec4 = lovr.math.newVec4\n")
-f:write("mat4 = lovr.math.mat4\n")
-f:write("Mat4 = lovr.math.newMat4\n")
-f:write("quat = lovr.math.quat\n")
-f:write("Quat = lovr.math.newQuat\n")
-
-f:close()
+do
+    local f = assert(io.open(OUTPUT .. "config.json", "w+"))
+    f:write('{\n')
+    f:write('    "name": "LÖVR",\n')
+    f:write('    "words": ["lovr%.%w+"],\n')
+    f:write('    "settings": {\n')
+    f:write('        "Lua.runtime.version" : "LuaJIT"\n')
+    f:write('    }\n')
+    f:write('}\n')
+    f:close()
+end
