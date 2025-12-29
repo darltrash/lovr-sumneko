@@ -146,42 +146,22 @@ local function writeFunction(func, namespace, is_method, f)
     if func.related then
         for _, rel in ipairs(func.related) do
             f:write("---@see ")
-            f:write(rel)
+            f:write((rel:gsub(":", ".")))
             f:write("\n")
         end
     end
 
-    for i = 2, #func.variants do
-        local var = func.variants[i]
-
-        local params = {}
-        for _, arg in ipairs(var.arguments) do
-            table.insert(params, handleParam(arg.name) .. ": " .. handleType(arg.type))
-        end
-
-        local returns = {}
-        for _, ret in ipairs(var.returns) do
-            table.insert(returns, handleType(ret.type))
-        end
-
-        f:write("---@overload fun(")
-        f:write(table.concat(params, ", "))
-        f:write(")")
-        if #returns > 0 then
-            f:write(": ")
-            f:write(table.concat(returns, ", "))
-        end
-        f:write("\n")
-    end
-
+    local params = {}
     local first = func.variants[1]
     do
-        local params = {}
         for _, arg in ipairs(first.arguments) do
+            local param = handleParam(arg.name)
+            local type = handleType(arg.type) .. (arg.default and "?" or "")
+
             f:write("---@param ")
-            f:write(handleParam(arg.name))
+            f:write(param)
             f:write(" ")
-            f:write(handleType(arg.type) .. (arg.default and "?" or ""))
+            f:write(type)
             f:write(" # ")
             writeSingleLine(arg.description, f)
             if arg.default then
@@ -190,7 +170,7 @@ local function writeFunction(func, namespace, is_method, f)
                 f:write(")")
             end
             f:write("\n")
-            table.insert(params, handleParam(arg.name))
+            table.insert(params, param)
         end
 
         for _, ret in ipairs(first.returns) do
@@ -202,131 +182,78 @@ local function writeFunction(func, namespace, is_method, f)
             end
             f:write("\n")
         end
-
-        f:write("function ")
-        f:write(namespace)
-        f:write(is_method and ":" or ".")
-        f:write(name)
-        f:write("(")
-        f:write(table.concat(params, ", "))
-        f:write(") end")
     end
+
+    for i = 2, #func.variants do
+        local var = func.variants[i]
+
+        local p = {}
+        for _, arg in ipairs(var.arguments) do
+            local param = handleParam(arg.name)
+            if arg.default then
+                param = param .. "?"
+            end
+            table.insert(p, param .. ": " .. handleType(arg.type))
+        end
+
+        local returns = {}
+        for _, ret in ipairs(var.returns) do
+            table.insert(returns, handleType(ret.type))
+        end
+
+        f:write("---@overload fun(")
+        f:write(table.concat(p, ", "))
+        f:write(")")
+        if #returns > 0 then
+            f:write(": ")
+            f:write(table.concat(returns, ", "))
+        end
+        f:write("\n")
+    end
+
+    f:write("function ")
+    f:write(namespace)
+    f:write(is_method and ":" or ".")
+    f:write(name)
+    f:write("(")
+    f:write(table.concat(params, ", "))
+    f:write(") end")
 
     f:write("\n\n")
-end
-
-local function generateSwizzles(name, f)
-    local components = {}
-    local vecSize = 0
-
-    if name == "Vec2" then
-        components = { "x", "y" }
-        vecSize = 2
-    elseif name == "Vec3" then
-        components = { "x", "y", "z" }
-        vecSize = 3
-    elseif name == "Vec4" or name == "Quat" then
-        components = { "x", "y", "z", "w" }
-        vecSize = 4
-    end
-
-    for _, comp in ipairs(components) do
-        f:write("---@field ")
-        f:write(comp)
-        f:write(" number\n")
-    end
-
-    if vecSize >= 2 then
-        local common2 = { "xy", "yx", "xx", "yy" }
-        if vecSize >= 3 then
-            table.insert(common2, "xz")
-            table.insert(common2, "yz")
-            table.insert(common2, "zx")
-            table.insert(common2, "zy")
-        end
-        if vecSize >= 4 then
-            table.insert(common2, "xw")
-            table.insert(common2, "yw")
-            table.insert(common2, "zw")
-            table.insert(common2, "wx")
-            table.insert(common2, "wy")
-            table.insert(common2, "wz")
-        end
-
-        for _, swizzle in ipairs(common2) do
-            f:write("---@field ")
-            f:write(swizzle)
-            f:write(" Vec2\n")
-        end
-    end
-
-    if vecSize >= 3 then
-        local common3 = {
-            "xyz", "xzy", "yxz", "yzx", "zxy", "zyx", "xxx", "yyy", "zzz"
-        }
-        if vecSize >= 4 then
-            table.insert(common3, "xyw")
-            table.insert(common3, "xzw")
-            table.insert(common3, "yzw")
-            table.insert(common3, "wxy")
-            table.insert(common3, "wxz")
-            table.insert(common3, "wyz")
-        end
-
-        for _, swizzle in ipairs(common3) do
-            f:write("---@field ")
-            f:write(swizzle)
-            f:write(" Vec3\n")
-        end
-    end
-
-    if vecSize == 4 then
-        local common4 = {
-            "xyzw", "xywz", "xzyw", "xzwy", "xwyz", "xwzy",
-            "yxzw", "yxwz", "yzxw", "yzwx", "ywxz", "ywzx",
-            "zxyw", "zxwy", "zyxw", "zywx", "zwxy", "zwyx",
-            "wxyz", "wxzy", "wyxz", "wyzx", "wzxy", "wzyx",
-            "xxxx", "yyyy", "zzzz", "wwww"
-        }
-
-        for _, swizzle in ipairs(common4) do
-            f:write("---@field ")
-            f:write(swizzle)
-            f:write(" Vec4\n")
-        end
-    end
 end
 
 local function writeObject(object, namespace, f)
     local key = object.key
     local name = object.name
 
-    local swizzable = name:sub(1, 3) == "Vec" or name == "Quat"
-
     --# ---@class Blob
     f:write("---@class ")
     f:write(name)
     if name == "Mat4" then
         f:write(": number[]")
-    elseif swizzable then
-        f:write(": { [string]: number|Vec2|Vec3|Vec4 }")
     end
     f:write("\n")
 
-    if swizzable then
-        generateSwizzles(name, f)
+    local vec_n = tonumber(name:sub(4))
+    if vec_n and name:sub(1, 3) == "Vec" then
+        local c = "xyzw"
+        for i = 1, vec_n do
+            f:write("---@field ")
+            f:write(c:sub(i, i))
+            f:write(" number\n")
+        end
     end
+
+    --if object.constructors then
+    --    for _, const in ipairs(object.constructors) do
+    --        f:write("---@see ")
+    --        f:write(const)
+    --        f:write(" # (Constructor)\n")
+    --    end
+    --end
 
     for _, func in ipairs(object.methods) do
         writeOperator(func, f)
-    end
-
-    if object.constructors then
-        for _, const in ipairs(object.constructors) do
-            f:write("---@see ")
-            f:write(const)
-            f:write(" # (Constructor)\n")
-        end
     end
 
     --# local Blob = {}
@@ -337,6 +264,8 @@ local function writeObject(object, namespace, f)
     for _, func in ipairs(object.methods) do
         writeFunction(func, name, true, f)
     end
+
+    return name
 end
 
 local function processModule(module)
@@ -359,10 +288,9 @@ local function processModule(module)
 
     writeComment(module.description, f)
 
-    --# ---@class lovr.audio: { [any]: any }
+    --# ---@class lovr.audio
     f:write("---@class ")
     f:write(key)
-    f:write(": { [any]: any }")
     f:write("\n")
 
     --# local audio = {}
@@ -374,12 +302,12 @@ local function processModule(module)
         writeEnum(enum, f)
     end
 
-    for _, func in ipairs(module.functions) do
-        writeFunction(func, name, false, f)
-    end
-
     for _, objt in ipairs(module.objects) do
         writeObject(objt, name, f)
+    end
+
+    for _, func in ipairs(module.functions) do
+        writeFunction(func, name, false, f)
     end
 
     --# _G.lovr.audio = audio
@@ -410,13 +338,16 @@ f:write("\n")
 for _, key in ipairs(modules) do
     local name = key:match("([^.]+)$")
 
+    f:write("---@module '")
+    f:write(key)
+    f:write("'\n")
     f:write("lovr.")
     f:write(name)
     f:write(" = ")
     f:write(key)
-    f:write("\n")
+    f:write("\n\n")
 end
-f:write("\n")
+
 f:write("---@diagnostic disable: inject-field\n")
 f:write("---@diagnostic disable: duplicate-set-field\n")
 f:write("\n")

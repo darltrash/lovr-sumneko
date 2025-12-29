@@ -1,16 +1,8 @@
 ---@meta lovr
 
 --- `lovr` is the single global table that is exposed to every LÖVR app. It contains a set of **modules** and a set of **callbacks**.
----@class lovr: { [any]: any }
+---@class lovr
 local lovr = {}
-
---- Get the current major, minor, and patch version of LÖVR.
----@return number # The major version.
----@return number # The minor version.
----@return number # The patch number.
----@return string # The version codename.
----@return string # The commit hash (not available in all builds).
-function lovr.getVersion() end
 
 ---@class Object
 local Object = {}
@@ -22,19 +14,50 @@ function Object:release() end
 ---@return string # The type of the object.
 function Object:type() end
 
+--- Get the current major, minor, and patch version of LÖVR.
+---@return number # The major version.
+---@return number # The minor version.
+---@return number # The patch number.
+---@return string # The version codename.
+---@return string # The commit hash (not available in all builds).
+function lovr.getVersion() end
+
 _G.lovr = lovr
 
+---@module 'lovr'
 lovr.lovr = lovr
+
+---@module 'lovr.audio'
 lovr.audio = lovr.audio
+
+---@module 'lovr.data'
 lovr.data = lovr.data
+
+---@module 'lovr.event'
 lovr.event = lovr.event
+
+---@module 'lovr.filesystem'
 lovr.filesystem = lovr.filesystem
+
+---@module 'lovr.graphics'
 lovr.graphics = lovr.graphics
+
+---@module 'lovr.headset'
 lovr.headset = lovr.headset
+
+---@module 'lovr.math'
 lovr.math = lovr.math
+
+---@module 'lovr.physics'
 lovr.physics = lovr.physics
+
+---@module 'lovr.system'
 lovr.system = lovr.system
+
+---@module 'lovr.thread'
 lovr.thread = lovr.thread
+
+---@module 'lovr.timer'
 lovr.timer = lovr.timer
 
 ---@diagnostic disable: inject-field
@@ -109,7 +132,7 @@ function lovr.load(arg) end
 --- The message can have a "tag" that is a short string representing the sender, and a "level" indicating how severe the message is.
 --- The `t.graphics.debug` flag in `lovr.conf` can be used to get log messages from the GPU driver, tagged as `GPU`.  The `t.headset.debug` will enable OpenXR messages from the VR runtime, tagged as `XR`.
 --- It is also possible to emit custom log messages using `lovr.event.push`, or by calling the callback.
----@see Pass:text
+---@see Pass.text
 ---@param message string # The log message.  It may end in a newline.
 ---@param level string # The log level (`debug`, `info`, `warn`, or `error`).
 ---@param tag string # The log tag.
@@ -181,9 +204,9 @@ function lovr.quit() end
 function lovr.recenter() end
 
 --- This callback is called when the desktop window is resized.
----@see Pass:getDimensions
----@see Pass:getWidth
----@see Pass:getHeight
+---@see Pass.getDimensions
+---@see Pass.getWidth
+---@see Pass.getHeight
 ---@see lovr.headset.getDisplayDimensions
 ---@see lovr.conf
 ---@param width number # The new width of the window.
@@ -214,7 +237,7 @@ function lovr.textinput(text, code) end
 --- The `lovr.threaderror` callback is called whenever an error occurs in a Thread.  It receives the Thread object where the error occurred and an error message.
 --- The default implementation of this callback will call `lovr.errhand` with the error.
 ---@see Thread
----@see Thread:getError
+---@see Thread.getError
 ---@see lovr.errhand
 ---@param thread Thread # The Thread that errored.
 ---@param message string # The error message.

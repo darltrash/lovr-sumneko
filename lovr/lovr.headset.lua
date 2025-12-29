@@ -1,7 +1,7 @@
 ---@meta lovr.headset
 
 --- The `lovr.headset` module is where all the magical VR functionality is.  With it, you can access connected VR hardware and get information about the available space the player has.  Note that all units are reported in meters.  Position `(0, 0, 0)` is on the floor in the center of the play area.
----@class lovr.headset: { [any]: any }
+---@class lovr.headset
 local headset = {}
 
 --- Different types of input devices supported by the `lovr.headset` module.
@@ -84,13 +84,146 @@ local headset = {}
 ---| '"blend"' # The real world will blend with the headset display using the alpha channel.  This is supported on VR headsets with camera passthrough, as well as some AR displays.
 ---| '"add"' # Color values from virtual content will be added to the real world.  This is the most common mode used for AR.  Notably, black pixels will not show up at all.
 
+---@class Layer
+local Layer = {}
+
+--- Returns the color of the layer.  This will tint the contents of its texture.  It can be used to fade the layer without re-rendering its texture, which is especially useful for layers created with the `static` option.
+---@return number # The red component of the color.
+---@return number # The green component of the color.
+---@return number # The blue component of the color.
+---@return number # The alpha component of the color.
+function Layer:getColor() end
+
+--- Returns the curve of the layer.  Curving a layer renders it on a piece of a cylinder instead of a plane. The radius of the cylinder is `1 / curve` meters, so increasing the curve decreases the radius of the cylinder.
+---@return number # The curve of the layer.
+function Layer:getCurve() end
+
+--- Returns the width and height of the layer.  This is the size of the Layer's plane in meters, not the resolution of the layer's texture in pixels.
+---@return number # The width of the layer, in meters.
+---@return number # The height of the layer, in meters.
+function Layer:getDimensions() end
+
+--- Returns the orientation of the layer.
+---@see Layer.getPosition
+---@see Layer.setPosition
+---@see Layer.getPose
+---@see Layer.setPose
+---@return number # The amount of rotation around the axis of rotation, in radians.
+---@return number # The x component of the axis of rotation.
+---@return number # The y component of the axis of rotation.
+---@return number # The z component of the axis of rotation.
+function Layer:getOrientation() end
+
+--- Returns the render pass for the layer.  This can be used to render to the layer.
+---@see Layer.getTexture
+---@return Pass # The layer's render pass.
+function Layer:getPass() end
+
+--- Returns the position and orientation of the layer.
+---@see Layer.getPosition
+---@see Layer.setPosition
+---@see Layer.getOrientation
+---@see Layer.setOrientation
+---@return number # The x position.
+---@return number # The y position.
+---@return number # The z position.
+---@return number # The amount of rotation around the axis of rotation, in radians.
+---@return number # The x component of the axis of rotation.
+---@return number # The y component of the axis of rotation.
+---@return number # The z component of the axis of rotation.
+function Layer:getPose() end
+
+--- Returns the position of the layer, in meters.
+---@see Layer.getOrientation
+---@see Layer.setOrientation
+---@see Layer.getPose
+---@see Layer.setPose
+---@return number # The x position of the layer.
+---@return number # The y position of the layer.
+---@return number # The z position of the layer.
+function Layer:getPosition() end
+
+--- Returns the texture for the layer.  This is the texture that will be pasted onto the layer.
+---@see Layer.getPass
+---@return Texture # The layer's texture.
+function Layer:getTexture() end
+
+--- Returns the viewport of the layer.  The viewport is a 2D region of pixels that the layer will display within its plane.
+---@return number # The x coordinate of the upper-left corner of the viewport.
+---@return number # The y coordinate of the upper-left corner of the viewport.
+---@return number # The width of the viewport, in pixels.
+---@return number # The height of the viewport, in pixels.
+function Layer:getViewport() end
+
+--- Sets the color of the layer.  This will tint the contents of its texture.  It can be used to fade the layer without re-rendering its texture, which is especially useful for layers created with the `static` option.
+---@param r number # The red component of the color.
+---@param g number # The green component of the color.
+---@param b number # The blue component of the color.
+---@param a number? # The alpha component of the color. (default: 1.0)
+---@overload fun(t: number[])
+---@overload fun(hex: number, a?: number)
+function Layer:setColor(r, g, b, a) end
+
+--- Sets the curve of the layer.  Curving a layer renders it on a piece of a cylinder instead of a plane. The radius of the cylinder is `1 / curve` meters, so increasing the curve decreases the radius of the cylinder.
+---@param curve number? # The curve of the layer.  Negative values or zero means no curve. (default: 0)
+function Layer:setCurve(curve) end
+
+--- Sets the width and height of the layer.  This is the size of the Layer's plane in meters, not not the resolution of the layer's texture in pixels.
+---@param width number # The width of the layer, in meters.
+---@param height number # The height of the layer, in meters.
+function Layer:setDimensions(width, height) end
+
+--- Sets the orientation of the layer.
+---@see Layer.getPosition
+---@see Layer.setPosition
+---@see Layer.getPose
+---@see Layer.setPose
+---@param angle number # The amount of rotation around the axis of rotation, in radians.
+---@param ax number # The x component of the axis of rotation.
+---@param ay number # The y component of the axis of rotation.
+---@param az number # The z component of the axis of rotation.
+---@overload fun(orientation: Quat)
+function Layer:setOrientation(angle, ax, ay, az) end
+
+--- Sets the position and orientation of the layer.
+---@see Layer.getPosition
+---@see Layer.setPosition
+---@see Layer.getOrientation
+---@see Layer.setOrientation
+---@param x number # The x position.
+---@param y number # The y position.
+---@param z number # The z position.
+---@param angle number # The amount of rotation around the axis of rotation, in radians.
+---@param ax number # The x component of the axis of rotation.
+---@param ay number # The y component of the axis of rotation.
+---@param az number # The z component of the axis of rotation.
+---@overload fun(position: Vec3, orientation: Quat)
+function Layer:setPose(x, y, z, angle, ax, ay, az) end
+
+--- Sets the position of the layer, in meters.
+---@see Layer.getOrientation
+---@see Layer.setOrientation
+---@see Layer.getPose
+---@see Layer.setPose
+---@param x number # The x position of the layer.
+---@param y number # The y position of the layer.
+---@param z number # The z position of the layer.
+function Layer:setPosition(x, y, z) end
+
+--- Sets the viewport of the layer.  The viewport is a 2D region of pixels that the layer will display within its plane.
+---@param x number # The x coordinate of the upper-left corner of the viewport.
+---@param y number # The y coordinate of the upper-left corner of the viewport.
+---@param w number # The width of the viewport, in pixels.
+---@param h number # The height of the viewport, in pixels.
+function Layer:setViewport(x, y, w, h) end
+
 --- Animates a model to match its input state.  The buttons and joysticks on a controller will move as they're pressed/moved and hand models will move to match hand tracking joints.
 --- The model must have been created using `lovr.headset.newModel` with the `animated` flag set to `true`.
 ---@see lovr.headset.newModel
----@see Model:animate
----@overload fun(device: Device, model: Model): boolean
+---@see Model.animate
 ---@param model Model # The model to animate.
 ---@return boolean # Whether the animation was applied successfully to the Model.  If the Model was not compatible or animation data for the device was not available, this will be `false`.
+---@overload fun(device?: Device, model: Model): boolean
 function headset.animate(model) end
 
 --- Returns the current angular velocity of a device.
@@ -295,9 +428,9 @@ function headset.getRefreshRates() end
 --- Returns a list of joint transforms tracked by a device.  Currently, only hand devices are able to track joints.
 ---@see lovr.headset.getPose
 ---@see lovr.headset.animate
----@overload fun(device: Device, t: table): number[][]
 ---@param device Device # The hand device to query (`left` or `right`).
 ---@return number[][] # A list of joint transforms for the device.  Each transform is a table with 3 numbers for the position of the joint, 1 number for the joint radius (in meters), and 4 numbers for the angle/axis orientation of the joint.  There is also a `radius` key with the radius of the joint as well.
+---@overload fun(device: Device, t: table): number[][]
 function headset.getSkeleton(device) end
 
 --- Returns a Texture that will be submitted to the headset display.  This will be the render target used in the headset's render pass.  The texture is not guaranteed to be the same every frame, and must be called every frame to get the current texture.
@@ -433,17 +566,17 @@ function headset.newLayer(width, height) end
 ---@see lovr.headset.isTracked
 ---@see lovr.modelschanged
 ---@see lovr.graphics.newModel
----@overload fun(device: Device): Model
 ---@param key lightuserdata # A model key to load, previously obtained with `lovr.headset.getModelKeys`.
 ---@return Model # The new Model, or `nil` if a model could not be loaded.
+---@overload fun(device?: Device): Model
 function headset.newModel(key) end
 
 --- Sets a background layer.  This will render behind any transparent pixels in the main 3D content. It works similarly to other `Layer` objects, but using a cubemap or equirectangular texture.
 --- The background texture is sent to the VR runtime once, and the runtime is responsible for compositing it behind the rest of the scene.  This can improve performance greatly, since the background doesn't need to be re-rendered every frame.  It also ensures the background remains tracked smoothly even if LÖVR is struggling to render at a high frame rate.
 ---@see Layer
----@see Pass:skybox
----@overload fun()
+---@see Pass.skybox
 ---@param background Image[] # The image(s) or texture to use for the background.  Backgrounds can either be cubemaps (6 images) or equirectangular (a single panoramic 2D image).Textures can have any color format, but it will be converted to `rgba8` before getting copied to the VR runtime.  Images currently have to be `rgba8`.
+---@overload fun()
 function headset.setBackground(background) end
 
 --- Sets the near and far clipping planes used to render to the headset.  Objects closer than the near clipping plane or further than the far clipping plane will be clipped out of view.
@@ -452,25 +585,25 @@ function headset.setBackground(background) end
 function headset.setClipDistance(near, far) end
 
 --- Sets foveated rendering settings.  Currently only fixed foveated rendering is supported.  This renders the edges of the screen at a lower resolution to improve GPU performance.  Higher foveation levels will save more GPU time, but make the edges of the screen more blocky.
----@overload fun(): boolean
 ---@param level FoveationLevel # The foveation level (or the maximum level when dynamic foveation is active).
 ---@param dynamic boolean? # Whether the system is allowed to dynamically adjust the foveation level based on GPU load. (default: true)
 ---@return boolean # Whether foveation was enabled successfully.
+---@overload fun(): boolean
 function headset.setFoveation(level, dynamic) end
 
 --- Sets the list of active `Layer` objects.  These are the layers that will be rendered in the headset's display.  They are rendered in order.
 ---@see lovr.headset.newLayer
 ---@see Layer
----@overload fun(t: table)
 ---@param ... Layer # Zero or more layers to render in the headset.
+---@overload fun(t: table)
 function headset.setLayers(...) end
 
 --- Sets a new passthrough mode.  Not all headsets support all passthrough modes.  Use `lovr.headset.getPassthroughModes` to see which modes are supported.
 ---@see lovr.headset.getPassthroughModes
----@overload fun(transparent: boolean): boolean
----@overload fun(): boolean
 ---@param mode PassthroughMode # The passthrough mode to request.
 ---@return boolean # Whether the passthrough mode was supported and successfully enabled.
+---@overload fun(transparent: boolean): boolean
+---@overload fun(): boolean
 function headset.setPassthrough(mode) end
 
 --- Sets the display refresh rate, in Hz.
@@ -535,139 +668,5 @@ function headset.wasPressed(device, button) end
 ---@param button DeviceButton # The button to check.
 ---@return boolean # Whether the button on the device was released this frame.
 function headset.wasReleased(device, button) end
-
----@class Layer
----@see lovr.headset.newLayer # (Constructor)
-local Layer = {}
-
---- Returns the color of the layer.  This will tint the contents of its texture.  It can be used to fade the layer without re-rendering its texture, which is especially useful for layers created with the `static` option.
----@return number # The red component of the color.
----@return number # The green component of the color.
----@return number # The blue component of the color.
----@return number # The alpha component of the color.
-function Layer:getColor() end
-
---- Returns the curve of the layer.  Curving a layer renders it on a piece of a cylinder instead of a plane. The radius of the cylinder is `1 / curve` meters, so increasing the curve decreases the radius of the cylinder.
----@return number # The curve of the layer.
-function Layer:getCurve() end
-
---- Returns the width and height of the layer.  This is the size of the Layer's plane in meters, not the resolution of the layer's texture in pixels.
----@return number # The width of the layer, in meters.
----@return number # The height of the layer, in meters.
-function Layer:getDimensions() end
-
---- Returns the orientation of the layer.
----@see Layer:getPosition
----@see Layer:setPosition
----@see Layer:getPose
----@see Layer:setPose
----@return number # The amount of rotation around the axis of rotation, in radians.
----@return number # The x component of the axis of rotation.
----@return number # The y component of the axis of rotation.
----@return number # The z component of the axis of rotation.
-function Layer:getOrientation() end
-
---- Returns the render pass for the layer.  This can be used to render to the layer.
----@see Layer:getTexture
----@return Pass # The layer's render pass.
-function Layer:getPass() end
-
---- Returns the position and orientation of the layer.
----@see Layer:getPosition
----@see Layer:setPosition
----@see Layer:getOrientation
----@see Layer:setOrientation
----@return number # The x position.
----@return number # The y position.
----@return number # The z position.
----@return number # The amount of rotation around the axis of rotation, in radians.
----@return number # The x component of the axis of rotation.
----@return number # The y component of the axis of rotation.
----@return number # The z component of the axis of rotation.
-function Layer:getPose() end
-
---- Returns the position of the layer, in meters.
----@see Layer:getOrientation
----@see Layer:setOrientation
----@see Layer:getPose
----@see Layer:setPose
----@return number # The x position of the layer.
----@return number # The y position of the layer.
----@return number # The z position of the layer.
-function Layer:getPosition() end
-
---- Returns the texture for the layer.  This is the texture that will be pasted onto the layer.
----@see Layer:getPass
----@return Texture # The layer's texture.
-function Layer:getTexture() end
-
---- Returns the viewport of the layer.  The viewport is a 2D region of pixels that the layer will display within its plane.
----@return number # The x coordinate of the upper-left corner of the viewport.
----@return number # The y coordinate of the upper-left corner of the viewport.
----@return number # The width of the viewport, in pixels.
----@return number # The height of the viewport, in pixels.
-function Layer:getViewport() end
-
---- Sets the color of the layer.  This will tint the contents of its texture.  It can be used to fade the layer without re-rendering its texture, which is especially useful for layers created with the `static` option.
----@overload fun(t: number[])
----@overload fun(hex: number, a: number)
----@param r number # The red component of the color.
----@param g number # The green component of the color.
----@param b number # The blue component of the color.
----@param a number? # The alpha component of the color. (default: 1.0)
-function Layer:setColor(r, g, b, a) end
-
---- Sets the curve of the layer.  Curving a layer renders it on a piece of a cylinder instead of a plane. The radius of the cylinder is `1 / curve` meters, so increasing the curve decreases the radius of the cylinder.
----@param curve number? # The curve of the layer.  Negative values or zero means no curve. (default: 0)
-function Layer:setCurve(curve) end
-
---- Sets the width and height of the layer.  This is the size of the Layer's plane in meters, not not the resolution of the layer's texture in pixels.
----@param width number # The width of the layer, in meters.
----@param height number # The height of the layer, in meters.
-function Layer:setDimensions(width, height) end
-
---- Sets the orientation of the layer.
----@see Layer:getPosition
----@see Layer:setPosition
----@see Layer:getPose
----@see Layer:setPose
----@overload fun(orientation: Quat)
----@param angle number # The amount of rotation around the axis of rotation, in radians.
----@param ax number # The x component of the axis of rotation.
----@param ay number # The y component of the axis of rotation.
----@param az number # The z component of the axis of rotation.
-function Layer:setOrientation(angle, ax, ay, az) end
-
---- Sets the position and orientation of the layer.
----@see Layer:getPosition
----@see Layer:setPosition
----@see Layer:getOrientation
----@see Layer:setOrientation
----@overload fun(position: Vec3, orientation: Quat)
----@param x number # The x position.
----@param y number # The y position.
----@param z number # The z position.
----@param angle number # The amount of rotation around the axis of rotation, in radians.
----@param ax number # The x component of the axis of rotation.
----@param ay number # The y component of the axis of rotation.
----@param az number # The z component of the axis of rotation.
-function Layer:setPose(x, y, z, angle, ax, ay, az) end
-
---- Sets the position of the layer, in meters.
----@see Layer:getOrientation
----@see Layer:setOrientation
----@see Layer:getPose
----@see Layer:setPose
----@param x number # The x position of the layer.
----@param y number # The y position of the layer.
----@param z number # The z position of the layer.
-function Layer:setPosition(x, y, z) end
-
---- Sets the viewport of the layer.  The viewport is a 2D region of pixels that the layer will display within its plane.
----@param x number # The x coordinate of the upper-left corner of the viewport.
----@param y number # The y coordinate of the upper-left corner of the viewport.
----@param w number # The width of the viewport, in pixels.
----@param h number # The height of the viewport, in pixels.
-function Layer:setViewport(x, y, w, h) end
 
 _G.lovr.headset = headset

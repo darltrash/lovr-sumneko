@@ -1,7 +1,7 @@
 ---@meta lovr.timer
 
 --- The `lovr.timer` module provides a few functions that deal with time.  All times are measured in seconds.
----@class lovr.timer: { [any]: any }
+---@class lovr.timer
 local timer = {}
 
 --- Returns the average delta over the last second.

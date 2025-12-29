@@ -2,7 +2,7 @@
 
 --- The `lovr.event` module handles events from the operating system.
 --- Due to its low-level nature, it's rare to use `lovr.event` in simple projects.
----@class lovr.event: { [any]: any }
+---@class lovr.event
 local event = {}
 
 --- This enum is used to distinguish whether a display is the headset display or the desktop window.

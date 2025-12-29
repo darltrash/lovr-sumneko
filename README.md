@@ -7,7 +7,6 @@ So, I had a terrible experience with the [Sumneko LSP](https://github.com/bjornb
 3. Let the LSP know you're using this instead of the original ones, use this example:
 ```json
 {
-  "runtime.version": "LuaJIT",
   "workspace.library": [
     "your/path/to/the/api/folder",
   ]

@@ -23,7 +23,7 @@
 --- When files are read, they will be searched for in multiple places.  By default, the save directory is checked first, then the project source (folder or zip).  That way, when data is written to a file, any future reads will see the new data.  The `t.saveprecedence` conf setting can be used to change this precedence.
 --- Conceptually, `lovr.filesystem` uses a "virtual filesystem", which is an ordered list of folders and zip files that are merged into a single filesystem hierarchy.  Folders and archives in the list can be added and removed with `lovr.filesystem.mount` and `lovr.filesystem.unmount`.
 --- LÖVR extends Lua's `require` function to look for modules in the virtual filesystem.  The search patterns can be changed with `lovr.filesystem.setRequirePath`, similar to `package.path`.
----@class lovr.filesystem: { [any]: any }
+---@class lovr.filesystem
 local filesystem = {}
 
 --- The different actions that can be taken on files, reported by `lovr.filechanged` when filesystem watching is active.
@@ -38,6 +38,62 @@ local filesystem = {}
 ---| '"r"' # Open the file for reading.
 ---| '"w"' # Open the file for writing (overwrites existing data).
 ---| '"a"' # Open the file for appending.
+
+---@class File
+local File = {}
+
+--- Returns the mode the file was opened in.
+---@see File.getPath
+---@return OpenMode # The mode the file was opened in (`r`, `w`, or `a`).
+function File:getMode() end
+
+--- Returns the file's path.
+---@return string # The file path.
+function File:getPath() end
+
+--- Returns the size of the file, in bytes.
+---@see lovr.filesystem.getSize
+---@return number # The size of the file, in bytes, or nil if an error occurred.
+---@return string # The error message, if an error occurred.
+function File:getSize() end
+
+--- Returns whether the end of file has been reached.  When true, `File:read` will no longer return data.
+---@see File.seek
+---@see File.tell
+---@see File.getSize
+---@return boolean # Whether the end of the file has been reached.
+function File:isEOF() end
+
+--- Reads data from the file.
+---@see File.write
+---@see lovr.filesystem.read
+---@see lovr.filesystem.newBlob
+---@param bytes number # The number of bytes to read from the file, or `nil` to read the rest of the file.
+---@return string # The data that was read, or nil if an error occurred.
+---@return number # The number of bytes that were read, or the error message if an error occurred.
+function File:read(bytes) end
+
+--- Seeks to a new position in the file.  `File:read` and `File:write` will read/write relative to this position.
+---@see File.tell
+---@see File.getSize
+---@param offset number # The new file offset, in bytes.
+function File:seek(offset) end
+
+--- Returns the seek position of the file, which is where `File:read` and `File:write will read/write from.
+---@see File.seek
+---@return number # The file offset, in bytes.
+function File:tell() end
+
+--- Writes data to the file.
+---@see File.read
+---@see lovr.filesystem.write
+---@see lovr.filesystem.append
+---@param string string # A string to write to the file.
+---@param size number? # The number of bytes to write, or nil to write all of the data from the string/Blob. (default: nil)
+---@return boolean # Whether the data was successfully written.
+---@return string # The error message.
+---@overload fun(blob: Blob, size?: number): boolean, string
+function File:write(string, size) end
 
 --- Appends content to the end of a file.
 ---@param filename string # The file to append to.
@@ -94,7 +150,7 @@ function filesystem.getRequirePath() end
 function filesystem.getSaveDirectory() end
 
 --- Returns the size of a file, in bytes.
----@see File:getSize
+---@see File.getSize
 ---@param file string # The file.
 ---@return number | nil # The size of the file, in bytes, or `nil` if there was an error.
 ---@return string | nil # The error message, if the operation was not successful.
@@ -210,62 +266,5 @@ function filesystem.watch() end
 ---@return boolean # Whether the write was successful.
 ---@return string # The error message, if there was an error.
 function filesystem.write(filename, content) end
-
----@class File
----@see lovr.filesystem.newFile # (Constructor)
-local File = {}
-
---- Returns the mode the file was opened in.
----@see File:getPath
----@return OpenMode # The mode the file was opened in (`r`, `w`, or `a`).
-function File:getMode() end
-
---- Returns the file's path.
----@return string # The file path.
-function File:getPath() end
-
---- Returns the size of the file, in bytes.
----@see lovr.filesystem.getSize
----@return number # The size of the file, in bytes, or nil if an error occurred.
----@return string # The error message, if an error occurred.
-function File:getSize() end
-
---- Returns whether the end of file has been reached.  When true, `File:read` will no longer return data.
----@see File:seek
----@see File:tell
----@see File:getSize
----@return boolean # Whether the end of the file has been reached.
-function File:isEOF() end
-
---- Reads data from the file.
----@see File:write
----@see lovr.filesystem.read
----@see lovr.filesystem.newBlob
----@param bytes number # The number of bytes to read from the file, or `nil` to read the rest of the file.
----@return string # The data that was read, or nil if an error occurred.
----@return number # The number of bytes that were read, or the error message if an error occurred.
-function File:read(bytes) end
-
---- Seeks to a new position in the file.  `File:read` and `File:write` will read/write relative to this position.
----@see File:tell
----@see File:getSize
----@param offset number # The new file offset, in bytes.
-function File:seek(offset) end
-
---- Returns the seek position of the file, which is where `File:read` and `File:write will read/write from.
----@see File:seek
----@return number # The file offset, in bytes.
-function File:tell() end
-
---- Writes data to the file.
----@see File:read
----@see lovr.filesystem.write
----@see lovr.filesystem.append
----@overload fun(blob: Blob, size: number): boolean, string
----@param string string # A string to write to the file.
----@param size number? # The number of bytes to write, or nil to write all of the data from the string/Blob. (default: nil)
----@return boolean # Whether the data was successfully written.
----@return string # The error message.
-function File:write(string, size) end
 
 _G.lovr.filesystem = filesystem

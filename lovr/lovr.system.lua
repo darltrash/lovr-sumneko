@@ -2,7 +2,7 @@
 
 --- The `lovr.system` provides information about the current platform and hardware.
 --- It also interfaces with the desktop window and window input.
----@class lovr.system: { [any]: any }
+---@class lovr.system
 local system = {}
 
 --- These are the different permissions that need to be requested using `lovr.system.requestPermission` on some platforms.
