@@ -145,18 +145,6 @@ function Object:type() end
 ---@return string # The commit hash (not available in all builds).
 function lovr.getVersion() end
 
-return lovr---@module 'lovr'
----@module 'lovr.audio'
----@module 'lovr.data'
----@module 'lovr.event'
----@module 'lovr.filesystem'
----@module 'lovr.graphics'
----@module 'lovr.headset'
----@module 'lovr.math'
----@module 'lovr.physics'
----@module 'lovr.system'
----@module 'lovr.thread'
----@module 'lovr.timer'
 vec2 = lovr.math.vec2
 Vec2 = lovr.math.newVec2
 vec3 = lovr.math.vec3

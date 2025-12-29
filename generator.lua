@@ -325,6 +325,7 @@ end
 local function processModule(module)
     local key = module.key
     local name = key:match("([^.]+)$")
+    local is_main_module = key == "lovr"
 
     io.write(("- %-20s"):format(key .. "..."))
     if module.external then
@@ -348,7 +349,7 @@ local function processModule(module)
     --# ---@class lovr.audio
     f:write("---@class ")
     f:write(key)
-    if is_lovr then
+    if is_main_module then
         f:write(": table")
     end
     f:write("\n")
@@ -375,8 +376,10 @@ local function processModule(module)
         writeFunction(func, key, false, f)
     end
 
-    f:write("return ")
-    f:write(key)
+    if not is_main_module then
+        f:write("return ")
+        f:write(key)
+    end
     f:close()
 
     print("OK")
