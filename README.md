@@ -19,18 +19,8 @@ You can also get the lovr folder, isolated, by [grabbing a release.](https://git
 2. Get this repository, WITH the submodule. (`git clone --recurse-submodules https://github.com/darltrash/lovr-sumneko`)
 3. Run `make generate`
 
-### How to update the API and possibly help me mantain this:
-1. Get LuaJIT, and Make, as stated previously.
-2. Update submodules (`git submodule update --remote --merge`)
-3. Run `make generate`
-
-> [!NOTE]
-> This might break some things in regards to the generator script, should work fine unless the team decided to switch something in regards to how the API is expressed, though.
-
-## How to contribute
-Do the thing above, get the ball rolling and generate the API in case anything changes, if that doesn't work as it should, then try to fix the script.
-
-**DO NOT USE GENERATIVE AI FOR CODE GENERATION**, I will not accept any usage of it in this project, thank you.
+## On being merged:
+There are plans that, hopefully, this will be [merged into the main documentation repo](https://github.com/bjornbytes/lovr-docs/pull/188) which will make the "default" annotations for LÖVR in LuaLS to be these ones right in front of you. No more having to download this weirdo little folder, you just select LÖVR in your IDE and that's about it! 
 
 ## Licensing
 Mate, this thing was whipped out in like 30 minutes, I don't care what you do with it. Just please keep it mantained and loved.

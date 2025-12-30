@@ -4,7 +4,7 @@ local OUTPUT = "lovr/"
 local API_OUTPUT = OUTPUT .. "library/"
 local DOCS_URL = "https://lovr.org/docs/"
 
-local reserved = {
+local KEYWORD_LOOKUP = {
     ["and"] = true,
     ["break"] = true,
     ["do"] = true,
@@ -28,7 +28,7 @@ local reserved = {
     ["while"] = true,
 }
 
-local operators = {
+local OPERATOR_LOOKUP = {
     ["add"] = "add",
     ["sub"] = "sub",
     ["div"] = "div",
@@ -101,7 +101,7 @@ end
 local function handleParam(name)
     if name:sub(1, 3) == "..." then
         return "..."
-    elseif reserved[name] then
+    elseif KEYWORD_LOOKUP[name] then
         return name .. "_"
     end
     return name
@@ -109,7 +109,7 @@ end
 
 -- Assumes that an object with :sub, also has :__sub, for example
 local function writeOperator(func, f)
-    local name = operators[func.name]
+    local name = OPERATOR_LOOKUP[func.name]
     if not name then
         return
     end
@@ -396,11 +396,9 @@ local function processModule(module)
     print("OK")
 end
 
-do
-    print("Processing modules")
-    for _, v in ipairs(data.modules) do
-        processModule(v)
-    end
+print("Processing modules")
+for _, v in ipairs(data.modules) do
+    processModule(v)
 end
 
 do
